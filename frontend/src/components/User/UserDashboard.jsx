@@ -141,7 +141,7 @@ export default function UserDashboard() {
               {card.title}
             </h3>
 
-            <p className="text-2xl font-bold mt-2 break-words">
+            <p className="text-2xl font-bold mt-2 wrap-break-word">
               {card.value}
             </p>
           </div>
@@ -174,7 +174,7 @@ export default function UserDashboard() {
         </div>
 
         {/* LUNCH */}
-        <div className="rounded-2xl border p-5 bg-gradient-to-r from-orange-50 to-white mb-6">
+        <div className="rounded-2xl border p-5 bg-linear-to-r from-orange-50 to-white mb-6">
           <h3 className="text-lg font-semibold mb-3">🍛 Lunch</h3>
 
           <div className="flex flex-wrap gap-2">
@@ -190,7 +190,7 @@ export default function UserDashboard() {
         <div className="grid md:grid-cols-2 gap-4">
 
           {/* VEG */}
-          <div className="rounded-2xl border p-5 bg-gradient-to-br from-green-200 to-white">
+          <div className="rounded-2xl border p-5 bg-linear-to-br from-green-200 to-white">
             <h4 className="font-semibold mb-3 flex items-center gap-2">
               {mealIcons.veg} Veg Dinner
             </h4>
@@ -205,7 +205,7 @@ export default function UserDashboard() {
           </div>
 
           {/* NON VEG */}
-          <div className="rounded-2xl border p-5 bg-gradient-to-br from-red-200 to-white">
+          <div className="rounded-2xl border p-5 bg-linear-to-br from-red-200 to-white">
             <h4 className="font-semibold mb-3 flex items-center gap-2">
               {mealIcons.nonveg} Non-Veg Dinner
             </h4>
