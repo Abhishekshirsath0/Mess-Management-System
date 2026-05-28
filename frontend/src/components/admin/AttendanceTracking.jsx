@@ -30,8 +30,8 @@ export default function AttendanceTable() {
       </div>
 
       {/* TABLE WRAPPER WITH SCROLL */}
-      <div className="overflow-y-auto max-h-[420px]">
-        <table className="w-full min-w-[650px]">
+      <div className="overflow-y-auto max-h-105">
+        <table className="w-full min-w-162.5">
 
           <thead className="bg-slate-100 sticky top-0 z-10">
             <tr>

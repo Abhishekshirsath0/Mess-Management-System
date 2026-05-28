@@ -18,24 +18,19 @@ export default function Navbar() {
           
           <Link
             to="/admin"
-            className="font-semibold border-b-2 border-black py-5"
+            className="font-semibold h-10 py-2 mt-2  hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
           >
             Admin Dashboard
           </Link>
 
           <Link
-            to="/user"
-            className="font-semibold border-b-2 border-black py-5"
+            to="/"
+            className="font-semibold h-10 py-2 mt-2  hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
           >
             User Dashboard
           </Link>
 
-          <Link
-            to="/reports"
-            className="text-gray-500 hover:text-black py-5"
-          >
-            Reports
-          </Link>
+       
         </nav>
 
         {/* Right Side */}
@@ -43,10 +38,18 @@ export default function Navbar() {
           <button className="text-xl hidden md:block">
             🔔
           </button>
+          
+              <Link
+            to="#"
+            className="font-semibold h-10 py-2 mt-2  hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
+          >
+            Logout
+          </Link>
 
-          <div className="hidden md:flex w-10 h-10 rounded-full bg-black text-white items-center justify-center font-semibold">
+          <div className="hidden md:flex w-10 h-10 rounded-full bg-black text-white items-center font-semiboldhidden justify-center font-semibold">
             A
           </div>
+          
 
           {/* Mobile Button */}
           <button
@@ -64,7 +67,7 @@ export default function Navbar() {
 
           <Link
             to="/admin"
-            className="block font-medium"
+            className="block font-mediumbg-black bg-black  text-white px-3 py-2 w-40 rounded-xl"
             onClick={() => setOpen(false)}
           >
             Admin Dashboard
@@ -72,7 +75,7 @@ export default function Navbar() {
 
           <Link
             to="/user"
-            className="block font-medium"
+            className="block font-mediumbg-black bg-black  text-white px-3 py-2 w-40 rounded-xl"
             onClick={() => setOpen(false)}
           >
             User Dashboard
@@ -80,10 +83,10 @@ export default function Navbar() {
 
           <Link
             to="/reports"
-            className="block font-medium"
+            className="block font-mediumbg-black bg-black  text-white px-3 py-2 w-40 rounded-xl"
             onClick={() => setOpen(false)}
           >
-            Reports
+          Settings
           </Link>
 
         </div>
