@@ -9,7 +9,11 @@ export default function Login() {
     password: "",
   });
 
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
+    setError("");
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -19,46 +23,44 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(formData);
-
-    // Example admin login
+    // Demo Login Credentials
     if (
       formData.email === "admin@gmail.com" &&
       formData.password === "123456"
     ) {
       navigate("/admin");
     } else {
-      alert("Invalid Credentials");
+      setError("Invalid email or password. Please try again.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col justify-center px-6 py-12">
+    <div className="min-h-screen bg-white flex flex-col justify-center px-6 py-12">
+      {/* Logo + Heading */}
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          alt="Mess Management"
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-          className="mx-auto h-12 w-auto"
-        />
+        <div className="mx-auto w-14 h-14 rounded-xl bg-black flex items-center justify-center text-white text-2xl font-bold select-none">
+          M
+        </div>
 
-        <h2 className="mt-8 text-center text-3xl font-bold tracking-tight text-white">
+        <h2 className="mt-8 text-center text-3xl font-bold tracking-tight text-black">
           Sign in to your account
         </h2>
 
-        <p className="mt-2 text-center text-sm text-gray-400">
-          Mess Management System
+        <p className="mt-2 text-center text-sm text-gray-600">
+          MessMaster Pro — Mess Management System
         </p>
       </div>
 
+      {/* Login Card */}
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-200">
-              Email address
-            </label>
+        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">
+                Email Address
+              </label>
 
-            <div className="mt-2">
               <input
                 name="email"
                 type="email"
@@ -66,56 +68,69 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
-                className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white border border-gray-700 placeholder:text-gray-500 focus:border-indigo-500 focus:outline-none"
+                className="block w-full rounded-xl bg-white px-4 py-3 text-black border border-gray-300 placeholder:text-gray-500 focus:border-black focus:ring-2 focus:ring-black/20 focus:outline-none transition text-sm"
               />
             </div>
-          </div>
 
-          {/* Password */}
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-200">
-                Password
-              </label>
+            {/* Password */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-black">
+                  Password
+                </label>
 
-              <Link
-                to="/forgot-password"
-                className="text-sm font-semibold text-indigo-400 hover:text-indigo-300"
-              >
-                Forgot password?
-              </Link>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-semibold text-black hover:text-gray-700"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPw ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className="block w-full rounded-xl bg-white px-4 py-3 pr-12 text-black border border-gray-300 placeholder:text-gray-500 focus:border-black focus:ring-2 focus:ring-black/20 focus:outline-none transition text-sm"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition"
+                >
+                  {showPw ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
 
-            <div className="mt-2">
-              <input
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className="block w-full rounded-md bg-gray-800 px-3 py-2 text-white border border-gray-700 placeholder:text-gray-500 focus:border-indigo-500 focus:outline-none"
-              />
-            </div>
-          </div>
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-300 text-red-600 rounded-xl px-4 py-3 text-sm">
+                {error}
+              </div>
+            )}
 
-          {/* Button */}
-          <div>
+            {/* Login Button */}
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition"
+              className="flex w-full justify-center rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800 active:scale-95 transition-all"
             >
               Sign In
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
 
-        {/* Signup */}
-        <p className="mt-10 text-center text-sm text-gray-400">
+        {/* Register Link */}
+        <p className="mt-6 text-center text-sm text-gray-600">
           Not a member?{" "}
           <Link
             to="/register"
-            className="font-semibold text-indigo-400 hover:text-indigo-300"
+            className="font-semibold text-black hover:text-gray-700"
           >
             Create account
           </Link>

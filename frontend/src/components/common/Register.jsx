@@ -1,219 +1,238 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Register() {
+  const [formData, setFormData] = useState({
+    fullname: "",
+    mobile: "",
+    parentMobile: "",
+    email: "",
+    address: "",
+    gender: "",
+    password: "",
+    confirmPassword: "",
+    terms: false,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    // Handle submission logic (e.g., API call) here
+    console.log("Form Submitted Successfully:", formData);
+  };
+
   return (
-    <main className="px-4 md:px-8 min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-neutral-900 py-10">
-      <div className="max-w-md w-full">
-        <div className="p-6 rounded-lg bg-white border border-slate-300 shadow-md md:p-8 dark:bg-neutral-800 dark:border-neutral-700">
+    <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 antialiased">
+      <div className="w-full max-w-lg">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 p-8 sm:p-10">
           
-          <h1 className="text-slate-900 text-center text-3xl font-bold dark:text-slate-50">
-            Create an Account
-          </h1>
+          {/* Header Section */}
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center text-white text-2xl font-black tracking-wider shadow-md shadow-black/20">
+              M
+            </div>
+            <h1 className="mt-5 text-3xl font-extrabold text-gray-900 tracking-tight">
+              Create an Account
+            </h1>
+            <p className="mt-2 text-sm text-gray-500 font-medium">
+              Register for Mess Management System
+            </p>
+          </div>
 
-          <p className="text-center text-sm text-slate-500 mt-2 dark:text-slate-400">
-            Register for Mess Management System
-          </p>
-
-          <form className="space-y-5 mt-8">
-
+          {/* Registration Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
             {/* Full Name */}
             <div>
-              <label
-                htmlFor="fullname"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
+              <label htmlFor="fullname" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Full Name
               </label>
-
               <input
                 type="text"
                 id="fullname"
                 name="fullname"
-                placeholder="Enter full name"
+                value={formData.fullname}
+                onChange={handleChange}
+                placeholder="John Doe"
                 required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
+                className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
               />
             </div>
 
-            {/* Mobile Number */}
-            <div>
-              <label
-                htmlFor="mobile"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
-                Mobile Number
-              </label>
+            {/* Mobile Numbers Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="mobile" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  id="mobile"
+                  name="mobile"
+                  value={formData.mobile}
+                  onChange={handleChange}
+                  placeholder="Enter mobile number"
+                  required
+                  className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
+                />
+              </div>
 
-              <input
-                type="tel"
-                id="mobile"
-                name="mobile"
-                placeholder="Enter mobile number"
-                required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
-              />
+              <div>
+                <label htmlFor="parentMobile" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  Parent Mobile
+                </label>
+                <input
+                  type="tel"
+                  id="parentMobile"
+                  name="parentMobile"
+                  value={formData.parentMobile}
+                  onChange={handleChange}
+                  placeholder="Enter parent mobile"
+                  required
+                  className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
+                />
+              </div>
             </div>
 
-            {/* Parent Mobile Number */}
+            {/* Email Address */}
             <div>
-              <label
-                htmlFor="parentMobile"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
-                Parent Mobile Number
+              <label htmlFor="email" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                Email Address
               </label>
-
-              <input
-                type="tel"
-                id="parentMobile"
-                name="parentMobile"
-                placeholder="Enter parent mobile number"
-                required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
-                Email
-              </label>
-
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
                 required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
+                className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
               />
             </div>
 
             {/* Address */}
             <div>
-              <label
-                htmlFor="address"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
+              <label htmlFor="address" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Address
               </label>
-
               <textarea
                 id="address"
                 name="address"
-                rows="3"
-                placeholder="Enter your address"
+                rows="2"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Enter your residential address"
                 required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
+                className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none resize-none"
               ></textarea>
             </div>
 
             {/* Gender */}
             <div>
-              <label
-                htmlFor="gender"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
+              <label htmlFor="gender" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
                 Gender
               </label>
-
               <select
                 id="gender"
                 name="gender"
+                value={formData.gender}
+                onChange={handleChange}
                 required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
+                className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none appearance-none"
               >
-                <option value="">Select Gender</option>
+                <option value="" disabled>Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
             </div>
 
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
-                Password
-              </label>
+            {/* Password Fields Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="password" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
+                />
+              </div>
 
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="••••••••"
-                required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
-              />
+              <div>
+                <label htmlFor="confirmPassword" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
+                />
+              </div>
             </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirm-password"
-                className="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50"
-              >
-                Confirm Password
-              </label>
-
-              <input
-                type="password"
-                id="confirm-password"
-                name="confirm-password"
-                placeholder="••••••••"
-                required
-                className="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none dark:text-slate-50 dark:bg-neutral-700 dark:border-neutral-600"
-              />
-            </div>
-
-            {/* Terms */}
-            <div className="flex items-start gap-2">
+            {/* Terms & Conditions */}
+            <div className="flex items-start gap-3 pt-1">
               <input
                 id="terms"
+                name="terms"
                 type="checkbox"
+                checked={formData.terms}
+                onChange={handleChange}
                 required
-                className="mt-1"
+                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
               />
-
-              <label
-                htmlFor="terms"
-                className="text-sm text-slate-700 dark:text-slate-300"
-              >
+              <label htmlFor="terms" className="text-sm text-gray-600 select-none cursor-pointer">
                 I accept the{" "}
-                <a
-                  href="#"
-                  className="text-blue-700 hover:underline dark:text-blue-500"
-                >
+                <a href="#" className="font-semibold text-black hover:underline underline-offset-2">
                   Terms and Conditions
                 </a>
               </label>
             </div>
 
-            {/* Button */}
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-2.5 px-4 text-sm rounded-md font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all"
+              className="w-full py-3.5 px-4 mt-2 text-sm font-bold text-white bg-black rounded-xl hover:bg-gray-900 active:scale-[0.98] transition-all shadow-md shadow-black/10 tracking-wide"
             >
-              Create an Account
+              Create Account
             </button>
           </form>
 
-          {/* Login */}
-          <div className="mt-6 text-slate-900 text-sm text-center dark:text-slate-50">
+          {/* Login Redirection Link */}
+          <div className="mt-8 text-center text-sm text-gray-500 font-medium">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-blue-700 hover:underline ml-1 font-medium dark:text-blue-500"
+              className="ml-1 font-bold text-black hover:underline underline-offset-2"
             >
               Login here
             </Link>
           </div>
+          
         </div>
       </div>
     </main>

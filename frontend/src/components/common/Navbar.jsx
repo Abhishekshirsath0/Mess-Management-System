@@ -40,10 +40,10 @@ export default function Navbar() {
           </button>
           
               <Link
-            to="#"
+            to="/login"
             className="font-semibold h-10 py-2 mt-2  hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
           >
-            Logout
+            Login
           </Link>
 
           <div className="hidden md:flex w-10 h-10 rounded-full bg-black text-white items-center font-semiboldhidden justify-center font-semibold">
