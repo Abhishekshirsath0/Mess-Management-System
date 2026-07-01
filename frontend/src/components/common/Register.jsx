@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {postUserdata} from "../../service";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function Register() {
     confirmPassword: "",
     terms: false,
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -22,15 +24,36 @@ export default function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    // Handle submission logic (e.g., API call) here
-    console.log("Form Submitted Successfully:", formData);
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const result = await postUserdata(formData);
+    console.log(result);
+    alert("Registration Successful!");
+
+    navigate("/login");
+
+    setFormData({
+      fullname: "",
+      mobile: "",
+      parentMobile: "",
+      email: "",
+      address: "",
+      gender: "",
+      password: "",
+      confirmPassword: "",
+      terms: false,
+    });
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 antialiased">
