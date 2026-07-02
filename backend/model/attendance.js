@@ -1,34 +1,53 @@
 import mongoose, { Schema } from "mongoose";
 
-const attendance = new Schema({
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
+const attendanceSchema = new Schema(
+    {
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        userName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        date: {
+            type: Date,
+            required: true,
+        },
+        status: {
+            type: String,
+            enum: ["present", "absent"],
+            default: "present",
+        },
+        lunch: {
+            type: Boolean,
+            default: false,
+        },
+        dinner: {
+            type: Boolean,
+            default: false,
+        },
+        extraTiffin: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
     },
-    date: {
-        type: Date,
-        required: true,
-    },
-    meal_type: {
-        type: String,
-        enum: ["Lunch", "Dinner"],
-        required: true,
-    },
-    status: {
-        type: String,
-        enum: ["present", "absent"],
-        required: true,
-    },
-    time: {
-        type: String,
-        required: true,
-    },
-    Extra_Tiffin: {
-        type: Number,
-        default: 0,
-    },
-});
+    {
+        timestamps: true,
+    }
+);
 
-const Attendance = mongoose.models.Attendance || mongoose.model("Attendance", attendance);
+// One record per student per day — no more separate Lunch/Dinner docs
+attendanceSchema.index(
+    { userId: 1, date: 1 },
+    { unique: true }
+);
+
+const Attendance =
+    mongoose.models.Attendance ||
+    mongoose.model("Attendance", attendanceSchema);
 
 export default Attendance;

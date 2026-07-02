@@ -45,7 +45,6 @@ export const getUserdatafromserver = async () => {
 
 // ==================== ATTENDANCE =======================
 
-// data can be a single attendance record OR an array of records
 export const postAttendance = async (data) => {
   try {
     const response = await axios.post(`${API}/attendance`, data);
@@ -53,6 +52,29 @@ export const postAttendance = async (data) => {
   } catch (error) {
     console.error(
       "POST ATTENDANCE ERROR:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const getAttendanceByDate = async (date) => {
+  try {
+    const response = await axios.get(`${API}/attendance`, { params: { date } });
+    return response.data.data; // array of attendance records
+  } catch (error) {
+    console.error("GET ATTENDANCE ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const updateAttendance = async (records) => {
+  try {
+    const response = await axios.put(`${API}/attendance`, { records });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "UPDATE ATTENDANCE ERROR:",
       error.response?.data || error.message
     );
     throw error;

@@ -1,51 +1,105 @@
 import { useEffect, useState } from "react";
-import { getUserdatafromserver, postAttendance } from "../../../service";
+import {
+  getUserdatafromserver,
+  getAttendanceByDate,
+  postAttendance,
+  updateAttendance,
+} from "../../../service";
+
+const todayStr = () => new Date().toISOString().split("T")[0];
+
+const mapUsersWithAttendance = (users, records) => {
+  return users.map((u) => {
+    const rec = records.find((r) => String(r.userId) === String(u.id));
+
+    return {
+      id: u.id,
+      rollNo: u.id.slice(-4),
+      name: u.name,
+      mobile: String(u.mobile),
+      payment: u.payment ?? "Unpaid",
+      status: rec ? (rec.status === "present" ? "Active" : "Inactive") : "Inactive",
+      lunch: rec?.lunch ?? false,
+      dinner: rec?.dinner ?? false,
+      extraTiffin: rec?.extraTiffin ?? 0,
+    };
+  });
+};
 
 export const View_Attends = () => {
   const [members, setMembers] = useState([]);
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
+  const [attendanceSaved, setAttendanceSaved] = useState(false);
+  const [currentDate, setCurrentDate] = useState(todayStr());
 
+  const loadData = async () => {
+    try {
+      const date = todayStr();
+      const [users, records] = await Promise.all([
+        getUserdatafromserver(),
+        getAttendanceByDate(date),
+      ]);
+      setMembers(mapUsersWithAttendance(users, records));
+      setAttendanceSaved(records.length > 0);
+      setCurrentDate(date);
+    } catch (err) {
+      console.error("Failed to load attendance data:", err);
+    }
+  };
+
+  // Initial load
   useEffect(() => {
-    getUserdatafromserver().then((data) => {
-      const mapped = data.map((m) => ({
-        id: m.id,
-        rollNo: m.id.slice(-4),
-        name: m.name,
-        mobile: String(m.mobile),   // ← convert to string here
-        payment: m.payment ?? "Unpaid",
-        status: m.status ?? "Inactive",
-        lunch: m.lunch ?? false,
-        dinner: m.dinner ?? false,
-        extraTiffin: m.extraTiffin ?? 0,
-      }));
-      setMembers(mapped);
-    });
+    loadData();
   }, []);
+
+  // Check every minute whether the date has rolled over; if so, reload fresh data
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (todayStr() !== currentDate) {
+        loadData();
+      }
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [currentDate]);
 
   const filteredMembers = members.filter((m) => {
     const q = search.toLowerCase();
     return (
       m.name.toLowerCase().includes(q) ||
-      m.mobile.includes(q) ||         // ← now safe, mobile is always a string
+      m.mobile.includes(q) ||
       String(m.rollNo).includes(q)
     );
   });
 
-  const totalPresent     = members.filter((m) => m.status === "Active").length;
-  const totalAbsent      = members.filter((m) => m.status === "Inactive").length;
-  const totalLunch       = members.filter((m) => m.lunch).length;
-  const totalDinner      = members.filter((m) => m.dinner).length;
+  const totalPresent = members.filter((m) => m.status === "Active").length;
+  const totalAbsent = members.filter((m) => m.status === "Inactive").length;
+  const totalLunch = members.filter((m) => m.lunch).length;
+  const totalDinner = members.filter((m) => m.dinner).length;
   const totalExtraTiffin = members.reduce((acc, m) => acc + m.extraTiffin, 0);
 
   const toggleStatus = (id, newStatus) =>
     setMembers((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, status: newStatus } : m))
+      prev.map((m) =>
+        m.id === id
+          ? {
+            ...m,
+            status: newStatus,
+            // Absent students can't have meals marked — clear them
+            lunch: newStatus === "Active" ? m.lunch : false,
+            dinner: newStatus === "Active" ? m.dinner : false,
+          }
+          : m
+      )
     );
 
   const toggleMeal = (id, field) =>
     setMembers((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, [field]: !m[field] } : m))
+      prev.map((m) => {
+        if (m.id !== id) return m;
+        if (m.status !== "Active") return m; // guard: only Present students can toggle meals
+        return { ...m, [field]: !m[field] };
+      })
     );
 
   const updateExtraTiffin = (id, action) =>
@@ -56,45 +110,29 @@ export const View_Attends = () => {
           action === "add"
             ? m.extraTiffin + 1
             : m.extraTiffin > 0
-            ? m.extraTiffin - 1
-            : 0;
+              ? m.extraTiffin - 1
+              : 0;
         return { ...m, extraTiffin: count };
       })
     );
 
-  const handleSave = async () => {
+  const handleSaveOrUpdate = async () => {
     try {
       setSaving(true);
-      const today = new Date().toISOString().split("T")[0];
-      const now = new Date().toLocaleTimeString();
+      const today = todayStr();
 
-      const payload = [];
-
-      members.forEach((m) => {
-        const status = m.status === "Active" ? "present" : "absent";
-
-        if (m.lunch) {
-          payload.push({
-            userId: m.id,
-            date: today,
-            meal_type: "Lunch",
-            status,
-            Extra_Tiffin: m.extraTiffin,
-            time: now,
-          });
-        }
-
-        if (m.dinner) {
-          payload.push({
-            userId: m.id,
-            date: today,
-            meal_type: "Dinner",
-            status,
-            Extra_Tiffin: m.extraTiffin,
-            time: now,
-          });
-        }
-      });
+      // One payload object per member (not per meal) — single record per student per day
+      const payload = members
+        .filter((m) => m.lunch || m.dinner)
+        .map((m) => ({
+          userId: m.id,
+          userName: m.name,
+          date: today,
+          status: m.status === "Active" ? "present" : "absent",
+          lunch: m.lunch,
+          dinner: m.dinner,
+          extraTiffin: m.extraTiffin,
+        }));
 
       if (payload.length === 0) {
         alert("No lunch/dinner marked for any member — nothing to save.");
@@ -102,11 +140,23 @@ export const View_Attends = () => {
         return;
       }
 
-      await postAttendance(payload);
-      alert("Attendance Saved Successfully!");
+      if (attendanceSaved) {
+        await updateAttendance(payload);
+      } else {
+        await postAttendance(payload);
+      }
+
+      alert(
+        attendanceSaved
+          ? "Attendance Updated Successfully!"
+          : "Attendance Saved Successfully!"
+      );
+
+      // Refetch so the UI reflects exactly what's in the database
+      await loadData();
     } catch (error) {
       console.error(error);
-      alert("Failed to save attendance");
+      alert(attendanceSaved ? "Failed to update attendance" : "Failed to save attendance");
     } finally {
       setSaving(false);
     }
@@ -155,11 +205,10 @@ export const View_Attends = () => {
 
                   {/* PAYMENT */}
                   <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-sm ${
-                      member.payment === "Paid"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}>
+                    <span className={`px-3 py-1 rounded-full text-sm ${member.payment === "Paid"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                      }`}>
                       {member.payment}
                     </span>
                   </td>
@@ -169,21 +218,19 @@ export const View_Attends = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => toggleStatus(member.id, "Active")}
-                        className={`px-3 py-1 rounded-lg text-sm transition ${
-                          member.status === "Active"
-                            ? "bg-green-600 text-white"
-                            : "bg-gray-200 hover:bg-gray-300"
-                        }`}
+                        className={`px-3 py-1 rounded-lg text-sm transition ${member.status === "Active"
+                          ? "bg-green-600 text-white"
+                          : "bg-gray-200 hover:bg-gray-300"
+                          }`}
                       >
                         Present
                       </button>
                       <button
                         onClick={() => toggleStatus(member.id, "Inactive")}
-                        className={`px-3 py-1 rounded-lg text-sm transition ${
-                          member.status === "Inactive"
-                            ? "bg-red-600 text-white"
-                            : "bg-gray-200 hover:bg-gray-300"
-                        }`}
+                        className={`px-3 py-1 rounded-lg text-sm transition ${member.status === "Inactive"
+                          ? "bg-red-600 text-white"
+                          : "bg-gray-200 hover:bg-gray-300"
+                          }`}
                       >
                         Absent
                       </button>
@@ -194,11 +241,11 @@ export const View_Attends = () => {
                   <td className="p-4">
                     <button
                       onClick={() => toggleMeal(member.id, "lunch")}
-                      className={`px-3 py-1 rounded-lg text-sm transition ${
-                        member.lunch
-                          ? "bg-orange-500 text-white"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      }`}
+                      disabled={member.status !== "Active"}
+                      className={`px-3 py-1 rounded-lg text-sm transition ${member.lunch
+                        ? "bg-orange-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                        } disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       Lunch
                     </button>
@@ -208,11 +255,11 @@ export const View_Attends = () => {
                   <td className="p-4">
                     <button
                       onClick={() => toggleMeal(member.id, "dinner")}
-                      className={`px-3 py-1 rounded-lg text-sm transition ${
-                        member.dinner
-                          ? "bg-purple-600 text-white"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      }`}
+                      disabled={member.status !== "Active"}
+                      className={`px-3 py-1 rounded-lg text-sm transition ${member.dinner
+                        ? "bg-purple-600 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                        } disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       Dinner
                     </button>
@@ -279,17 +326,23 @@ export const View_Attends = () => {
         </div>
       </div>
 
-      {/* SAVE BUTTON */}
+      {/* SAVE / UPDATE BUTTON */}
       <div className="p-4 border-t flex justify-between items-center">
         <div className="text-sm text-gray-500">
           Total Members: {members.length}
         </div>
         <button
-          onClick={handleSave}
+          onClick={handleSaveOrUpdate}
           disabled={saving}
           className="bg-black text-white px-6 py-2 rounded-xl hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {saving ? "Saving..." : "Save Attendance"}
+          {saving
+            ? attendanceSaved
+              ? "Updating..."
+              : "Saving..."
+            : attendanceSaved
+              ? "Update Attendance"
+              : "Save Attendance"}
         </button>
       </div>
 

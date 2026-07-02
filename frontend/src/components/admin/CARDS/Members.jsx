@@ -1,45 +1,40 @@
-import { useState, useMemo } from "react";
-
-const initialMembers = [
-  {
-    id: 1,
-    name: "Rahul Patil",
-    phone: "9876543210",
-    parentPhone: "9123456780",
-    address: "Pune",
-    gender: "Male",
-    role: "user",
-    paid: 3600,
-    pending: 0,
-    dietType: "Mixed",
-    plan: {
-      name: "STANDARD",
-      meals: ["Lunch", "Dinner"],
-      price: 3600,
-    },
-  },
-  {
-    id: 2,
-    name: "Sneha Sharma",
-    phone: "9988776655",
-    parentPhone: "9111122233",
-    address: "Mumbai",
-    gender: "Female",
-    role: "admin",
-    paid: 1800,
-    pending: 1800,
-    dietType: "Pure Veg",
-    plan: {
-      name: "BASIC",
-      meals: ["Dinner"],
-      price: 1800,
-    },
-  },
-];
+import { useState, useEffect, useMemo } from "react";
+import { getUserdatafromserver } from "../../../service";
 
 export const Members = () => {
-  const [members, setMembers] = useState(initialMembers);
+  const [members, setMembers] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    
+    const loadMembers = async () => {
+      try {
+        const data = await getUserdatafromserver();
+
+        const mapped = data.map((u) => ({
+          id: u.id,
+          name: u.name,
+          phone: u.mobile,
+          parentPhone: u.parent_mob,
+          address: u.address,
+          gender: u.gender,
+          role: u.role ?? "user",
+          dietType: u.dietType ?? "Mixed",
+          paid: u.paid ?? 0,
+          pending: u.pending ?? 0,
+        }));
+
+        setMembers(mapped);
+      } catch (err) {
+        console.error("Failed to load members:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMembers();
+  }, []);
 
   const toggleRole = (id) => {
     setMembers((prev) =>
@@ -52,16 +47,14 @@ export const Members = () => {
   };
 
   const filtered = members
-  .filter((m) =>
-    m.name.toLowerCase().includes(search.toLowerCase())
-  )
-  .sort((a, b) => {
-    // admin first
-    if (a.role === "admin" && b.role !== "admin") return -1;
-    if (a.role !== "admin" && b.role === "admin") return 1;
-    return 0;
-  });
-  // ✅ STATS (NON-VEG REMOVED)
+    .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      // admin first
+      if (a.role === "admin" && b.role !== "admin") return -1;
+      if (a.role !== "admin" && b.role === "admin") return 1;
+      return 0;
+    });
+
   const stats = useMemo(() => {
     return members.reduce(
       (acc, m) => {
@@ -85,6 +78,14 @@ export const Members = () => {
     );
   }, [members]);
 
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-gray-50 p-6 flex items-center justify-center text-gray-500">
+        Loading members...
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-screen bg-gray-50 p-6">
 
@@ -102,7 +103,7 @@ export const Members = () => {
         />
       </div>
 
-      {/* 🔥 STATS */}
+      {/* STATS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
         <div className="bg-white p-4 rounded-2xl border">
@@ -143,71 +144,75 @@ export const Members = () => {
       {/* LIST */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {filtered.map((m) => (
-          <div
-            key={m.id}
-            className="bg-white border rounded-3xl p-6 shadow-sm"
-          >
+        {filtered.length > 0 ? (
+          filtered.map((m) => (
+            <div
+              key={m.id}
+              className="bg-white border rounded-3xl p-6 shadow-sm"
+            >
 
-            {/* HEADER */}
-            <div className="flex justify-between items-start mb-4">
+              {/* HEADER */}
+              <div className="flex justify-between items-start mb-4">
 
-              <div>
-                <h2 className="text-xl font-bold">{m.name}</h2>
-                <p className="text-sm text-gray-500">{m.phone}</p>
-              </div>
+                <div>
+                  <h2 className="text-xl font-bold">{m.name}</h2>
+                  <p className="text-sm text-gray-500">{m.phone}</p>
+                </div>
 
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                m.role === "admin"
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${m.role === "admin"
                   ? "bg-purple-100 text-purple-700"
                   : "bg-gray-100 text-gray-700"
-              }`}>
-                {m.role.toUpperCase()}
-              </span>
+                  }`}>
+                  {m.role.toUpperCase()}
+                </span>
 
-            </div>
+              </div>
 
-            {/* DIET TYPE */}
-            <div className="mb-4">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                m.dietType === "Pure Veg"
+              {/* DIET TYPE */}
+              <div className="mb-4">
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${m.dietType === "Pure Veg"
                   ? "bg-green-100 text-green-700"
                   : "bg-orange-100 text-orange-700"
-              }`}>
-                {m.dietType}
-              </span>
+                  }`}>
+                  {m.dietType}
+                </span>
+              </div>
+
+              {/* DETAILS */}
+              <div className="text-sm space-y-1 text-gray-700">
+                <p><b>Parent:</b> {m.parentPhone}</p>
+                <p><b>Address:</b> {m.address}</p>
+                <p><b>Gender:</b> {m.gender}</p>
+              </div>
+
+              {/* PAYMENT */}
+              <div className="flex gap-3 mt-4">
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs">
+                  Paid: ₹{m.paid}
+                </span>
+
+                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs">
+                  Pending: ₹{m.pending}
+                </span>
+              </div>
+
+              {/* ACTION */}
+              <div className="mt-5 flex justify-end">
+                <button
+                  onClick={() => toggleRole(m.id)}
+                  className="bg-black text-white px-4 py-2 rounded-xl text-sm"
+                >
+                  Toggle Role
+                </button>
+              </div>
+
             </div>
-
-            {/* DETAILS */}
-            <div className="text-sm space-y-1 text-gray-700">
-              <p><b>Parent:</b> {m.parentPhone}</p>
-              <p><b>Address:</b> {m.address}</p>
-              <p><b>Gender:</b> {m.gender}</p>
-            </div>
-
-            {/* PAYMENT */}
-            <div className="flex gap-3 mt-4">
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs">
-                Paid: ₹{m.paid}
-              </span>
-
-              <span className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs">
-                Pending: ₹{m.pending}
-              </span>
-            </div>
-
-            {/* ACTION */}
-            <div className="mt-5 flex justify-end">
-              <button
-                onClick={() => toggleRole(m.id)}
-                className="bg-black text-white px-4 py-2 rounded-xl text-sm"
-              >
-                Toggle Role
-              </button>
-            </div>
-
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-gray-500 col-span-full text-center py-10">
+            No members found
+          </p>
+        )}
 
       </div>
     </div>
