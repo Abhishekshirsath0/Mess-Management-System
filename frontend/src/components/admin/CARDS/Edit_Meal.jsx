@@ -1,68 +1,92 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { postMeal, getMeals } from "../../../service"; // adjust path to your api.js
 
-const initialMeals = [
-  {
-    id: 1,
-    day: "Monday",
-    date: "2026-05-26",
-    veg: ["Paneer Butter Masala", "Dal Tadka"],
-    nonVeg: ["Chicken Curry", "Egg Curry"],
-  },
-  {
-    id: 2,
-    day: "Tuesday",
-    date: "2026-05-27",
-    veg: ["Veg Biryani", "Chapati"],
-    nonVeg: ["Chicken Biryani", "Fish Fry"],
-  },
-  {
-    id: 3,
-    day: "Wednesday",
-    date: "2026-05-28",
-    veg: ["Mix Veg", "Rice"],
-    nonVeg: ["Mutton Curry", "Egg Bhurji"],
-  },
-  {
-    id: 4,
-    day: "Thursday",
-    date: "2026-05-29",
-    veg: ["Paneer Tikka", "Dal Rice"],
-    nonVeg: ["Chicken Handi", "Fish Fry"],
-  },
-  {
-    id: 5,
-    day: "Friday",
-    date: "2026-05-30",
-    veg: ["Aloo Gobi", "Chapati"],
-    nonVeg: ["Chicken Tandoori", "Egg Curry"],
-  },
-  {
-    id: 6,
-    day: "Saturday",
-    date: "2026-05-31",
-    veg: ["Veg Pulav", "Roti"],
-    nonVeg: ["Chicken Curry", "Egg Fry"],
-  },
-  {
-    id: 7,
-    day: "Sunday",
-    date: "2026-06-01",
-    veg: ["Shahi Paneer", "Naan"],
-    nonVeg: ["Special Chicken Thali", "Fish Fry"],
-  },
+const DAY_NAMES = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ];
+
+// Returns the Monday of the current week, shifted by weekOffset weeks
+const getMondayOfWeek = (weekOffset = 0) => {
+  const today = new Date();
+  const day = today.getDay(); // 0 = Sunday, 1 = Monday, ...
+  const diffToMonday = day === 0 ? -6 : 1 - day; // shift Sunday back to previous Monday
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diffToMonday + weekOffset * 7);
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+};
+
+// Builds 7 cards (Mon–Sun) with dates computed from the given week
+const buildWeekTemplate = (weekOffset) => {
+  const monday = getMondayOfWeek(weekOffset);
+
+  return DAY_NAMES.map((day, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+
+    return {
+      id: `day-${i}`, // stable id per weekday slot
+      day,
+      date: date.toISOString().slice(0, 10),
+      veg: [],
+      nonVeg: [],
+      dbId: null, // will hold the real MongoDB _id once saved/fetched
+    };
+  });
+};
 
 export const Edit_Meal = () => {
   const [mealType, setMealType] = useState("Lunch");
-  const [meals, setMeals] = useState(initialMeals);
+  const [weekOffset, setWeekOffset] = useState(0); // 0 = this week, 1 = next week, -1 = last week
+  const [meals, setMeals] = useState(() => buildWeekTemplate(0));
+  const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState(null);
 
-  const handleDateChange = (id, value) => {
-    setMeals((prev) =>
-      prev.map((meal) =>
-        meal.id === id ? { ...meal, date: value } : meal
-      )
-    );
-  };
+  // Rebuild the 7-day template whenever the week changes,
+  // then merge in whatever's already saved for those exact dates
+  useEffect(() => {
+    const fetchMeals = async () => {
+      setLoading(true);
+      const template = buildWeekTemplate(weekOffset);
+
+      try {
+        const saved = await getMeals();
+        const field = mealType.toLowerCase(); // "lunch" or "dinner"
+
+        const merged = template.map((slot) => {
+          const match = saved.find(
+            (m) => new Date(m.date).toISOString().slice(0, 10) === slot.date
+          );
+
+          if (match) {
+            return {
+              ...slot,
+              dbId: match._id,
+              veg: match[field]?.veg?.length ? match[field].veg : [],
+              nonVeg: match[field]?.nonVeg?.length ? match[field].nonVeg : [],
+            };
+          }
+
+          return slot;
+        });
+
+        setMeals(merged);
+      } catch (error) {
+        console.error("Failed to load meals:", error);
+        setMeals(template); // fall back to empty template if fetch fails
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeals();
+  }, [weekOffset, mealType]);
 
   const handleMenuChange = (id, category, index, value) => {
     setMeals((prev) =>
@@ -100,29 +124,81 @@ export const Edit_Meal = () => {
     );
   };
 
-  const handleSaveCard = (meal) => {
-    console.log("Saved Meal:", meal);
-    alert(`${meal.day} saved successfully`);
+  const handleSaveCard = async (meal) => {
+    setSavingId(meal.id);
+    try {
+      const saved = await postMeal(meal, mealType);
+      setMeals((prev) =>
+        prev.map((m) => (m.id === meal.id ? { ...m, dbId: saved._id } : m))
+      );
+      alert(`${meal.day} (${meal.date}, ${mealType}) saved successfully`);
+    } catch (error) {
+      alert(`Failed to save ${meal.day}`);
+    } finally {
+      setSavingId(null);
+    }
   };
+
+  const monday = getMondayOfWeek(weekOffset);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const weekLabel = `${monday.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+  })} – ${sunday.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })}`;
 
   return (
     <div className="w-full min-h-screen bg-gray-50 p-6">
 
       {/* HEADER */}
-      <div className="flex justify-between mb-10">
-        <h1 className="text-3xl font-bold">
-          Weekly Meal Management
-        </h1>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Weekly Meal Management
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">{weekLabel}</p>
+        </div>
 
-        <select
-          value={mealType}
-          onChange={(e) => setMealType(e.target.value)}
-          className="border px-4 py-2 rounded-xl"
-        >
-          <option>Lunch</option>
-          <option>Dinner</option>
-        </select>
+        <div className="flex gap-3 items-center">
+          <button
+            onClick={() => setWeekOffset((w) => w - 1)}
+            className="border px-3 py-2 rounded-xl hover:bg-gray-100"
+          >
+            ← Prev Week
+          </button>
+
+          <button
+            onClick={() => setWeekOffset(0)}
+            className="border px-3 py-2 rounded-xl hover:bg-gray-100"
+          >
+            This Week
+          </button>
+
+          <button
+            onClick={() => setWeekOffset((w) => w + 1)}
+            className="border px-3 py-2 rounded-xl hover:bg-gray-100"
+          >
+            Next Week →
+          </button>
+
+          <select
+            value={mealType}
+            onChange={(e) => setMealType(e.target.value)}
+            className="border px-4 py-2 rounded-xl"
+          >
+            <option>Lunch</option>
+            <option>Dinner</option>
+          </select>
+        </div>
       </div>
+
+      {loading && (
+        <p className="mb-4 text-sm text-gray-500">Loading saved meals...</p>
+      )}
 
       {/* CARDS */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -140,15 +216,12 @@ export const Edit_Meal = () => {
                 <h2 className="text-2xl font-bold">
                   {meal.day}
                 </h2>
-
-                <input
-                  type="date"
-                  value={meal.date}
-                  onChange={(e) =>
-                    handleDateChange(meal.id, e.target.value)
-                  }
-                  className="border mt-2 px-3 py-2 rounded-lg"
-                />
+                <p className="text-sm text-gray-500 mt-1">
+                  {new Date(meal.date + "T00:00:00").toLocaleDateString(
+                    "en-GB",
+                    { day: "numeric", month: "short", year: "numeric" }
+                  )}
+                </p>
               </div>
 
               <span className="inline-flex items-center bg-black text-white px-2 py-1 rounded-lg text-xs font-medium leading-none h-fit">
@@ -172,10 +245,15 @@ export const Edit_Meal = () => {
                 </button>
               </div>
 
+              {meal.veg.length === 0 && (
+                <p className="text-sm text-gray-400 mb-2">No veg items yet.</p>
+              )}
+
               {meal.veg.map((item, i) => (
                 <div key={i} className="flex gap-2 mb-2">
                   <input
                     value={item}
+                    placeholder="Enter veg item"
                     onChange={(e) =>
                       handleMenuChange(meal.id, "veg", i, e.target.value)
                     }
@@ -211,10 +289,15 @@ export const Edit_Meal = () => {
                 </button>
               </div>
 
+              {meal.nonVeg.length === 0 && (
+                <p className="text-sm text-gray-400 mb-2">No non-veg items yet.</p>
+              )}
+
               {meal.nonVeg.map((item, i) => (
                 <div key={i} className="flex gap-2 mb-2">
                   <input
                     value={item}
+                    placeholder="Enter non-veg item"
                     onChange={(e) =>
                       handleMenuChange(meal.id, "nonVeg", i, e.target.value)
                     }
@@ -236,9 +319,10 @@ export const Edit_Meal = () => {
             {/* SAVE */}
             <button
               onClick={() => handleSaveCard(meal)}
-              className="w-full bg-black text-white py-3 rounded-2xl font-medium hover:bg-gray-800 transition"
+              disabled={savingId === meal.id}
+              className="w-full bg-black text-white py-3 rounded-2xl font-medium hover:bg-gray-800 transition disabled:opacity-50"
             >
-              Save This Day
+              {savingId === meal.id ? "Saving..." : "Save This Day"}
             </button>
 
           </div>

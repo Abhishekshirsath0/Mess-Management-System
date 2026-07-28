@@ -7,7 +7,6 @@ export const Members = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
     const loadMembers = async () => {
       try {
         const data = await getUserdatafromserver();

@@ -61,7 +61,7 @@ export const postAttendance = async (data) => {
 export const getAttendanceByDate = async (date) => {
   try {
     const response = await axios.get(`${API}/attendance`, { params: { date } });
-    return response.data.data; // array of attendance records
+    return response.data.data;
   } catch (error) {
     console.error("GET ATTENDANCE ERROR:", error.response?.data || error.message);
     throw error;
@@ -77,6 +77,35 @@ export const updateAttendance = async (records) => {
       "UPDATE ATTENDANCE ERROR:",
       error.response?.data || error.message
     );
+    throw error;
+  }
+};
+
+// ==================== MEAL =======================
+
+export const postMeal = async (meal, mealType) => {
+  try {
+    const response = await axios.post(`${API}/meal`, {
+      date: meal.date,
+      mealType,
+      veg: meal.veg,
+      nonVeg: meal.nonVeg,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("POST MEAL ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getMeals = async (date) => {
+  try {
+    const response = await axios.get(`${API}/meal`, {
+      params: date ? { date } : {},
+    });
+    return response.data;
+  } catch (error) {
+    console.error("GET MEAL ERROR:", error.response?.data || error.message);
     throw error;
   }
 };

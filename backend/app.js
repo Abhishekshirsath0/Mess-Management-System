@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./Router/userRouter.js";
 import attendanceRouter from "./Router/attendanceRouter.js";
+import mealRouter from "./Router/mealRouter.js";
 
 dotenv.config();
 
@@ -20,7 +21,8 @@ app.use(
 );
 
 app.use("/api/user", userRouter);
-app.use("/api/attendance", attendanceRouter); // fixed typo: "attendence" -> "attendance"
+app.use("/api/attendance", attendanceRouter);
+app.use("/api/meal", mealRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
