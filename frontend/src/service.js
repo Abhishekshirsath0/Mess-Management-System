@@ -61,9 +61,15 @@ export const loginUser = async (credentials) => {
 export const getUserdatafromserver = async () => {
   try {
     const response = await axios.get(`${API}/user`);
+
     return response.data.map(mapUser);
+
   } catch (error) {
-    console.error("GET USER ERROR:", error.response?.data || error.message);
+    console.error(
+      "GET USER ERROR:",
+      error.response?.data || error.message
+    );
+
     throw error;
   }
 };

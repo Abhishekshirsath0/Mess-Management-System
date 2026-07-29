@@ -206,9 +206,7 @@ export const Members = () => {
                   Toggle Role
                 </button>
                 <button
-                  onClick={() => { alert("Are you sure you want to remove this member?"); deleteUser(m.id);
-                    deleteUser == false ? "loading" : setMembers((prev) => prev.filter((member) => member.id !== m.id))
-                   }}
+                  onClick={() => { alert("Are you sure you want to remove this member?"); deleteUser(m.id); }}
                   className="bg-red-500 cursor-pointer transition-all duration-300 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm ml-2">
                   Remove Member
                 </button>
