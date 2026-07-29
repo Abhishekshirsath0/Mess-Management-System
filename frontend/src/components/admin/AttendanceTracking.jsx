@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { getUserdatafromserver } from "../../service";
+import { getUserdatafromserver, getAttendanceByDate } from "../../service";
+
+const todayStr = () => new Date().toISOString().split("T")[0];
 
 export default function AttendanceTable() {
   const [members, setMembers] = useState([]);
@@ -7,11 +9,36 @@ export default function AttendanceTable() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndAttendance = async () => {
       try {
-        const data = await getUserdatafromserver();
-        console.log(data);
-        setMembers(data);
+        const date = todayStr();
+        const [users, records] = await Promise.all([
+          getUserdatafromserver(),
+          getAttendanceByDate(date),
+        ]);
+
+        const mapped = users.map((u) => {
+          const rec = records.find((r) => String(r.userId) === String(u.id));
+          let lastEntryText = "--";
+          if (rec) {
+            const mealsArr = [];
+            if (rec.lunch) mealsArr.push("Lunch");
+            if (rec.dinner) mealsArr.push("Dinner");
+            if (rec.extraTiffin > 0) mealsArr.push(`+${rec.extraTiffin} Tiffin`);
+            lastEntryText = mealsArr.length ? mealsArr.join(", ") : "Present";
+          }
+
+          return {
+            id: u.id,
+            name: u.name,
+            mobile: u.mobile,
+            payment: u.paymentStatus || "Pending",
+            status: rec ? (rec.status === "present" ? "Present" : "Absent") : "Not Marked",
+            lastEntry: lastEntryText,
+          };
+        });
+
+        setMembers(mapped);
       } catch (error) {
         console.error(error);
       } finally {
@@ -19,7 +46,7 @@ export default function AttendanceTable() {
       }
     };
 
-    fetchUsers();
+    fetchUsersAndAttendance();
   }, []);
 
   const filteredMembers = members.filter((member) =>
@@ -86,16 +113,26 @@ export default function AttendanceTable() {
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {member.payment || "Pending"}
+                      {member.payment}
                     </span>
                   </td>
 
                   <td className="p-4">
-                    {member.status || "Active"}
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        member.status === "Present"
+                          ? "bg-green-100 text-green-700"
+                          : member.status === "Absent"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {member.status}
+                    </span>
                   </td>
 
                   <td className="p-4 text-right">
-                    {member.lastEntry || "--"}
+                    {member.lastEntry}
                   </td>
                 </tr>
               ))

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getUserdatafromserver } from "../../../service";
+import { getUserdatafromserver, updateUser } from "../../../service";
 
 export const Members = () => {
   const [members, setMembers] = useState([]);
@@ -35,14 +35,19 @@ export const Members = () => {
     loadMembers();
   }, []);
 
-  const toggleRole = (id) => {
-    setMembers((prev) =>
-      prev.map((m) =>
-        m.id === id
-          ? { ...m, role: m.role === "admin" ? "user" : "admin" }
-          : m
-      )
-    );
+  const toggleRole = async (id) => {
+    const target = members.find((m) => m.id === id);
+    if (!target) return;
+    const newRole = target.role === "admin" ? "user" : "admin";
+
+    try {
+      await updateUser(id, { Usertype: newRole });
+      setMembers((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, role: newRole } : m))
+      );
+    } catch (err) {
+      alert("Failed to update user role");
+    }
   };
 
   const filtered = members

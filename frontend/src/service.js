@@ -4,7 +4,7 @@ const API = "http://localhost:8000/api";
 
 // ================= USER =================
 
-const mapUser = (user) => ({
+export const mapUser = (user) => ({
   id: user._id,
   name: user.Name,
   mobile: user.Mobile,
@@ -12,6 +12,12 @@ const mapUser = (user) => ({
   email: user.Email,
   address: user.Address,
   gender: user.Gender,
+  role: user.Usertype || "user",
+  plan: user.Plan || "STANDARD",
+  paymentStatus: user.PaymentStatus || "Pending",
+  paid: user.PaidAmount ?? 0,
+  pending: user.PendingAmount ?? 3600,
+  dietType: user.DietType || "Mixed",
 });
 
 export const postUserdata = async (userdata) => {
@@ -24,11 +30,30 @@ export const postUserdata = async (userdata) => {
       Address: userdata.address,
       Gender: userdata.gender,
       Password: userdata.password,
+      Plan: userdata.plan || "STANDARD",
+      DietType: userdata.dietType || "Mixed",
     });
 
     return mapUser(response.data);
   } catch (error) {
     console.error("POST USER ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const loginUser = async (credentials) => {
+  try {
+    const response = await axios.post(`${API}/user/login`, {
+      email: credentials.email,
+      password: credentials.password,
+    });
+    const { token, user } = response.data;
+    const mapped = mapUser(user);
+    localStorage.setItem("user", JSON.stringify(mapped));
+    localStorage.setItem("token", token);
+    return { token, user: mapped };
+  } catch (error) {
+    console.error("LOGIN ERROR:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -39,6 +64,26 @@ export const getUserdatafromserver = async () => {
     return response.data.map(mapUser);
   } catch (error) {
     console.error("GET USER ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const updateUser = async (id, updateData) => {
+  try {
+    const response = await axios.put(`${API}/user/${id}`, updateData);
+    return mapUser(response.data);
+  } catch (error) {
+    console.error("UPDATE USER ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    const response = await axios.delete(`${API}/user/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("DELETE USER ERROR:", error.response?.data || error.message);
     throw error;
   }
 };
@@ -81,6 +126,16 @@ export const updateAttendance = async (records) => {
   }
 };
 
+export const getUserAttendanceStats = async (userId) => {
+  try {
+    const response = await axios.get(`${API}/attendance/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("GET USER ATTENDANCE STATS ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 // ==================== MEAL =======================
 
 export const postMeal = async (meal, mealType) => {
@@ -106,6 +161,16 @@ export const getMeals = async (date) => {
     return response.data;
   } catch (error) {
     console.error("GET MEAL ERROR:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getTodayMeal = async () => {
+  try {
+    const response = await axios.get(`${API}/meal/today`);
+    return response.data;
+  } catch (error) {
+    console.error("GET TODAY MEAL ERROR:", error.response?.data || error.message);
     throw error;
   }
 };

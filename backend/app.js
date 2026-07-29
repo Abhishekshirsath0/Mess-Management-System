@@ -36,10 +36,40 @@ app.use((err, req, res, next) => {
 const MONGODB_URI = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 3000;
 
+import User from "./model/user.js";
+import bcrypt from "bcrypt";
+
+const seedAdminUser = async () => {
+  try {
+    const adminExists = await User.findOne({ Email: "admin@gmail.com" });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash("123456", 10);
+      await User.create({
+        Name: "Admin",
+        Mobile: 9999999999,
+        Parent_Mob: 9999999998,
+        Email: "admin@gmail.com",
+        Address: "Main Office",
+        Gender: "Male",
+        Password: hashedPassword,
+        Usertype: "admin",
+        Plan: "PREMIUM",
+        PaymentStatus: "Paid",
+        PaidAmount: 4200,
+        PendingAmount: 0,
+      });
+      console.log("Default Admin user created (admin@gmail.com / 123456)");
+    }
+  } catch (err) {
+    console.error("Admin seed error:", err.message);
+  }
+};
+
 mongoose
   .connect(MONGODB_URI)
-  .then(() => {
+  .then(async () => {
     console.log("Connected to MongoDB");
+    await seedAdminUser();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

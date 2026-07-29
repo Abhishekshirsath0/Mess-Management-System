@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Wallet,
   UtensilsCrossed,
@@ -8,29 +9,13 @@ import {
   Moon,
   CalendarDays,
 } from "lucide-react";
+import { getTodayMeal, getUserAttendanceStats } from "../../service";
 
 /* ---------------- PLANS ---------------- */
 const PLANS = {
   BASIC: { price: 1800, meals: ["dinner"] },
   STANDARD: { price: 3600, meals: ["lunch", "dinner"] },
   PREMIUM: { price: 4200, meals: ["breakfast", "lunch", "dinner"] },
-};
-
-/* ---------------- USER ---------------- */
-const user = {
-  name: "Abhishek",
-  plan: "STANDARD",
-  paymentStatus: "Paid",
-  tiffins: 48,
-  bill: 3600,
-  address: "Nashik Road",
-};
-
-/* ---------------- MEAL DATA ---------------- */
-const mealData = {
-  lunch: ["Dal", "Rice", "Chapati", "Sabzi"],
-  dinnerVeg: ["Dal", "Rice", "Chapati", "Paneer Curry"],
-  dinnerNonVeg: ["Rice", "Chapati", "Chicken Curry"],
 };
 
 /* ---------------- ICONS ---------------- */
@@ -59,6 +44,29 @@ const getFoodStyle = (type) => {
 };
 
 export default function UserDashboard() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return {
+      name: "Abhishek",
+      plan: "STANDARD",
+      paymentStatus: "Paid",
+      address: "Nashik Road",
+      paid: 3600,
+    };
+  });
+
+  const [tiffinCount, setTiffinCount] = useState(0);
+  const [todayMenu, setTodayMenu] = useState({
+    lunch: [],
+    dinnerVeg: [],
+    dinnerNonVeg: [],
+  });
+
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -66,18 +74,53 @@ export default function UserDashboard() {
     day: "numeric",
   });
 
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load meal
+        const meal = await getTodayMeal();
+        if (meal) {
+          setTodayMenu({
+            lunch: [...(meal.lunch?.veg || []), ...(meal.lunch?.nonVeg || [])],
+            dinnerVeg: meal.dinner?.veg || [],
+            dinnerNonVeg: meal.dinner?.nonVeg || [],
+          });
+        }
+      } catch (err) {
+        console.error("Error loading today's meal:", err);
+      }
+
+      try {
+        // Load attendance stats if user id is available
+        if (currentUser.id) {
+          const stats = await getUserAttendanceStats(currentUser.id);
+          if (stats) {
+            setTiffinCount(stats.totalTiffins || 0);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading attendance stats:", err);
+      }
+    };
+
+    loadData();
+  }, [currentUser]);
+
+  const planInfo = PLANS[currentUser.plan] || PLANS.STANDARD;
+  const billAmount = currentUser.paid || planInfo.price;
+
   const userCards = [
     {
       title: "Payment Status",
-      value: user.paymentStatus,
+      value: currentUser.paymentStatus || "Paid",
       subtitle: "Current Month",
       icon: <Wallet size={22} />,
-      bg: "bg-green-100",
-      color: "text-green-600",
+      bg: currentUser.paymentStatus === "Pending" ? "bg-red-100" : "bg-green-100",
+      color: currentUser.paymentStatus === "Pending" ? "text-red-600" : "text-green-600",
     },
     {
       title: "Total Tiffins",
-      value: user.tiffins,
+      value: tiffinCount,
       subtitle: "This Month",
       icon: <UtensilsCrossed size={22} />,
       bg: "bg-orange-100",
@@ -85,21 +128,25 @@ export default function UserDashboard() {
     },
     {
       title: "Total Bill",
-      value: `₹${user.bill}`,
-      subtitle: `Plan ₹${PLANS[user.plan].price}`,
+      value: `₹${billAmount}`,
+      subtitle: `Plan ₹${planInfo.price}`,
       icon: <Receipt size={22} />,
       bg: "bg-blue-100",
       color: "text-blue-600",
     },
     {
       title: "Address",
-      value: user.address,
+      value: currentUser.address || "Nashik Road",
       subtitle: "Delivery Location",
       icon: <MapPin size={22} />,
       bg: "bg-purple-100",
       color: "text-purple-600",
     },
   ];
+
+  const lunchItems = todayMenu.lunch.length > 0 ? todayMenu.lunch : ["Dal", "Rice", "Chapati", "Sabzi"];
+  const dinnerVegItems = todayMenu.dinnerVeg.length > 0 ? todayMenu.dinnerVeg : ["Dal", "Rice", "Chapati", "Paneer Curry"];
+  const dinnerNonVegItems = todayMenu.dinnerNonVeg.length > 0 ? todayMenu.dinnerNonVeg : ["Rice", "Chapati", "Chicken Curry"];
 
   return (
     <div className="space-y-6">
@@ -108,7 +155,7 @@ export default function UserDashboard() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">
-            Welcome, {user.name}
+            Welcome, {currentUser.name}
           </h1>
 
           <div className="flex items-center gap-2 text-gray-500 mt-1 text-sm">
@@ -153,18 +200,15 @@ export default function UserDashboard() {
 
         <div className="flex items-center justify-between mb-6">
           <div>
-            
-
-           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-  <h2 className="text-2xl font-bold">Today's Meal</h2>
-
-  <h1 className="text-lg text-black md:text-righ ml-5">
-    {today}
-  </h1>
-</div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <h2 className="text-2xl font-bold">Today's Meal</h2>
+              <h1 className="text-lg text-black md:text-right ml-5">
+                {today}
+              </h1>
+            </div>
 
             <p className="text-gray-500 text-sm mt-1">
-              Plan: {user.plan} 
+              Plan: {currentUser.plan || "STANDARD"} 
             </p>
           </div>
 
@@ -178,7 +222,7 @@ export default function UserDashboard() {
           <h3 className="text-lg font-semibold mb-3">🍛 Lunch</h3>
 
           <div className="flex flex-wrap gap-2">
-            {mealData.lunch.map((item, i) => (
+            {lunchItems.map((item, i) => (
               <span key={i} className={getFoodStyle("lunch")}>
                 {item}
               </span>
@@ -196,7 +240,7 @@ export default function UserDashboard() {
             </h4>
 
             <div className="flex flex-wrap gap-2">
-              {mealData.dinnerVeg.map((item, i) => (
+              {dinnerVegItems.map((item, i) => (
                 <span key={i} className={getFoodStyle("veg")}>
                   {item}
                 </span>
@@ -211,7 +255,7 @@ export default function UserDashboard() {
             </h4>
 
             <div className="flex flex-wrap gap-2">
-              {mealData.dinnerNonVeg.map((item, i) => (
+              {dinnerNonVegItems.map((item, i) => (
                 <span key={i} className={getFoodStyle("nonveg")}>
                   {item}
                 </span>

@@ -72,8 +72,9 @@ export const getAttendanceByDate = async (req, res) => {
             return res.status(400).json({ message: "date query param is required" });
         }
 
-        const start = new Date(`${date}T00:00:00.000Z`);
-        const end = new Date(`${date}T23:59:59.999Z`);
+        const dateStr = typeof date === "string" ? date.slice(0, 10) : new Date(date).toISOString().slice(0, 10);
+        const start = new Date(`${dateStr}T00:00:00.000Z`);
+        const end = new Date(`${dateStr}T23:59:59.999Z`);
 
         const records = await Attendance.find({ date: { $gte: start, $lte: end } });
 
@@ -84,5 +85,29 @@ export const getAttendanceByDate = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to fetch attendance" });
+    }
+};
+
+export const getUserAttendanceStats = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const records = await Attendance.find({ userId });
+
+        const totalLunch = records.reduce((acc, r) => acc + (r.lunch ? 1 : 0), 0);
+        const totalDinner = records.reduce((acc, r) => acc + (r.dinner ? 1 : 0), 0);
+        const totalExtra = records.reduce((acc, r) => acc + (r.extraTiffin || 0), 0);
+        const totalTiffins = totalLunch + totalDinner + totalExtra;
+
+        res.status(200).json({
+            userId,
+            totalLunch,
+            totalDinner,
+            totalExtra,
+            totalTiffins,
+            records,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to fetch user attendance stats" });
     }
 };
