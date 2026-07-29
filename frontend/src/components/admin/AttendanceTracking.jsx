@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getUserdatafromserver, getAttendanceByDate } from "../../service";
+import { getUserdatafromserver, getAttendanceByDate  } from "../../service";
 
 const todayStr = () => new Date().toISOString().split("T")[0];
 

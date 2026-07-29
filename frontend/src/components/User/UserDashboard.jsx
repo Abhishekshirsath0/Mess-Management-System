@@ -66,6 +66,7 @@ export default function UserDashboard() {
     dinnerVeg: [],
     dinnerNonVeg: [],
   });
+  const [menuLoaded, setMenuLoaded] = useState(false);
 
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
@@ -88,6 +89,8 @@ export default function UserDashboard() {
         }
       } catch (err) {
         console.error("Error loading today's meal:", err);
+      } finally {
+        setMenuLoaded(true);
       }
 
       try {
@@ -144,9 +147,13 @@ export default function UserDashboard() {
     },
   ];
 
-  const lunchItems = todayMenu.lunch.length > 0 ? todayMenu.lunch : ["Dal", "Rice", "Chapati", "Sabzi"];
-  const dinnerVegItems = todayMenu.dinnerVeg.length > 0 ? todayMenu.dinnerVeg : ["Dal", "Rice", "Chapati", "Paneer Curry"];
-  const dinnerNonVegItems = todayMenu.dinnerNonVeg.length > 0 ? todayMenu.dinnerNonVeg : ["Rice", "Chapati", "Chicken Curry"];
+  const lunchItems = todayMenu.lunch;
+  const dinnerVegItems = todayMenu.dinnerVeg;
+  const dinnerNonVegItems = todayMenu.dinnerNonVeg;
+
+  const NotUpdated = () => (
+    <p className="text-sm text-gray-400 italic">Menu not updated yet</p>
+  );
 
   return (
     <div className="space-y-6">
@@ -217,51 +224,73 @@ export default function UserDashboard() {
           </div>
         </div>
 
-        {/* LUNCH */}
-        <div className="rounded-2xl border p-5 bg-linear-to-r from-orange-50 to-white mb-6">
-          <h3 className="text-lg font-semibold mb-3">🍛 Lunch</h3>
+      {/* LUNCH */}
+<div className="rounded-2xl border p-5 bg-linear-to-r from-orange-50 to-white mb-6">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-lg font-semibold">🍛 Lunch</h3>
+    <span className="text-lg text-black font-medium">8:00 AM - 3:00 PM</span>
+  </div>
 
-          <div className="flex flex-wrap gap-2">
-            {lunchItems.map((item, i) => (
-              <span key={i} className={getFoodStyle("lunch")}>
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
+  {menuLoaded && lunchItems.length === 0 ? (
+    <NotUpdated />
+  ) : (
+    <div className="flex flex-wrap gap-2">
+      {lunchItems.map((item, i) => (
+        <span key={i} className={getFoodStyle("lunch")}>
+          {item}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
 
         {/* DINNER */}
         <div className="grid md:grid-cols-2 gap-4">
 
           {/* VEG */}
           <div className="rounded-2xl border p-5 bg-linear-to-br from-green-200 to-white">
+            
             <h4 className="font-semibold mb-3 flex items-center gap-2">
               {mealIcons.veg} Veg Dinner
+               <span className="text-sm text-gray-500 block ml-auto">
+              7:00 PM - 10:00 PM
+            </span>
             </h4>
+           
+           
 
-            <div className="flex flex-wrap gap-2">
-              {dinnerVegItems.map((item, i) => (
-                <span key={i} className={getFoodStyle("veg")}>
-                  {item}
-                </span>
-              ))}
-            </div>
+            {menuLoaded && dinnerVegItems.length === 0 ? (
+              <NotUpdated />
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {dinnerVegItems.map((item, i) => (
+                  <span key={i} className={getFoodStyle("veg")}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* NON VEG */}
-          <div className="rounded-2xl border p-5 bg-linear-to-br from-red-200 to-white">
-            <h4 className="font-semibold mb-3 flex items-center gap-2">
-              {mealIcons.nonveg} Non-Veg Dinner
-            </h4>
+          <div className="rounded-2xl border p-5 bg-gradient-to-br from-red-200 to-white">
+  <h4 className="font-semibold mb-3 flex items-center gap-1">
+    {mealIcons.nonveg} Non-Veg Dinner
+    <span className="text-sm text-gray-500 ml-auto">7:00 PM - 10:00 PM</span>
+  </h4>
 
-            <div className="flex flex-wrap gap-2">
-              {dinnerNonVegItems.map((item, i) => (
-                <span key={i} className={getFoodStyle("nonveg")}>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
+  {menuLoaded && dinnerNonVegItems.length === 0 ? (
+    <NotUpdated />
+  ) : (
+    <div className="flex flex-wrap gap-2">
+      {dinnerNonVegItems.map((item, i) => (
+        <span key={i} className={getFoodStyle("nonveg")}>
+          {item}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
 
         </div>
 

@@ -84,21 +84,38 @@ export const getUserdata = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = { ...req.body };
-    delete updateData.Password; // Don't update password directly here
 
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    }).select("-Password");
+    const updateData = { ...req.body };
+
+    // Prevent password update from this route
+    delete updateData.Password;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      updateData,
+      {
+        returnDocument: "after",
+        runValidators: true,
+      }
+    ).select("-Password");
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
 
-    return res.status(200).json(updatedUser);
+    return res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.error("Update user error:", error);
+
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
