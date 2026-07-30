@@ -8,6 +8,7 @@ export default function Register() {
     mobile: "",
     parentMobile: "",
     email: "",
+    dietType: "Mixed",
     address: "",
     gender: "",
     password: "",
@@ -44,6 +45,7 @@ export default function Register() {
       mobile: "",
       parentMobile: "",
       email: "",
+      dietType: "",
       address: "",
       gender: "",
       password: "",
@@ -144,6 +146,43 @@ export default function Register() {
                 className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
               />
             </div>
+            <div>
+  <label className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+    Diet Type
+  </label>
+
+  <div className="flex gap-3">
+    {/* Veg */}
+ <button
+  type="button"
+  onClick={() =>
+    setFormData({ ...formData, dietType: "Pure Veg" })
+  }
+  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${
+    formData.dietType === "Pure Veg"
+      ? "bg-green-500 text-white border-green-500"
+      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-green-50"
+  }`}
+>
+  🥗 Veg
+</button>
+
+    {/* Mixed */}
+    <button
+      type="button"
+      onClick={() =>
+        setFormData({ ...formData, dietType: "Mixed" })
+      }
+      className={`flex-1 py-3 rounded-xl border font-medium transition-all ${
+        formData.dietType === "Mixed"
+          ? "bg-orange-500 text-white border-orange-500"
+          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50"
+      }`}
+    >
+      🍗 Mixed
+    </button>
+  </div>
+</div>
 
             {/* Address */}
             <div>

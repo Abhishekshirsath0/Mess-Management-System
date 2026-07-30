@@ -28,6 +28,7 @@ const UserSchema = new Schema(
     Plan: { type: String, enum: ["BASIC", "STANDARD", "PREMIUM"], default: "STANDARD" },
     PaymentStatus: { type: String, enum: ["Paid", "Pending"], default: "Pending" },
     PaidAmount: { type: Number, default: 0 },
+    Deposit: { type: Number, default: 0 },
     PendingAmount: { type: Number, default: 3600 },
     DietType: { type: String, enum: ["Pure Veg", "Mixed"], default: "Mixed" },
     

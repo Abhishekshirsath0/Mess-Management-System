@@ -22,22 +22,31 @@ export const mapUser = (user) => ({
 
 export const postUserdata = async (userdata) => {
   try {
+    // Debug: Check data before sending
+    console.log("Sending User Data:", userdata);
+
     const response = await axios.post(`${API}/user`, {
       Name: userdata.fullname,
       Mobile: userdata.mobile,
       Parent_Mob: userdata.parentMobile,
       Email: userdata.email,
+      DietType: userdata.dietType || "Mixed", // or "Pure Veg"
       Address: userdata.address,
       Gender: userdata.gender,
       Password: userdata.password,
       Plan: userdata.plan || "STANDARD",
-      DietType: userdata.dietType || "Mixed",
     });
+
+    console.log("Registration Success:", response.data);
 
     return mapUser(response.data);
   } catch (error) {
     console.error("POST USER ERROR:", error.response?.data || error.message);
-    throw error;
+
+    // Return backend validation message if available
+    throw new Error(
+      error.response?.data?.message || "Registration failed. Please try again."
+    );
   }
 };
 

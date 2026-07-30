@@ -20,9 +20,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <button className="bg-black text-white px-5 py-3 rounded-xl hover:bg-gray-800 transition w-full md:w-auto">
-          + Add Member
-        </button>
+        
       </div>
 
       {/* Cards */}

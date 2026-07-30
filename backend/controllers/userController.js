@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "mess_management_secret_key_123";
 
 export const postUserdata = async (req, res) => {
   try {
-    const { Name, Mobile, Parent_Mob, Email, Address, Gender, Password, Usertype, Plan, DietType } = req.body;
+    const { Name, Mobile, Parent_Mob, Email, DietType, Address, Gender, Password, Usertype, Plan } = req.body;
 
     const hashedPassword = await bcrypt.hash(Password, 10);
 
@@ -15,12 +15,13 @@ export const postUserdata = async (req, res) => {
       Mobile,
       Parent_Mob,
       Email,
+      DietType: DietType || "Mixed",
       Address,
       Gender,
       Password: hashedPassword,
       Usertype: Usertype || "user",
       Plan: Plan || "STANDARD",
-      DietType: DietType || "Mixed",
+      
     });
 
     const savedUser = await newUser.save();
