@@ -84,7 +84,7 @@ html:not(.dark) .meal-card {
 
 html.dark header,
 html.dark nav {
-  background-color: #0f172a !important;
+ 
   border-color: #1e293b !important;
   color: #f8fafc !important;
 }

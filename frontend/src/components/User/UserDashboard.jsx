@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { RingLoader } from "react-spinners"
 import {
   Wallet,
   UtensilsCrossed,
@@ -72,7 +73,7 @@ export default function UserDashboard() {
     dinnerNonVeg: [],
   });
   const [menuLoaded, setMenuLoaded] = useState(false);
-
+  const[loading, setLoading] = useState(true);
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -82,6 +83,7 @@ export default function UserDashboard() {
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
         // Load meal
         const meal = await getTodayMeal();
@@ -92,6 +94,7 @@ export default function UserDashboard() {
             dinnerNonVeg: meal.dinner?.nonVeg || [],
           });
         }
+        setLoading(false);
       } catch (err) {
         console.error("Error loading today's meal:", err);
       } finally {
@@ -159,7 +162,11 @@ export default function UserDashboard() {
   const lunchItems = todayMenu.lunch;
   const dinnerVegItems = todayMenu.dinnerVeg;
   const dinnerNonVegItems = todayMenu.dinnerNonVeg;
-
+  if (loading) {
+    <div className="flex justify-center items-center h-full">
+      <RingLoader color={"#ffffffff"} />
+    </div>
+  }
   const NotUpdated = () => (
     <p className="text-sm text-gray-600 dark:text-gray-400 font-medium italic">
       Menu not updated yet
@@ -171,6 +178,7 @@ export default function UserDashboard() {
   };
 
   return (
+ 
     <div className="space-y-6 text-black dark:text-white">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { getUserdatafromserver, updateUser , deleteUser } from "../../../service";
+import { PropagateLoader, RingLoader } from "react-spinners";
 
 export const Members = () => {
   const [members, setMembers] = useState([]);
@@ -84,8 +85,12 @@ export const Members = () => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gray-50 p-6 flex items-center justify-center text-gray-500">
-        Loading members...
+      <div>
+        {loading && (
+          <div className="flex justify-center items-center mt-70 h-full">
+            <RingLoader color={"#ffffffff"} />
+          </div>
+        )}
       </div>
     );
   }

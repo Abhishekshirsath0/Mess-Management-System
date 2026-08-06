@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { postMeal, getMeals } from "../../../service"; // adjust path to your api.js
-
+import { RingLoader } from "react-spinners";
 const DAY_NAMES = [
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
-  "Friday",
+  "Friday", 
   "Saturday",
   "Sunday",
 ];
@@ -47,6 +47,7 @@ export const Edit_Meal = () => {
   const [meals, setMeals] = useState(() => buildWeekTemplate(0));
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
+
 
   // Rebuild the 7-day template whenever the week changes,
   // then merge in whatever's already saved for those exact dates
@@ -125,14 +126,45 @@ export const Edit_Meal = () => {
   };
 
   const handleSaveCard = async (meal) => {
+    const cleanedMeal = {
+      ...meal,
+      veg: meal.veg
+        .map((item) => item.trim())
+        .filter(Boolean),
+      nonVeg: meal.nonVeg
+        .map((item) => item.trim())
+        .filter(Boolean),
+    };
+
+    if (
+      cleanedMeal.veg.length === 0 &&
+      cleanedMeal.nonVeg.length === 0
+    ) {
+      alert("Please add at least one menu item.");
+      return;
+    }
+
     setSavingId(meal.id);
+
     try {
-      const saved = await postMeal(meal, mealType);
+      const saved = await postMeal(cleanedMeal, mealType);
+
       setMeals((prev) =>
-        prev.map((m) => (m.id === meal.id ? { ...m, dbId: saved._id } : m))
+        prev.map((m) =>
+          m.id === meal.id
+            ? {
+              ...m,
+              dbId: saved._id,
+              veg: cleanedMeal.veg,
+              nonVeg: cleanedMeal.nonVeg,
+            }
+            : m
+        )
       );
-      alert(`${meal.day} (${meal.date}, ${mealType}) saved successfully`);
+
+      alert(`${meal.day} (${mealType}) saved successfully.`);
     } catch (error) {
+      console.error(error);
       alert(`Failed to save ${meal.day}`);
     } finally {
       setSavingId(null);
@@ -196,12 +228,16 @@ export const Edit_Meal = () => {
         </div>
       </div>
 
-      {loading && (
-        <p className="mb-4 text-sm text-gray-500">Loading saved meals...</p>
-      )}
 
       {/* CARDS */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      {loading ? (
+        <div className="flex justify-center items-center h-[70vh]">
+          <RingLoader color="#ffffffff" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      
+        
 
         {meals.map((meal) => (
           <div
@@ -328,6 +364,7 @@ export const Edit_Meal = () => {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
-};
+}

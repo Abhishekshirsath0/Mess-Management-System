@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { getUserdatafromserver, updateUser } from "../../../service";
+import { RingLoader } from "react-spinners";
 
 const PLAN_AMOUNTS = {
   BASIC: 1800,
@@ -154,8 +155,12 @@ export const Payments = () => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gray-50 p-6 flex items-center justify-center text-gray-500">
-        Loading payments...
+      <div>
+        {loading && (
+          <div className="flex justify-center items-center mt-70 h-full">
+            <RingLoader color={"#ffffffff"} />
+          </div>
+        )}
       </div>
     );
   }

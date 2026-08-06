@@ -5,6 +5,7 @@ import {
   postAttendance,
   updateAttendance,
 } from "../../../service";
+import { PropagateLoader  } from "react-spinners";
 
 const todayStr = () => new Date().toISOString().split("T")[0];
 
@@ -32,10 +33,11 @@ export const View_Attends = () => {
   const [saving, setSaving] = useState(false);
   const [attendanceSaved, setAttendanceSaved] = useState(false);
   const [currentDate, setCurrentDate] = useState(todayStr());
-
+  const [loading, setLoading] = useState(true);
   const loadData = async () => {
     try {
       const date = todayStr();
+      setLoading(true)
       const [users, records] = await Promise.all([
         getUserdatafromserver(),
         getAttendanceByDate(date),
@@ -43,7 +45,9 @@ export const View_Attends = () => {
       setMembers(mapUsersWithAttendance(users, records));
       setAttendanceSaved(records.length > 0);
       setCurrentDate(date);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.error("Failed to load attendance data:", err);
     }
   };
@@ -57,7 +61,9 @@ export const View_Attends = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (todayStr() !== currentDate) {
+       
         loadData();
+        
       }
     }, 60 * 1000);
     return () => clearInterval(interval);
@@ -163,6 +169,8 @@ export const View_Attends = () => {
   };
 
   return (
+   
+    
     <section className="bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col">
 
       {/* HEADER */}
@@ -195,6 +203,7 @@ export const View_Attends = () => {
           </thead>
 
           <tbody>
+            
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => (
                 <tr key={member.id} className="border-t hover:bg-slate-50">
@@ -291,7 +300,13 @@ export const View_Attends = () => {
             ) : (
               <tr>
                 <td colSpan="8" className="text-center p-6 text-gray-500">
-                  No members found
+                    <div>
+                      {loading && (
+                        <div className="flex justify-center items-center h-full">
+                          <PropagateLoader  color={"#ffffffff"} />
+                        </div>
+                      )}
+                    </div>
                 </td>
               </tr>
             )}

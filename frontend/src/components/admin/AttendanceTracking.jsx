@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getUserdatafromserver, getAttendanceByDate  } from "../../service";
-
+import { RingLoader } from "react-spinners"
 const todayStr = () => new Date().toISOString().split("T")[0];
 
 export default function AttendanceTable() {
@@ -55,8 +55,8 @@ export default function AttendanceTable() {
 
   if (loading) {
     return (
-      <div className="text-center p-8 text-lg">
-        Loading...
+      <div className="flex justify-center items-center h-full">
+        <RingLoader color={"#ffffffff"} />
       </div>
     );
   }
