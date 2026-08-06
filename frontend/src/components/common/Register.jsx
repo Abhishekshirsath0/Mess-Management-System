@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {postUserdata} from "../../service";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Register() {
+  const { theme, toggleTheme } = useTheme();
   const [formData, setFormData] = useState({
     fullname: "",
     mobile: "",
@@ -58,7 +60,28 @@ export default function Register() {
 };
 
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 antialiased">
+    <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 antialiased relative">
+      {/* Top right theme toggle */}
+      <div className="absolute top-6 right-6">
+        <button
+          onClick={toggleTheme}
+          title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+        >
+          {theme === "dark" ? (
+            <>
+              <span className="text-yellow-400 text-lg">☀️</span>
+              <span className="text-xs font-semibold">Light Mode</span>
+            </>
+          ) : (
+            <>
+              <span className="text-indigo-500 text-lg">🌙</span>
+              <span className="text-xs font-semibold">Dark Mode</span>
+            </>
+          )}
+        </button>
+      </div>
+
       <div className="w-full max-w-lg">
         <div className="bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 p-8 sm:p-10">
           

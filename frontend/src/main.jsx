@@ -11,6 +11,7 @@ import { Payments } from "./components/admin/CARDS/Payments";
 import Dashboard from "./components/admin/Dashboard";
 import Login from "./components/common/Login";
 import Register from "./components/common/Register";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </StrictMode>,
 );

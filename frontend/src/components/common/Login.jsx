@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginUser } from "../../service";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -44,7 +46,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center px-6 py-12">
+    <div className="min-h-screen bg-white flex flex-col justify-center px-6 py-12 relative">
+      {/* Top right theme toggle */}
+      <div className="absolute top-6 right-6">
+        <button
+          onClick={toggleTheme}
+          title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+        >
+          {theme === "dark" ? (
+            <>
+              <span className="text-yellow-400 text-lg">☀️</span>
+              <span className="text-xs font-semibold">Light Mode</span>
+            </>
+          ) : (
+            <>
+              <span className="text-indigo-500 text-lg">🌙</span>
+              <span className="text-xs font-semibold">Dark Mode</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Logo + Heading */}
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <div className="mx-auto w-14 h-14 rounded-xl bg-black flex items-center justify-center text-white text-2xl font-bold select-none">

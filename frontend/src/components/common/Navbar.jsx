@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -56,7 +58,26 @@ export default function Navbar() {
         </nav>
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+          >
+            {theme === "dark" ? (
+              <>
+                <span className="text-yellow-400 text-lg">☀️</span>
+                <span className="text-xs font-semibold hidden sm:inline">Light</span>
+              </>
+            ) : (
+              <>
+                <span className="text-indigo-500 text-lg">🌙</span>
+                <span className="text-xs font-semibold hidden sm:inline">Dark</span>
+              </>
+            )}
+          </button>
+
           <button className="text-xl hidden md:block">
             🔔
           </button>
@@ -76,7 +97,7 @@ export default function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
+              className="font-semibold h-10 py-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl flex items-center"
             >
               Login
             </Link>
@@ -110,6 +131,16 @@ export default function Navbar() {
           >
             User Dashboard
           </Link>
+
+          <button
+            onClick={() => {
+              toggleTheme();
+              setOpen(false);
+            }}
+            className="flex items-center gap-2 font-medium bg-gray-200 dark:bg-slate-800 text-black dark:text-white px-3 py-2 w-40 rounded-xl"
+          >
+            {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+          </button>
 
           {user ? (
             <button

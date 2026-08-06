@@ -13,8 +13,8 @@ const todayStr = () => new Date().toISOString().split("T")[0];
 export default function CardsSection() {
   const [stats, setStats] = useState({
     attendanceVal: "0 / 0",
-    attendanceSub: "Daily Status",
-    mealsVal: "Active",
+    attendanceSub: "Today's Attendance",
+    mealsVal: "Active Batch",
     mealsSub: "Today's Menu",
     membersVal: "0 Members",
     membersSub: "Manage Members",
