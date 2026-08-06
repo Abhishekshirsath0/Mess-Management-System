@@ -24,9 +24,9 @@
   }
 }
 
-/* ========================= */
+
 /* LIGHT MODE */
-/* ========================= */
+
 
 html:not(.dark),
 html:not(.dark) body {
@@ -78,9 +78,9 @@ html:not(.dark) .meal-card {
   background: #faf9f5 !important;
 }
 
-/* ========================= */
+
 /* DARK MODE */
-/* ========================= */
+
 
 html.dark header,
 html.dark nav {
