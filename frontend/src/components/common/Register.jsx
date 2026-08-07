@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {postUserdata} from "../../service";
+import { postUserdata } from "../../service";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function Register() {
@@ -10,7 +10,8 @@ export default function Register() {
     mobile: "",
     parentMobile: "",
     email: "",
-    dietType: "Mixed",
+    dietType: "Pure Veg",
+    plan: "Basic",
     address: "",
     gender: "",
     password: "",
@@ -27,37 +28,38 @@ export default function Register() {
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match!");
-    return;
-  }
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
 
-  try {
-    const result = await postUserdata(formData);
-    console.log(result);
-    alert("Registration Successful!");
+    try {
+      const result = await postUserdata(formData);
+      console.log(result);
+      alert("Registration Successful!");
 
-    navigate("/login");
+      navigate("/login");
 
-    setFormData({
-      fullname: "",
-      mobile: "",
-      parentMobile: "",
-      email: "",
-      dietType: "",
-      address: "",
-      gender: "",
-      password: "",
-      confirmPassword: "",
-      terms: false,
-    });
-  } catch (error) {
-    alert(error.message);
-  }
-};
+      setFormData({
+        fullname: "",
+        mobile: "",
+        parentMobile: "",
+        email: "",
+        dietType: "Mixed",
+        plan: "Basic",
+        address: "",
+        gender: "",
+        password: "",
+        confirmPassword: "",
+        terms: false,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 antialiased relative">
@@ -84,7 +86,7 @@ export default function Register() {
 
       <div className="w-full max-w-lg">
         <div className="bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 p-8 sm:p-10">
-          
+
           {/* Header Section */}
           <div className="flex flex-col items-center text-center mb-8">
             <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center text-white text-2xl font-black tracking-wider shadow-md shadow-black/20">
@@ -100,7 +102,7 @@ export default function Register() {
 
           {/* Registration Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            
+
             {/* Full Name */}
             <div>
               <label htmlFor="fullname" className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
@@ -169,43 +171,88 @@ export default function Register() {
                 className="w-full px-4 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl placeholder:text-gray-400 focus:bg-white focus:border-black focus:ring-4 focus:ring-black/5 transition-all outline-none"
               />
             </div>
+
+            {/* Diet Type */}
             <div>
-  <label className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
-    Diet Type
-  </label>
+              <label className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                Diet Type
+              </label>
 
-  <div className="flex gap-3">
-    {/* Veg */}
- <button
-  type="button"
-  onClick={() =>
-    setFormData({ ...formData, dietType: "Pure Veg" })
-  }
-  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${
-    formData.dietType === "Pure Veg"
-      ? "bg-green-500 text-white border-green-500"
-      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-green-50"
-  }`}
->
-  🥗 Veg
-</button>
+              <div className="flex gap-3">
+                {/* Veg */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, dietType: "Pure Veg" })
+                  }
+                  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.dietType === "Pure Veg"
+                      ? "bg-green-500 text-white border-green-500"
+                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-green-50"
+                    }`}
+                >
+                  🥗 Veg
+                </button>
 
-    {/* Mixed */}
-    <button
-      type="button"
-      onClick={() =>
-        setFormData({ ...formData, dietType: "Mixed" })
-      }
-      className={`flex-1 py-3 rounded-xl border font-medium transition-all ${
-        formData.dietType === "Mixed"
-          ? "bg-orange-500 text-white border-orange-500"
-          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50"
-      }`}
-    >
-      🍗 Mixed
-    </button>
-  </div>
-</div>
+                {/* Mixed */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, dietType: "Mixed" })
+                  }
+                  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.dietType === "Mixed"
+                      ? "bg-orange-500 text-white border-orange-500"
+                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50"
+                    }`}
+                >
+                  🍗 Mixed
+                </button>
+              </div>
+            </div>
+
+            {/* Select Plan */}
+            <div>
+              <label className="block mb-2 text-xs font-semibold uppercase tracking-wider text-gray-700">
+                Select Plan
+              </label>
+
+              <div className="flex gap-3">
+                {/* Basic */}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, plan: "Basic" })}
+                  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.plan === "Basic"
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-blue-50"
+                    }`}
+                >
+                  Basic
+                </button>
+
+                {/* Standard */}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, plan: "Standard" })}
+                  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.plan === "Standard"
+                      ? "bg-purple-500 text-white border-purple-500"
+                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-purple-50"
+                    }`}
+                >
+                  Standard
+                </button>
+
+                {/* Premium */}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, plan: "Premium" })}
+                  className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.plan === "Premium"
+                      ? "bg-yellow-500 text-white border-yellow-500"
+                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-yellow-50"
+                    }`}
+                >
+                  Premium
+                </button>
+              </div>
+            </div>
 
             {/* Address */}
             <div>
@@ -317,7 +364,7 @@ export default function Register() {
               Login here
             </Link>
           </div>
-          
+
         </div>
       </div>
     </main>

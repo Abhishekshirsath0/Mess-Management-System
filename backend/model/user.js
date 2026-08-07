@@ -25,7 +25,11 @@ const UserSchema = new Schema(
       minlength: [6, "Password must be at least 6 characters"],
     },
     Usertype: { type: String, enum: ["user", "admin"], default: "user" },
-    Plan: { type: String, enum: ["BASIC", "STANDARD", "PREMIUM"], default: "STANDARD" },
+    Plan: {
+      type: String,
+      enum: ["BASIC", "STANDARD", "PREMIUM"],
+      default: "STANDARD"
+    },
     PaymentStatus: { type: String, enum: ["Paid", "Pending"], default: "Pending" },
     PaidAmount: { type: Number, default: 0 },
     Deposit: { type: Number, default: 0 },
