@@ -5,7 +5,7 @@ import {
   UtensilsCrossed,
   Receipt,
   MapPin,
-  Sun,
+  Sun, 
   CloudSun,
   Moon,
   CalendarDays,
@@ -55,12 +55,13 @@ export default function UserDashboard() {
     if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) {}
+      } catch (e) { }
     }
     return {
       name: "Abhishek",
       plan: "STANDARD",
-      paymentStatus: "Paid",
+      PaymentStatus
+: "Paid",
       address: "Nashik Road",
       paid: 3600,
     };
@@ -73,7 +74,7 @@ export default function UserDashboard() {
     dinnerNonVeg: [],
   });
   const [menuLoaded, setMenuLoaded] = useState(false);
-  const[loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -116,6 +117,7 @@ export default function UserDashboard() {
 
     loadData();
   }, [currentUser]);
+  
 
   const planInfo = PLANS[currentUser.plan] || PLANS.STANDARD;
   const billAmount = currentUser.paid || planInfo.price;
@@ -139,13 +141,17 @@ export default function UserDashboard() {
     },
     {
       title: "Payment Status",
-      value: currentUser.paymentStatus || "Paid",
+      value: currentUser.PaymentStatus
+
+ || "Paid",
       subtitle: "Current Month",
       icon: <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />,
       bg:
-        currentUser.paymentStatus === "Pending" ? "bg-red-100 dark:bg-red-950" : "bg-green-100 dark:bg-green-950",
+        currentUser.PaymentStatus
+ === "Pending" ? "bg-red-100 dark:bg-red-950" : "bg-green-100 dark:bg-green-950",
       color:
-        currentUser.paymentStatus === "Pending"
+        currentUser.PaymentStatus
+ === "Pending"
           ? "text-red-700 dark:text-red-300"
           : "text-green-700 dark:text-green-300",
     },
@@ -178,7 +184,7 @@ export default function UserDashboard() {
   };
 
   return (
- 
+
     <div className="space-y-6 text-black dark:text-white">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -244,18 +250,18 @@ export default function UserDashboard() {
             </p>
           </div>
 
-          <div className="bg-green-100 dark:bg-green-950 text-green-950 dark:text-green-200 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
+          <div className="bg-green-100 dark:bg-green-100 text-green-100 dark:text-green-200 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
             Active Menu
           </div>
         </div>
 
         {/* LUNCH */}
         <div
-          style={cardBgStyle}
+          style={cardBgStyle} 
           className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 mb-6 shadow-xs transition-colors"
         >
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-black text-black dark:text-orange-400 flex items-center gap-2">
+            <h3 className="text-lg font-black text-black dark:text-orange flex items-center gap-2">
               🍛 Lunch
             </h3>
             <span className="text-sm font-bold text-black dark:text-slate-200">

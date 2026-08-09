@@ -41,8 +41,8 @@ html:not(.dark) h4,
 html:not(.dark) h5,
 html:not(.dark) h6,
 html:not(.dark) p,
-html:not(.dark) span,
-html:not(.dark) div,
+/* html:not(.dark) span, */
+/* html:not(.dark) div, */
 html:not(.dark) label,
 html:not(.dark) strong,
 html:not(.dark) small,
@@ -52,11 +52,11 @@ html:not(.dark) th {
 }
 
 /* Override Tailwind text colors */
-html:not(.dark) [class*="text-gray"],
+/* html:not(.dark) [class*="text-gray"], */
 html:not(.dark) [class*="text-slate"],
 html:not(.dark) .text-black,
 html:not(.dark) .text-black\/80 {
-  color: #000 !important;
+  color: #000000 !important;
 }
 
 /* Inputs */
