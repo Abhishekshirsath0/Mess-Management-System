@@ -250,7 +250,7 @@ export default function UserDashboard() {
             </p>
           </div>
 
-          <div className="bg-green-100 dark:bg-green-100 text-green-100 dark:text-green-200 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
+          <div className="bg-green-100 dark:bg-green-400 text-black dark:text-black px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
             Active Menu
           </div>
         </div>

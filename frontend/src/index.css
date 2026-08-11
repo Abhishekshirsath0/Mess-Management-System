@@ -34,13 +34,13 @@ html:not(.dark) body {
 }
 
 /* Make all headings/text black */
-html:not(.dark) h1,
-html:not(.dark) h2,
-html:not(.dark) h3,
+/* html:not(.dark) h1, */
+/* html:not(.dark) h2, */
+/* html:not(.dark) h3, */
 html:not(.dark) h4,
 html:not(.dark) h5,
 html:not(.dark) h6,
-html:not(.dark) p,
+/* html:not(.dark) p, */
 /* html:not(.dark) span, */
 /* html:not(.dark) div, */
 html:not(.dark) label,
