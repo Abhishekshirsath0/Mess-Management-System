@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { RingLoader } from "react-spinners"
 import {
   Wallet,
   UtensilsCrossed,
   Receipt,
   MapPin,
-  Sun, 
+  Sun,
   CloudSun,
   Moon,
   CalendarDays,
+  WifiOff,
+  SignalLow,
 } from "lucide-react";
 import { getTodayMeal, getUserAttendanceStats } from "../../service";
 import { useTheme } from "../../context/ThemeContext";
@@ -47,6 +48,110 @@ const getFoodStyle = (type) => {
   return `${base} bg-gray-100 border border-gray-200 dark:bg-slate-800 dark:text-gray-100 dark:border-slate-700`;
 };
 
+/* ---------------- SKELETON PRIMITIVES ---------------- */
+// Base shimmering block. Uses the same rounded/border language as the real
+// UI so the skeleton reads as a "ghost" of the content that's loading.
+const Bone = ({ className = "" }) => (
+  <div
+    className={`animate-pulse rounded-md bg-gray-200 dark:bg-slate-700/80 ${className}`}
+  />
+);
+
+const SkeletonCard = () => (
+  <div className="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border border-gray-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+    <div className="flex items-center justify-between gap-1 mb-2 sm:mb-4">
+      <Bone className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shrink-0" />
+      <Bone className="h-3 w-14 sm:w-16" />
+    </div>
+    <div className="space-y-2">
+      <Bone className="h-2.5 w-20" />
+      <Bone className="h-5 sm:h-7 w-24 sm:w-28" />
+    </div>
+  </div>
+);
+
+const SkeletonChips = ({ count = 3 }) => (
+  <div className="flex flex-wrap gap-2">
+    {Array.from({ length: count }).map((_, i) => (
+      <Bone
+        key={i}
+        className="h-8 rounded-xl"
+        style={{ width: `${64 + ((i * 23) % 50)}px` }}
+      />
+    ))}
+  </div>
+);
+
+const SkeletonMealBlock = ({ chips = 3 }) => (
+  <div className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs">
+    <div className="flex items-center justify-between mb-3">
+      <Bone className="h-5 w-28" />
+      <Bone className="h-4 w-32" />
+    </div>
+    <SkeletonChips count={chips} />
+  </div>
+);
+
+/* ---------------- NETWORK STATUS UI ---------------- */
+// Persistent banner shown whenever the browser reports no connection.
+// Rendered both in the skeleton and the loaded view so it never disappears
+// mid-session if the connection drops later.
+const OfflineBanner = () => (
+  <div className="flex items-center gap-2 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm font-semibold px-4 py-2.5 rounded-xl">
+    <WifiOff size={16} className="shrink-0" />
+    <span>You're offline. Showing the last data we loaded.</span>
+  </div>
+);
+
+// Shown only while loading, and only once the fetch has taken longer than
+// expected — a signal to the user that it's the network, not a freeze.
+const SlowNetworkNotice = () => (
+  <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 text-amber-700 dark:text-amber-300 text-sm font-semibold px-4 py-2.5 rounded-xl animate-pulse">
+    <SignalLow size={16} className="shrink-0" />
+    <span>Slow connection detected — still loading your dashboard…</span>
+  </div>
+);
+
+const DashboardSkeleton = ({ isOffline, isSlow }) => (
+  <div className="space-y-6 text-black dark:text-white">
+    {isOffline && <OfflineBanner />}
+    {!isOffline && isSlow && <SlowNetworkNotice />}
+
+    {/* HEADER */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="space-y-2">
+        <Bone className="h-8 w-56" />
+        <Bone className="h-4 w-40" />
+      </div>
+    </div>
+
+    {/* CARDS */}
+    <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <SkeletonCard key={i} />
+      ))}
+    </section>
+
+    {/* MEALS */}
+    <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="space-y-2">
+          <Bone className="h-7 w-40" />
+          <Bone className="h-4 w-28" />
+        </div>
+        <Bone className="h-9 w-28 rounded-full" />
+      </div>
+
+      <SkeletonMealBlock chips={4} />
+
+      <div className="grid md:grid-cols-2 gap-4 mt-6">
+        <SkeletonMealBlock chips={3} />
+        <SkeletonMealBlock chips={3} />
+      </div>
+    </section>
+  </div>
+);
+
 export default function UserDashboard() {
   const { theme } = useTheme();
 
@@ -60,8 +165,7 @@ export default function UserDashboard() {
     return {
       name: "Abhishek",
       plan: "STANDARD",
-      PaymentStatus
-: "Paid",
+      PaymentStatus: "Paid",
       address: "Nashik Road",
       paid: 3600,
     };
@@ -75,6 +179,13 @@ export default function UserDashboard() {
   });
   const [menuLoaded, setMenuLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
+  // True once a load has been in-flight longer than SLOW_LOAD_THRESHOLD ms.
+  const [slowLoading, setSlowLoading] = useState(false);
+  // Mirrors the browser's connectivity state so we can warn the user even
+  // if a fetch hasn't been attempted yet (e.g. right after going offline).
+  const [isOffline, setIsOffline] = useState(
+    typeof navigator !== "undefined" ? !navigator.onLine : false
+  );
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -82,9 +193,33 @@ export default function UserDashboard() {
     day: "numeric",
   });
 
+  // How long a load can run before we tell the user it's the network.
+  const SLOW_LOAD_THRESHOLD = 4000;
+
   useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
     const loadData = async () => {
       setLoading(true);
+      setSlowLoading(false);
+
+      // Only flag "slow" if we're still loading after the threshold —
+      // avoids flashing the notice on normal, fast loads.
+      const slowTimer = setTimeout(() => {
+        if (!cancelled) setSlowLoading(true);
+      }, SLOW_LOAD_THRESHOLD);
+
       try {
         // Load meal
         const meal = await getTodayMeal();
@@ -95,11 +230,15 @@ export default function UserDashboard() {
             dinnerNonVeg: meal.dinner?.nonVeg || [],
           });
         }
-        setLoading(false);
       } catch (err) {
         console.error("Error loading today's meal:", err);
       } finally {
-        setMenuLoaded(true);
+        clearTimeout(slowTimer);
+        if (!cancelled) {
+          setMenuLoaded(true);
+          setLoading(false);
+          setSlowLoading(false);
+        }
       }
 
       try {
@@ -116,8 +255,11 @@ export default function UserDashboard() {
     };
 
     loadData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser]);
-  
 
   const planInfo = PLANS[currentUser.plan] || PLANS.STANDARD;
   const billAmount = currentUser.paid || planInfo.price;
@@ -141,17 +283,15 @@ export default function UserDashboard() {
     },
     {
       title: "Payment Status",
-      value: currentUser.PaymentStatus
-
- || "Paid",
+      value: currentUser.PaymentStatus || "Paid",
       subtitle: "Current Month",
       icon: <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />,
       bg:
-        currentUser.PaymentStatus
- === "Pending" ? "bg-red-100 dark:bg-red-950" : "bg-green-100 dark:bg-green-950",
+        currentUser.PaymentStatus === "Pending"
+          ? "bg-red-100 dark:bg-red-950"
+          : "bg-green-100 dark:bg-green-950",
       color:
-        currentUser.PaymentStatus
- === "Pending"
+        currentUser.PaymentStatus === "Pending"
           ? "text-red-700 dark:text-red-300"
           : "text-green-700 dark:text-green-300",
     },
@@ -168,11 +308,7 @@ export default function UserDashboard() {
   const lunchItems = todayMenu.lunch;
   const dinnerVegItems = todayMenu.dinnerVeg;
   const dinnerNonVegItems = todayMenu.dinnerNonVeg;
-  if (loading) {
-    <div className="flex justify-center items-center h-full">
-      <RingLoader color={"#ffffffff"} />
-    </div>
-  }
+
   const NotUpdated = () => (
     <p className="text-sm text-gray-600 dark:text-gray-400 font-medium italic">
       Menu not updated yet
@@ -183,9 +319,14 @@ export default function UserDashboard() {
     backgroundColor: theme === "light" ? "#faf9f5" : "#0b1328",
   };
 
-  return (
+  if (loading) {
+    return <DashboardSkeleton isOffline={isOffline} isSlow={slowLoading} />;
+  }
 
+  return (
     <div className="space-y-6 text-black dark:text-white">
+      {isOffline && <OfflineBanner />}
+
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -257,7 +398,7 @@ export default function UserDashboard() {
 
         {/* LUNCH */}
         <div
-          style={cardBgStyle} 
+          style={cardBgStyle}
           className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 mb-6 shadow-xs transition-colors"
         >
           <div className="flex items-center justify-between mb-3">
