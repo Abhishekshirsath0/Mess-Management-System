@@ -6,16 +6,15 @@ export default function App() {
   const location = useLocation();
 
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isHistoryRoute = location.pathname === "/history";
+  const showUserDashboard = !isAdminRoute && !isHistoryRoute;
 
   return (
     <div>
       <Navbar />
 
-      {/* Show only on user pages */}
-      
-
       <div className="max-w-7xl mx-auto px-2 md:px-4 py-4">
-        {!isAdminRoute && <UserDashboard />}
+        {showUserDashboard && <UserDashboard />}
         <Outlet />
       </div>
     </div>

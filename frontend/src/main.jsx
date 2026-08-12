@@ -9,6 +9,8 @@ import { Members } from "./components/admin/CARDS/Members";
 import { Edit_Meal } from "./components/admin/CARDS/Edit_Meal";
 import { Payments } from "./components/admin/CARDS/Payments";
 import Dashboard from "./components/admin/Dashboard";
+import AdminHistory from "./components/admin/AdminHistory";
+import UserHistory from "./components/User/UserHistory";
 import Login from "./components/common/Login";
 import Register from "./components/common/Register";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -18,12 +20,14 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      { path: "history", element: <UserHistory /> },
       {
         path: "admin",
         element: <AdminLayout />,
         children: [
           { index: true, element: <Dashboard /> }, // 👈 default admin page
           { path: "attendance", element: <View_Attends /> },
+          { path: "history", element: <AdminHistory /> },
           { path: "meals", element: <Edit_Meal /> },
           { path: "members", element: <Members /> },
           { path: "payments", element: <Payments /> },

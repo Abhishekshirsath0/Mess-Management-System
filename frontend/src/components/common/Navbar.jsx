@@ -30,6 +30,8 @@ export default function Navbar() {
   };
 
   const initial = user?.name ? user.name.charAt(0).toUpperCase() : "A";
+  const isAdmin = user?.role === "admin";
+  const historyPath = isAdmin ? "/admin/history" : "/history";
 
   return (
     <header className="bg-white border-b sticky top-0 z-50">
@@ -54,6 +56,13 @@ export default function Navbar() {
             className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
           >
             User Dashboard
+          </Link>
+
+          <Link
+            to={historyPath}
+            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
+          >
+            History
           </Link>
         </nav>
 
@@ -130,6 +139,14 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
           >
             User Dashboard
+          </Link>
+
+          <Link
+            to={historyPath}
+            className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
+            onClick={() => setOpen(false)}
+          >
+            History
           </Link>
 
           <button

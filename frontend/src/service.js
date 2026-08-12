@@ -107,6 +107,11 @@ export const deleteUser = async (id) => {
 
 // ==================== ATTENDANCE =======================
 
+export const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const postAttendance = async (data) => {
   try {
     const response = await axios.post(`${API}/attendance`, data);
@@ -150,6 +155,32 @@ export const getUserAttendanceStats = async (userId) => {
   } catch (error) {
     console.error("GET USER ATTENDANCE STATS ERROR:", error.response?.data || error.message);
     throw error;
+  }
+};
+
+export const getUserAttendanceHistory = async (userId, params = {}) => {
+  try {
+    const response = await axios.get(`${API}/attendance/history/${userId}`, {
+      headers: getAuthHeaders(),
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("GET USER ATTENDANCE HISTORY ERROR:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const getAllAttendanceHistory = async (params = {}) => {
+  try {
+    const response = await axios.get(`${API}/attendance/history`, {
+      headers: getAuthHeaders(),
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("GET ALL ATTENDANCE HISTORY ERROR:", error.response?.data || error.message);
+    throw error.response?.data || error;
   }
 };
 

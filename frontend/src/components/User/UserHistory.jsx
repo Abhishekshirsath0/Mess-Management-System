@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getUserAttendanceHistory } from "../../service";
 import { RingLoader } from "react-spinners";
 import { CalendarDays, Filter, RefreshCw, ChevronLeft, ChevronRight, History } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function UserHistory() {
   const [currentUser] = useState(() => {
@@ -25,6 +26,20 @@ export default function UserHistory() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  const surfaceClass = isDark
+    ? "bg-slate-900 border-slate-800 text-slate-100"
+    : "bg-white border-gray-200 text-gray-900";
+  const mutedTextClass = isDark ? "text-slate-400" : "text-gray-500";
+  const inputClass = isDark
+    ? "bg-slate-800 border-slate-700 text-slate-100 focus:ring-slate-400"
+    : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-gray-500";
+  const tableHeaderClass = isDark
+    ? "bg-slate-800/80 border-slate-800 text-slate-300"
+    : "bg-slate-100 border-gray-200 text-gray-600";
+  const tableRowClass = isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50";
 
   // Filters
   const [startDate, setStartDate] = useState("");
@@ -140,15 +155,15 @@ export default function UserHistory() {
 
   if (!currentUser) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-8 text-center my-6">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Login Required</h2>
-        <p className="text-gray-500 dark:text-gray-400">Please log in to view your attendance history.</p>
+      <div className={`${surfaceClass} rounded-2xl border p-8 text-center my-6 shadow-sm`}>
+        <h2 className={`text-xl font-bold mb-2 ${isDark ? "text-slate-100" : "text-gray-800"}`}>Login Required</h2>
+        <p className={mutedTextClass}>Please log in to view your attendance history.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 text-black dark:text-white my-2">
+    <div className={`space-y-6 my-2 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -156,8 +171,8 @@ export default function UserHistory() {
             <History className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
             Attendance History
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Personal attendance and meal records for <span className="font-semibold text-black dark:text-white">{currentUser.name}</span>
+          <p className={`text-sm mt-1 ${mutedTextClass}`}>
+            Personal attendance and meal records for <span className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>{currentUser.name}</span>
           </p>
         </div>
 
@@ -198,8 +213,8 @@ export default function UserHistory() {
       </div>
 
       {/* FILTER BAR */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs">
-        <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+      <div className={`${surfaceClass} rounded-2xl border p-4 sm:p-5 shadow-sm`}>
+        <div className={`flex items-center gap-2 mb-3 text-sm font-semibold ${isDark ? "text-slate-300" : "text-gray-700"}`}>
           <Filter className="w-4 h-4 text-indigo-500" />
           Filter & Sort History
         </div>
@@ -298,7 +313,7 @@ export default function UserHistory() {
       </div>
 
       {/* TABLE SECTION */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+      <div className={`${surfaceClass} rounded-2xl border shadow-sm overflow-hidden flex flex-col`}>
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <RingLoader color={"#6366f1"} size={50} />
@@ -308,16 +323,16 @@ export default function UserHistory() {
             {error}
           </div>
         ) : paginatedHistory.length === 0 ? (
-          <div className="p-12 text-center text-gray-500 dark:text-gray-400">
-            <CalendarDays className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-            <h3 className="text-base font-bold text-gray-700 dark:text-gray-300 mb-1">No Attendance Records Found</h3>
-            <p className="text-xs text-gray-400">Try adjusting your dates or filter settings.</p>
+          <div className={`p-12 text-center ${mutedTextClass}`}>
+            <CalendarDays className={`w-12 h-12 mx-auto mb-3 ${isDark ? "text-slate-600" : "text-gray-300"}`} />
+            <h3 className={`text-base font-bold mb-1 ${isDark ? "text-slate-300" : "text-gray-700"}`}>No Attendance Records Found</h3>
+            <p className={`text-xs ${isDark ? "text-slate-500" : "text-gray-400"}`}>Try adjusting your dates or filter settings.</p>
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-100 dark:bg-slate-800/80 border-b border-gray-200 dark:border-slate-800 text-xs uppercase tracking-wider font-bold text-gray-600 dark:text-gray-300">
+                <thead className={`${tableHeaderClass} border-b text-xs uppercase tracking-wider font-bold`}>
                   <tr>
                     <th className="p-4">Date</th>
                     <th className="p-4">User Name</th>
@@ -327,9 +342,9 @@ export default function UserHistory() {
                     <th className="p-4">Extra Tiffin</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-100"}`}>
                   {paginatedHistory.map((item) => (
-                    <tr key={item._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <tr key={item._id} className={`${tableRowClass} transition`}>
                       <td className="p-4 font-semibold text-gray-900 dark:text-gray-100">
                         {formatDate(item.date)}
                       </td>
@@ -363,13 +378,13 @@ export default function UserHistory() {
             </div>
 
             {/* PAGINATION FOOTER */}
-            <div className="p-4 border-t border-gray-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <span className="text-gray-500 dark:text-gray-400">
-                Showing <span className="font-semibold text-black dark:text-white">{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
-                <span className="font-semibold text-black dark:text-white">
+            <div className={`p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs ${isDark ? "border-slate-800 bg-slate-800/40" : "border-gray-200 bg-slate-50"}`}>
+              <span className={mutedTextClass}>
+                Showing <span className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
+                <span className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>
                   {Math.min(currentPage * itemsPerPage, history.length)}
                 </span>{" "}
-                of <span className="font-semibold text-black dark:text-white">{history.length}</span> records
+                of <span className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>{history.length}</span> records
               </span>
 
               <div className="flex items-center gap-2">

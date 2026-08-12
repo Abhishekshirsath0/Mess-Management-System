@@ -60,7 +60,7 @@ html:not(.dark) .text-black\/80 {
 }
 
 /* Inputs */
-html:not(.dark) input,
+/* html:not(.dark) input, */
 html:not(.dark) select,
 html:not(.dark) textarea {
   color: #000 !important;
