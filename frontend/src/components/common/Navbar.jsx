@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
+import { logoutUser } from "../../service";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -23,10 +24,7 @@ export default function Navbar() {
   }, [location]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    setUser(null);
-    navigate("/login");
+    logoutUser();
   };
 
   const initial = user?.name ? user.name.charAt(0).toUpperCase() : "A";
@@ -36,7 +34,6 @@ export default function Navbar() {
   return (
     <header className="bg-white border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between">
-        
         {/* Logo */}
         <Link to="/" className="text-xl md:text-2xl font-bold text-black">
           MessMaster Pro
@@ -44,26 +41,34 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-6">
-          <Link
-            to="/admin"
-            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          >
-            Admin Dashboard
-          </Link>
+          {isAdmin && (
+            <>
+              <Link
+                to="/admin"
+                className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl">
+                Dashboard
+              </Link>
+              <Link
+                to="/admin/history"
+                className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl">
+                Admin History
+              </Link>
+            </>
+          )}
 
           <Link
             to="/"
-            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          >
-            User Dashboard
+            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl">
+            Home
           </Link>
 
-          <Link
-            to={historyPath}
-            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          >
-            History
-          </Link>
+          {!isAdmin && (
+            <Link
+              to={historyPath}
+              className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl">
+              History
+            </Link>
+          )}
         </nav>
 
         {/* Right Side */}
@@ -71,26 +76,29 @@ export default function Navbar() {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
-          >
+            title={
+              theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
+            }
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer">
             {theme === "dark" ? (
               <>
                 <span className="text-yellow-400 text-lg">☀️</span>
-                <span className="text-xs font-semibold hidden sm:inline">Light</span>
+                <span className="text-xs font-semibold hidden sm:inline">
+                  Light
+                </span>
               </>
             ) : (
               <>
                 <span className="text-indigo-500 text-lg">🌙</span>
-                <span className="text-xs font-semibold hidden sm:inline">Dark</span>
+                <span className="text-xs font-semibold hidden sm:inline">
+                  Dark
+                </span>
               </>
             )}
           </button>
 
-          <button className="text-xl hidden md:block">
-            🔔
-          </button>
-          
+          <button className="text-xl hidden md:block">🔔</button>
+
           {user ? (
             <div className="flex items-center gap-3">
               <div className="hidden md:flex w-10 h-10 rounded-full bg-black text-white items-center justify-center font-semibold">
@@ -98,25 +106,20 @@ export default function Navbar() {
               </div>
               <button
                 onClick={handleLogout}
-                className="font-semibold h-10 py-2 text-sm hover:bg-red-700 bg-red-600 text-white px-3 rounded-xl transition"
-              >
+                className="font-semibold h-10 py-2 text-sm hover:bg-red-700 bg-red-600 text-white px-3 rounded-xl transition">
                 Logout
               </button>
             </div>
           ) : (
             <Link
               to="/login"
-              className="font-semibold h-10 py-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl flex items-center"
-            >
+              className="font-semibold h-10 py-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl flex items-center">
               Login
             </Link>
           )}
 
           {/* Mobile Button */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden text-2xl"
-          >
+          <button onClick={() => setOpen(!open)} className="md:hidden text-2xl">
             ☰
           </button>
         </div>
@@ -125,37 +128,45 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden border-t bg-white px-4 py-4 space-y-4">
-          <Link
-            to="/admin"
-            className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
-            onClick={() => setOpen(false)}
-          >
-            Admin Dashboard
-          </Link>
+          {isAdmin && (
+            <>
+              <Link
+                to="/admin"
+                className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
+                onClick={() => setOpen(false)}>
+                Dashboard
+              </Link>
+              <Link
+                to="/admin/history"
+                className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
+                onClick={() => setOpen(false)}>
+                Admin History
+              </Link>
+            </>
+          )}
 
           <Link
             to="/"
             className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
-            onClick={() => setOpen(false)}
-          >
-            User Dashboard
+            onClick={() => setOpen(false)}>
+            Home
           </Link>
 
-          <Link
-            to={historyPath}
-            className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
-            onClick={() => setOpen(false)}
-          >
-            History
-          </Link>
+          {!isAdmin && (
+            <Link
+              to={historyPath}
+              className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
+              onClick={() => setOpen(false)}>
+              History
+            </Link>
+          )}
 
           <button
             onClick={() => {
               toggleTheme();
               setOpen(false);
             }}
-            className="flex items-center gap-2 font-medium bg-gray-200 dark:bg-slate-800 text-black dark:text-white px-3 py-2 w-40 rounded-xl"
-          >
+            className="flex items-center gap-2 font-medium bg-gray-200 dark:bg-slate-800 text-black dark:text-white px-3 py-2 w-40 rounded-xl">
             {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
           </button>
 
@@ -165,16 +176,14 @@ export default function Navbar() {
                 setOpen(false);
                 handleLogout();
               }}
-              className="block font-medium bg-red-600 text-white px-3 py-2 w-40 rounded-xl text-left"
-            >
+              className="block font-medium bg-red-600 text-white px-3 py-2 w-40 rounded-xl text-left">
               Logout
             </button>
           ) : (
             <Link
               to="/login"
               className="block font-medium bg-black text-white px-3 py-2 w-40 rounded-xl"
-              onClick={() => setOpen(false)}
-            >
+              onClick={() => setOpen(false)}>
               Login
             </Link>
           )}

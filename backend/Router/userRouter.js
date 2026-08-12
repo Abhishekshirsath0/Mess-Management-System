@@ -1,12 +1,16 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
+import { verifyToken, verifyAdmin } from "../middleware/auth.js";
 
 const userRouter = express.Router();
 
-userRouter.post("/", userController.postUserdata);
-userRouter.post("/login", userController.loginUser);
-userRouter.get("/", userController.getUserdata);
-userRouter.put("/:id", userController.updateUser);
-userRouter.delete("/:id", userController.deleteUser);
+// Public routes - no authentication required
+userRouter.post("/", userController.postUserdata); // Register
+userRouter.post("/login", userController.loginUser); // Login
+
+// Protected routes - authentication required
+userRouter.get("/", verifyToken, userController.getUserdata);
+userRouter.put("/:id", verifyToken, userController.updateUser);
+userRouter.delete("/:id", verifyToken, verifyAdmin, userController.deleteUser);
 
 export default userRouter;

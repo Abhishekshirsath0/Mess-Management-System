@@ -13,7 +13,7 @@ export const mapUser = (user) => ({
   address: user.Address,
   gender: user.Gender,
   role: user.Usertype || "user",
-  plan: user.Plan ,
+  plan: user.Plan,
   paymentStatus: user.PaymentStatus || "Pending",
   paid: user.PaidAmount ?? 0,
   pending: user.PendingAmount ?? 3600,
@@ -22,9 +22,7 @@ export const mapUser = (user) => ({
 
 export const postUserdata = async (userdata) => {
   try {
-
     const response = await axios.post(`${API}/user`, {
-
       Name: userdata.fullname,
 
       Mobile: userdata.mobile,
@@ -42,15 +40,13 @@ export const postUserdata = async (userdata) => {
       Password: userdata.password,
 
       Plan: userdata.plan?.toUpperCase() || "STANDARD",
-
     });
 
     return response.data;
-
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const loginUser = async (credentials) => {
   try {
@@ -71,15 +67,13 @@ export const loginUser = async (credentials) => {
 
 export const getUserdatafromserver = async () => {
   try {
-    const response = await axios.get(`${API}/user`);
+    const response = await axios.get(`${API}/user`, {
+      headers: getAuthHeaders(),
+    });
 
     return response.data.map(mapUser);
-
   } catch (error) {
-    console.error(
-      "GET USER ERROR:",
-      error.response?.data || error.message
-    );
+    console.error("GET USER ERROR:", error.response?.data || error.message);
 
     throw error;
   }
@@ -87,7 +81,9 @@ export const getUserdatafromserver = async () => {
 
 export const updateUser = async (id, updateData) => {
   try {
-    const response = await axios.put(`${API}/user/${id}`, updateData);
+    const response = await axios.put(`${API}/user/${id}`, updateData, {
+      headers: getAuthHeaders(),
+    });
     return mapUser(response.data);
   } catch (error) {
     console.error("UPDATE USER ERROR:", error.response?.data || error.message);
@@ -97,7 +93,9 @@ export const updateUser = async (id, updateData) => {
 
 export const deleteUser = async (id) => {
   try {
-    const response = await axios.delete(`${API}/user/${id}`);
+    const response = await axios.delete(`${API}/user/${id}`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
     console.error("DELETE USER ERROR:", error.response?.data || error.message);
@@ -114,12 +112,14 @@ export const getAuthHeaders = () => {
 
 export const postAttendance = async (data) => {
   try {
-    const response = await axios.post(`${API}/attendance`, data);
+    const response = await axios.post(`${API}/attendance`, data, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
     console.error(
       "POST ATTENDANCE ERROR:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -127,22 +127,34 @@ export const postAttendance = async (data) => {
 
 export const getAttendanceByDate = async (date) => {
   try {
-    const response = await axios.get(`${API}/attendance`, { params: { date } });
+    const response = await axios.get(`${API}/attendance`, {
+      headers: getAuthHeaders(),
+      params: { date },
+    });
     return response.data.data;
   } catch (error) {
-    console.error("GET ATTENDANCE ERROR:", error.response?.data || error.message);
+    console.error(
+      "GET ATTENDANCE ERROR:",
+      error.response?.data || error.message,
+    );
     throw error;
   }
 };
 
 export const updateAttendance = async (records) => {
   try {
-    const response = await axios.put(`${API}/attendance`, { records });
+    const response = await axios.put(
+      `${API}/attendance`,
+      { records },
+      {
+        headers: getAuthHeaders(),
+      },
+    );
     return response.data;
   } catch (error) {
     console.error(
       "UPDATE ATTENDANCE ERROR:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -150,10 +162,15 @@ export const updateAttendance = async (records) => {
 
 export const getUserAttendanceStats = async (userId) => {
   try {
-    const response = await axios.get(`${API}/attendance/user/${userId}`);
+    const response = await axios.get(`${API}/attendance/user/${userId}`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
-    console.error("GET USER ATTENDANCE STATS ERROR:", error.response?.data || error.message);
+    console.error(
+      "GET USER ATTENDANCE STATS ERROR:",
+      error.response?.data || error.message,
+    );
     throw error;
   }
 };
@@ -166,7 +183,10 @@ export const getUserAttendanceHistory = async (userId, params = {}) => {
     });
     return response.data;
   } catch (error) {
-    console.error("GET USER ATTENDANCE HISTORY ERROR:", error.response?.data || error.message);
+    console.error(
+      "GET USER ATTENDANCE HISTORY ERROR:",
+      error.response?.data || error.message,
+    );
     throw error.response?.data || error;
   }
 };
@@ -179,7 +199,10 @@ export const getAllAttendanceHistory = async (params = {}) => {
     });
     return response.data;
   } catch (error) {
-    console.error("GET ALL ATTENDANCE HISTORY ERROR:", error.response?.data || error.message);
+    console.error(
+      "GET ALL ATTENDANCE HISTORY ERROR:",
+      error.response?.data || error.message,
+    );
     throw error.response?.data || error;
   }
 };
@@ -188,12 +211,18 @@ export const getAllAttendanceHistory = async (params = {}) => {
 
 export const postMeal = async (meal, mealType) => {
   try {
-    const response = await axios.post(`${API}/meal`, {
-      date: meal.date,
-      mealType,
-      veg: meal.veg,
-      nonVeg: meal.nonVeg,
-    });
+    const response = await axios.post(
+      `${API}/meal`,
+      {
+        date: meal.date,
+        mealType,
+        veg: meal.veg,
+        nonVeg: meal.nonVeg,
+      },
+      {
+        headers: getAuthHeaders(),
+      },
+    );
     return response.data;
   } catch (error) {
     console.error("POST MEAL ERROR:", error.response?.data || error.message);
@@ -204,6 +233,7 @@ export const postMeal = async (meal, mealType) => {
 export const getMeals = async (date) => {
   try {
     const response = await axios.get(`${API}/meal`, {
+      headers: getAuthHeaders(),
       params: date ? { date } : {},
     });
     return response.data;
@@ -215,10 +245,23 @@ export const getMeals = async (date) => {
 
 export const getTodayMeal = async () => {
   try {
-    const response = await axios.get(`${API}/meal/today`);
+    const response = await axios.get(`${API}/meal/today`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
-    console.error("GET TODAY MEAL ERROR:", error.response?.data || error.message);
+    console.error(
+      "GET TODAY MEAL ERROR:",
+      error.response?.data || error.message,
+    );
     throw error;
   }
+};
+
+// ==================== LOGOUT =======================
+
+export const logoutUser = () => {
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  window.location.href = "/Login";
 };

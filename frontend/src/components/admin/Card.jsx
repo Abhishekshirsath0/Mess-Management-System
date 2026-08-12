@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   CalendarCheck,
+  History,
   UtensilsCrossed,
   Users,
   Wallet,
@@ -14,6 +15,8 @@ export default function CardsSection() {
   const [stats, setStats] = useState({
     attendanceVal: "0 / 0",
     attendanceSub: "Today's Attendance",
+    historyVal: "All Records",
+    historySub: "Attendance History",
     mealsVal: "Active Batch",
     mealsSub: "Today's Menu",
     membersVal: "0 Members",
@@ -40,6 +43,8 @@ export default function CardsSection() {
         setStats({
           attendanceVal: `${presentCount} / ${totalUsers}`,
           attendanceSub: "Today's Attendance",
+          historyVal: `${records.length} Today`,
+          historySub: "Attendance History",
           mealsVal: "Active Batch",
           mealsSub: "Today's Menu",
           membersVal: `${totalUsers} Registered`,
@@ -65,6 +70,16 @@ export default function CardsSection() {
       color: "text-blue-600",
       action: "View Attendance",
       path: "/attendance",
+    },
+    {
+      title: "History",
+      value: stats.historyVal,
+      subtitle: stats.historySub,
+      icon: <History size={24} />,
+      bg: "bg-indigo-100",
+      color: "text-indigo-600",
+      action: "View History",
+      path: "/history",
     },
     {
       title: "Meals",
@@ -99,7 +114,7 @@ export default function CardsSection() {
   ];
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+    <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 md:gap-6">
       {cards.map((card, index) => (
         <div
           key={index}

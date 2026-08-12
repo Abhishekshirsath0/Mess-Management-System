@@ -106,12 +106,13 @@ export default function AdminAttendanceHistory() {
       String(userObj?._id || r.userId) === String(selectedUserId);
 
     // 3. Date Filter
-    const recordDateStr = r.date ? new Date(r.date).toISOString().split("T")[0] : "";
+    const recordDateStr = r.date
+      ? new Date(r.date).toISOString().split("T")[0]
+      : "";
     const matchesDate = !filterDate || recordDateStr === filterDate;
 
     // 4. Status Filter
-    const matchesStatus =
-      filterStatus === "ALL" || r.status === filterStatus;
+    const matchesStatus = filterStatus === "ALL" || r.status === filterStatus;
 
     // 5. Meal Filter
     let matchesMeal = true;
@@ -136,17 +137,21 @@ export default function AdminAttendanceHistory() {
   });
 
   // Metrics Calculation directly from database records
-  const totalPresent = filteredRecords.filter((r) => r.status === "present").length;
-  const totalAbsent = filteredRecords.filter((r) => r.status === "absent").length;
+  const totalPresent = filteredRecords.filter(
+    (r) => r.status === "present",
+  ).length;
+  const totalAbsent = filteredRecords.filter(
+    (r) => r.status === "absent",
+  ).length;
   const totalLunch = filteredRecords.filter((r) => r.lunch).length;
   const totalDinner = filteredRecords.filter((r) => r.dinner).length;
   const totalExtraTiffins = filteredRecords.reduce(
     (sum, r) => sum + (r.extraTiffin || 0),
-    0
+    0,
   );
 
   const extraTiffinRecords = filteredRecords.filter(
-    (r) => (r.extraTiffin || 0) > 0
+    (r) => (r.extraTiffin || 0) > 0,
   );
 
   const clearFilters = () => {
@@ -161,7 +166,8 @@ export default function AdminAttendanceHistory() {
 
   // Open Edit Modal
   const handleEditClick = (record) => {
-    const userObj = record.userId && typeof record.userId === "object" ? record.userId : null;
+    const userObj =
+      record.userId && typeof record.userId === "object" ? record.userId : null;
     const uId = userObj?._id || record.userId;
     const uName = userObj?.Name || record.userName || "User";
     const recordDateStr = record.date
@@ -199,7 +205,9 @@ export default function AdminAttendanceHistory() {
       ];
 
       await updateAttendance(payload);
-      alert(`Attendance history for ${editRecord.userName} updated successfully!`);
+      alert(
+        `Attendance history for ${editRecord.userName} updated successfully!`,
+      );
       setEditRecord(null);
       await loadHistoryData();
     } catch (err) {
@@ -240,8 +248,7 @@ export default function AdminAttendanceHistory() {
 
         <button
           onClick={loadHistoryData}
-          className="flex items-center gap-2 px-4 py-2 bg-black dark:bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-indigo-700 transition"
-        >
+          className="flex items-center gap-2 px-4 py-2 bg-black dark:bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-indigo-700 transition">
           <RotateCcw className="w-4 h-4" /> Refresh Logs
         </button>
       </div>
@@ -251,7 +258,9 @@ export default function AdminAttendanceHistory() {
         {/* Present */}
         <div className="bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Present Members</span>
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Present Members
+            </span>
             <UserCheck className="w-5 h-5" />
           </div>
           <p className="text-2xl font-black text-emerald-900 dark:text-emerald-100">
@@ -262,7 +271,9 @@ export default function AdminAttendanceHistory() {
         {/* Absent */}
         <div className="bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-rose-700 dark:text-rose-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Absent Members</span>
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Absent Members
+            </span>
             <UserX className="w-5 h-5" />
           </div>
           <p className="text-2xl font-black text-rose-900 dark:text-rose-100">
@@ -273,7 +284,9 @@ export default function AdminAttendanceHistory() {
         {/* Lunch */}
         <div className="bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-amber-700 dark:text-amber-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Lunch Records</span>
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Lunch Records
+            </span>
             <Utensils className="w-5 h-5" />
           </div>
           <p className="text-2xl font-black text-amber-900 dark:text-amber-100">
@@ -284,7 +297,9 @@ export default function AdminAttendanceHistory() {
         {/* Dinner */}
         <div className="bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-purple-700 dark:text-purple-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Dinner Records</span>
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Dinner Records
+            </span>
             <Utensils className="w-5 h-5" />
           </div>
           <p className="text-2xl font-black text-purple-900 dark:text-purple-100">
@@ -295,7 +310,9 @@ export default function AdminAttendanceHistory() {
         {/* Extra Tiffin */}
         <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 p-4 rounded-2xl col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-blue-700 dark:text-blue-300 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Extra Tiffins</span>
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Extra Tiffins
+            </span>
             <Package className="w-5 h-5" />
           </div>
           <p className="text-2xl font-black text-blue-900 dark:text-blue-100">
@@ -323,8 +340,7 @@ export default function AdminAttendanceHistory() {
             <button
               onClick={handleSearchClick}
               className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition shadow-xs"
-              title="Click to Search"
-            >
+              title="Click to Search">
               <Search className="w-3.5 h-3.5" />
               Search
             </button>
@@ -336,8 +352,7 @@ export default function AdminAttendanceHistory() {
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-black dark:text-white appearance-none cursor-pointer"
-            >
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-black dark:text-white appearance-none cursor-pointer">
               <option value="ALL">All Users Complete History</option>
               {usersList.map((u) => (
                 <option key={u.id} value={u.id}>
@@ -364,8 +379,7 @@ export default function AdminAttendanceHistory() {
             <select
               value={filterMeal}
               onChange={(e) => setFilterMeal(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-black dark:text-white appearance-none cursor-pointer"
-            >
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-black dark:text-white appearance-none cursor-pointer">
               <option value="ALL">All Meal Types</option>
               <option value="lunch">Lunch Only</option>
               <option value="dinner">Dinner Only</option>
@@ -384,8 +398,7 @@ export default function AdminAttendanceHistory() {
                   filterStatus === "ALL"
                     ? "bg-white dark:bg-slate-700 text-black dark:text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
+                }`}>
                 All Status
               </button>
               <button
@@ -394,8 +407,7 @@ export default function AdminAttendanceHistory() {
                   filterStatus === "present"
                     ? "bg-emerald-600 text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
+                }`}>
                 Present ({totalPresent})
               </button>
               <button
@@ -404,17 +416,17 @@ export default function AdminAttendanceHistory() {
                   filterStatus === "absent"
                     ? "bg-rose-600 text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
+                }`}>
                 Absent ({totalAbsent})
               </button>
             </div>
 
             {/* Sort Order */}
             <button
-              onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
-              className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-200 transition"
-            >
+              onClick={() =>
+                setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
+              }
+              className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-200 transition">
               <ArrowUpDown className="w-3.5 h-3.5" />
               {sortOrder === "newest" ? "Newest First" : "Oldest First"}
             </button>
@@ -426,8 +438,7 @@ export default function AdminAttendanceHistory() {
             </span>
             <button
               onClick={clearFilters}
-              className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
-            >
+              className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">
               Clear Filters
             </button>
           </div>
@@ -438,18 +449,21 @@ export default function AdminAttendanceHistory() {
       {extraTiffinRecords.length > 0 && (
         <div className="bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40 p-4 rounded-2xl">
           <h3 className="text-xs font-bold uppercase tracking-wider text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
-            <Package className="w-4 h-4" /> Extra Tiffin Log Summary ({extraTiffinRecords.length} entries)
+            <Package className="w-4 h-4" /> Extra Tiffin Log Summary (
+            {extraTiffinRecords.length} entries)
           </h3>
           <div className="flex flex-wrap gap-2">
             {extraTiffinRecords.map((r, idx) => {
-              const uObj = r.userId && typeof r.userId === "object" ? r.userId : null;
+              const uObj =
+                r.userId && typeof r.userId === "object" ? r.userId : null;
               const uName = uObj?.Name || r.userName || "User";
-              const dateStr = r.date ? new Date(r.date).toLocaleDateString("en-IN") : "";
+              const dateStr = r.date
+                ? new Date(r.date).toLocaleDateString("en-IN")
+                : "";
               return (
                 <span
                   key={idx}
-                  className="bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-900 dark:text-blue-200 shadow-2xs"
-                >
+                  className="bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-900 dark:text-blue-200 shadow-2xs">
                   {uName}: {r.extraTiffin} extra on {dateStr}
                 </span>
               );
@@ -481,13 +495,16 @@ export default function AdminAttendanceHistory() {
                   <td colSpan="8" className="p-12 text-center">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <PropagateLoader color="#6366f1" />
-                      <span className="text-xs text-gray-500 mt-4">Fetching database attendance history...</span>
+                      <span className="text-xs text-gray-500 mt-4">
+                        Fetching database attendance history...
+                      </span>
                     </div>
                   </td>
                 </tr>
               ) : sortedRecords.length > 0 ? (
                 sortedRecords.map((r, index) => {
-                  const userObj = r.userId && typeof r.userId === "object" ? r.userId : null;
+                  const userObj =
+                    r.userId && typeof r.userId === "object" ? r.userId : null;
                   const uId = userObj?._id || r.userId;
                   const name = userObj?.Name || r.userName || "Unknown User";
                   const email = userObj?.Email || "N/A";
@@ -511,11 +528,11 @@ export default function AdminAttendanceHistory() {
                         minute: "2-digit",
                       })
                     : r.updatedAt
-                    ? new Date(r.updatedAt).toLocaleTimeString("en-IN", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "Recorded";
+                      ? new Date(r.updatedAt).toLocaleTimeString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "Recorded";
 
                   const paymentDateFormatted = paymentDate
                     ? new Date(paymentDate).toLocaleDateString("en-IN", {
@@ -528,8 +545,7 @@ export default function AdminAttendanceHistory() {
                   return (
                     <tr
                       key={r._id || index}
-                      className="hover:bg-gray-50/80 dark:hover:bg-slate-800/50 transition-colors"
-                    >
+                      className="hover:bg-gray-50/80 dark:hover:bg-slate-800/50 transition-colors">
                       {/* USER DETAILS */}
                       <td className="p-4">
                         <div>
@@ -590,7 +606,9 @@ export default function AdminAttendanceHistory() {
                             </span>
                           )}
                           {!r.lunch && !r.dinner && (
-                            <span className="text-xs text-gray-400 italic">No meal marked</span>
+                            <span className="text-xs text-gray-400 italic">
+                              No meal marked
+                            </span>
                           )}
                         </div>
                       </td>
@@ -599,7 +617,8 @@ export default function AdminAttendanceHistory() {
                       <td className="p-4">
                         {r.extraTiffin > 0 ? (
                           <span className="px-3 py-1 bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-extrabold text-xs rounded-full border border-blue-200 dark:border-blue-800 inline-flex items-center gap-1">
-                            <Package className="w-3 h-3" /> +{r.extraTiffin} Extra
+                            <Package className="w-3 h-3" /> +{r.extraTiffin}{" "}
+                            Extra
                           </span>
                         ) : (
                           <span className="text-xs text-gray-400">0</span>
@@ -619,23 +638,26 @@ export default function AdminAttendanceHistory() {
                                 paymentStatus === "Paid"
                                   ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800"
                                   : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800"
-                              }`}
-                            >
-                              {paymentStatus === "Paid" ? "Full Paid" : "Pending"}
+                              }`}>
+                              {paymentStatus === "Paid"
+                                ? "Full Paid"
+                                : "Pending"}
                             </span>
 
                             {paymentStatus === "Paid" && (
                               <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
-                                Paid Date: {paymentDateFormatted || dateFormatted}
+                                Paid Date:{" "}
+                                {paymentDateFormatted || dateFormatted}
                               </span>
                             )}
                           </div>
 
                           {paymentStatus !== "Paid" && uId && (
                             <button
-                              onClick={() => handleMarkUserPaidFromHistory(uId, name)}
-                              className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 w-fit flex items-center gap-1"
-                            >
+                              onClick={() =>
+                                handleMarkUserPaidFromHistory(uId, name)
+                              }
+                              className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 w-fit flex items-center gap-1">
                               <CreditCard className="w-3 h-3" /> Mark Full Paid
                             </button>
                           )}
@@ -646,8 +668,7 @@ export default function AdminAttendanceHistory() {
                       <td className="p-4 text-center">
                         <button
                           onClick={() => handleEditClick(r)}
-                          className="px-3 py-1.5 bg-black dark:bg-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 mx-auto transition shadow-xs"
-                        >
+                          className="px-3 py-1.5 bg-black dark:bg-indigo-600 hover:bg-gray-800 dark:hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 mx-auto transition shadow-xs">
                           <Edit3 className="w-3.5 h-3.5" /> Modify
                         </button>
                       </td>
@@ -656,8 +677,11 @@ export default function AdminAttendanceHistory() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="8" className="p-10 text-center text-gray-500 dark:text-gray-400">
-                    No attendance records found in database for your active filters.
+                  <td
+                    colSpan="8"
+                    className="p-10 text-center text-gray-500 dark:text-gray-400">
+                    No attendance records found in database for your active
+                    filters.
                   </td>
                 </tr>
               )}
@@ -677,8 +701,7 @@ export default function AdminAttendanceHistory() {
               </h2>
               <button
                 onClick={() => setEditRecord(null)}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition"
-              >
+                className="p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -702,7 +725,9 @@ export default function AdminAttendanceHistory() {
                 <input
                   type="date"
                   value={editRecord.date}
-                  onChange={(e) => setEditRecord({ ...editRecord, date: e.target.value })}
+                  onChange={(e) =>
+                    setEditRecord({ ...editRecord, date: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -725,8 +750,7 @@ export default function AdminAttendanceHistory() {
                       editRecord.status === "present"
                         ? "bg-emerald-600 text-white shadow-xs"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200"
-                    }`}
-                  >
+                    }`}>
                     <CheckCircle className="w-4 h-4" /> Present
                   </button>
 
@@ -744,8 +768,7 @@ export default function AdminAttendanceHistory() {
                       editRecord.status === "absent"
                         ? "bg-rose-600 text-white shadow-xs"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200"
-                    }`}
-                  >
+                    }`}>
                     <XCircle className="w-4 h-4" /> Absent
                   </button>
                 </div>
@@ -760,26 +783,31 @@ export default function AdminAttendanceHistory() {
                   <button
                     type="button"
                     disabled={editRecord.status !== "present"}
-                    onClick={() => setEditRecord({ ...editRecord, lunch: !editRecord.lunch })}
+                    onClick={() =>
+                      setEditRecord({ ...editRecord, lunch: !editRecord.lunch })
+                    }
                     className={`py-2 rounded-xl text-xs font-bold transition ${
                       editRecord.lunch
                         ? "bg-amber-500 text-white"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}
-                  >
+                    } disabled:opacity-40 disabled:cursor-not-allowed`}>
                     🍛 Lunch {editRecord.lunch ? "✓" : ""}
                   </button>
 
                   <button
                     type="button"
                     disabled={editRecord.status !== "present"}
-                    onClick={() => setEditRecord({ ...editRecord, dinner: !editRecord.dinner })}
+                    onClick={() =>
+                      setEditRecord({
+                        ...editRecord,
+                        dinner: !editRecord.dinner,
+                      })
+                    }
                     className={`py-2 rounded-xl text-xs font-bold transition ${
                       editRecord.dinner
                         ? "bg-purple-600 text-white"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}
-                  >
+                    } disabled:opacity-40 disabled:cursor-not-allowed`}>
                     🌙 Dinner {editRecord.dinner ? "✓" : ""}
                   </button>
                 </div>
@@ -799,8 +827,7 @@ export default function AdminAttendanceHistory() {
                         extraTiffin: Math.max(0, editRecord.extraTiffin - 1),
                       })
                     }
-                    className="w-10 h-10 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl font-black text-lg flex items-center justify-center"
-                  >
+                    className="w-10 h-10 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl font-black text-lg flex items-center justify-center">
                     −
                   </button>
 
@@ -816,8 +843,7 @@ export default function AdminAttendanceHistory() {
                         extraTiffin: editRecord.extraTiffin + 1,
                       })
                     }
-                    className="w-10 h-10 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl font-black text-lg flex items-center justify-center"
-                  >
+                    className="w-10 h-10 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl font-black text-lg flex items-center justify-center">
                     +
                   </button>
                 </div>
@@ -829,8 +855,7 @@ export default function AdminAttendanceHistory() {
               <button
                 type="button"
                 onClick={() => setEditRecord(null)}
-                className="px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs font-bold hover:bg-gray-100 dark:hover:bg-slate-800"
-              >
+                className="px-4 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs font-bold hover:bg-gray-100 dark:hover:bg-slate-800">
                 Cancel
               </button>
 
@@ -838,8 +863,7 @@ export default function AdminAttendanceHistory() {
                 type="button"
                 onClick={handleSaveHistoryEdit}
                 disabled={isSavingEdit}
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 disabled:opacity-50"
-              >
+                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 disabled:opacity-50">
                 <Save className="w-4 h-4" />
                 {isSavingEdit ? "Saving..." : "Save Modifications"}
               </button>

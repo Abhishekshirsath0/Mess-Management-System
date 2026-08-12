@@ -13,6 +13,7 @@ import AdminHistory from "./components/admin/AdminHistory";
 import UserHistory from "./components/User/UserHistory";
 import Login from "./components/common/Login";
 import Register from "./components/common/Register";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
 
 const router = createBrowserRouter([
@@ -20,12 +21,23 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { path: "history", element: <UserHistory /> },
+      {
+        path: "history",
+        element: (
+          <ProtectedRoute>
+            <UserHistory />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "admin",
-        element: <AdminLayout />,
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        ),
         children: [
-          { index: true, element: <Dashboard /> }, // 👈 default admin page
+          { index: true, element: <Dashboard /> },
           { path: "attendance", element: <View_Attends /> },
           { path: "history", element: <AdminHistory /> },
           { path: "meals", element: <Edit_Meal /> },
@@ -37,19 +49,17 @@ const router = createBrowserRouter([
   },
 
   {
-    path:"Login",
-    element:<Login />
+    path: "Login",
+    element: <Login />,
   },
   {
-    path:"register",
-    element:<Register />
-  }
+    path: "register",
+    element: <Register />,
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
-  
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
- 
+  <ThemeProvider>
+    <RouterProvider router={router} />
+  </ThemeProvider>,
 );
