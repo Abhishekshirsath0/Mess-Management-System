@@ -172,7 +172,7 @@ export default function UserHistory() {
             Attendance History
           </h1>
           <p className={`text-sm mt-1 ${mutedTextClass}`}>
-            Personal attendance and meal records for <span className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>{currentUser.name}</span>
+            attendance and meal records for <span className={`font-semibold ${isDark ? "text-white" : "text-black"}`}>{currentUser.name}</span>
           </p>
         </div>
 
