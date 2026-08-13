@@ -186,8 +186,8 @@ export default function Register() {
                     setFormData({ ...formData, dietType: "Pure Veg" })
                   }
                   className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.dietType === "Pure Veg"
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-green-50"
+                    ? "bg-green-500 text-white border-green-500"
+                    : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-green-50"
                     }`}
                 >
                   🥗 Veg
@@ -200,8 +200,8 @@ export default function Register() {
                     setFormData({ ...formData, dietType: "Mixed" })
                   }
                   className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.dietType === "Mixed"
-                      ? "bg-orange-500 text-white border-orange-500"
-                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50"
+                    ? "bg-orange-500 text-white border-orange-500"
+                    : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50"
                     }`}
                 >
                   🍗 Mixed
@@ -221,8 +221,8 @@ export default function Register() {
                   type="button"
                   onClick={() => setFormData({ ...formData, plan: "Basic" })}
                   className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.plan === "Basic"
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-blue-50"
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-blue-50"
                     }`}
                 >
                   Basic
@@ -233,8 +233,8 @@ export default function Register() {
                   type="button"
                   onClick={() => setFormData({ ...formData, plan: "Standard" })}
                   className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.plan === "Standard"
-                      ? "bg-purple-500 text-white border-purple-500"
-                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-purple-50"
+                    ? "bg-purple-500 text-white border-purple-500"
+                    : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-purple-50"
                     }`}
                 >
                   Standard
@@ -245,8 +245,8 @@ export default function Register() {
                   type="button"
                   onClick={() => setFormData({ ...formData, plan: "Premium" })}
                   className={`flex-1 py-3 rounded-xl border font-medium transition-all ${formData.plan === "Premium"
-                      ? "bg-yellow-500 text-white border-yellow-500"
-                      : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-yellow-50"
+                    ? "bg-yellow-500 text-white border-yellow-500"
+                    : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-yellow-50"
                     }`}
                 >
                   Premium
