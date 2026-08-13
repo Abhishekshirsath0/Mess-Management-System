@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getUserdatafromserver, updateUser , deleteUser } from "../../../service";
+import { getUserdatafromserver, updateUser, deleteUser } from "../../../service";
 import { PropagateLoader, RingLoader } from "react-spinners";
 
 export const Members = () => {
@@ -54,7 +54,10 @@ export const Members = () => {
   const filtered = members
     .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
-      // admin first
+
+
+      {/* admin first */}
+
       if (a.role === "admin" && b.role !== "admin") return -1;
       if (a.role !== "admin" && b.role === "admin") return 1;
       return 0;
@@ -155,11 +158,10 @@ export const Members = () => {
 
                 <span
                   className={`relative overflow-hidden inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white
-  ${
-    m.role === "admin"
-      ? "bg-linear-to-r from-purple-500 via-fuchsia-500 to-indigo-500"
-      : "bg-linear-to-r from-gray-500 via-slate-400 to-gray-600"
-  }`}>
+  ${m.role === "admin"
+                      ? "bg-linear-to-r from-purple-500 via-fuchsia-500 to-indigo-500"
+                      : "bg-linear-to-r from-gray-500 via-slate-400 to-gray-600"
+                    }`}>
                   {/* Moving light */}
                   <span className="absolute inset-0 -translate-x-full animate-[shine_2s_linear_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
@@ -170,11 +172,10 @@ export const Members = () => {
               {/* DIET TYPE */}
               <div className="mb-4">
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    m.dietType === "Pure Veg"
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${m.dietType === "Pure Veg"
                       ? "bg-green-100 text-green-700"
                       : "bg-orange-100 text-orange-700"
-                  }`}>
+                    }`}>
                   {m.dietType}
                 </span>
               </div>

@@ -394,29 +394,26 @@ export default function AdminAttendanceHistory() {
             <div className="flex items-center gap-1 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
               <button
                 onClick={() => setFilterStatus("ALL")}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  filterStatus === "ALL"
+                className={`px-3 py-1.5 rounded-lg transition ${filterStatus === "ALL"
                     ? "bg-white dark:bg-slate-700 text-black dark:text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400"
-                }`}>
+                  }`}>
                 All Status
               </button>
               <button
                 onClick={() => setFilterStatus("present")}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  filterStatus === "present"
+                className={`px-3 py-1.5 rounded-lg transition ${filterStatus === "present"
                     ? "bg-emerald-600 text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400"
-                }`}>
+                  }`}>
                 Present ({totalPresent})
               </button>
               <button
                 onClick={() => setFilterStatus("absent")}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  filterStatus === "absent"
+                className={`px-3 py-1.5 rounded-lg transition ${filterStatus === "absent"
                     ? "bg-rose-600 text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400"
-                }`}>
+                  }`}>
                 Absent ({totalAbsent})
               </button>
             </div>
@@ -515,31 +512,31 @@ export default function AdminAttendanceHistory() {
 
                   const dateFormatted = r.date
                     ? new Date(r.date).toLocaleDateString("en-IN", {
-                        weekday: "short",
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })
+                      weekday: "short",
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })
                     : "N/A";
 
                   const timeFormatted = r.createdAt
                     ? new Date(r.createdAt).toLocaleTimeString("en-IN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                    : r.updatedAt
+                      ? new Date(r.updatedAt).toLocaleTimeString("en-IN", {
                         hour: "2-digit",
                         minute: "2-digit",
                       })
-                    : r.updatedAt
-                      ? new Date(r.updatedAt).toLocaleTimeString("en-IN", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
                       : "Recorded";
 
                   const paymentDateFormatted = paymentDate
                     ? new Date(paymentDate).toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })
                     : null;
 
                   return (
@@ -634,11 +631,10 @@ export default function AdminAttendanceHistory() {
 
                           <div className="flex flex-col gap-0.5">
                             <span
-                              className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold w-fit ${
-                                paymentStatus === "Paid"
+                              className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold w-fit ${paymentStatus === "Paid"
                                   ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800"
                                   : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800"
-                              }`}>
+                                }`}>
                               {paymentStatus === "Paid"
                                 ? "Full Paid"
                                 : "Pending"}
@@ -746,11 +742,10 @@ export default function AdminAttendanceHistory() {
                         status: "present",
                       })
                     }
-                    className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
-                      editRecord.status === "present"
+                    className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${editRecord.status === "present"
                         ? "bg-emerald-600 text-white shadow-xs"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200"
-                    }`}>
+                      }`}>
                     <CheckCircle className="w-4 h-4" /> Present
                   </button>
 
@@ -764,11 +759,10 @@ export default function AdminAttendanceHistory() {
                         dinner: false,
                       })
                     }
-                    className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
-                      editRecord.status === "absent"
+                    className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${editRecord.status === "absent"
                         ? "bg-rose-600 text-white shadow-xs"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200"
-                    }`}>
+                      }`}>
                     <XCircle className="w-4 h-4" /> Absent
                   </button>
                 </div>
@@ -786,11 +780,10 @@ export default function AdminAttendanceHistory() {
                     onClick={() =>
                       setEditRecord({ ...editRecord, lunch: !editRecord.lunch })
                     }
-                    className={`py-2 rounded-xl text-xs font-bold transition ${
-                      editRecord.lunch
+                    className={`py-2 rounded-xl text-xs font-bold transition ${editRecord.lunch
                         ? "bg-amber-500 text-white"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}>
+                      } disabled:opacity-40 disabled:cursor-not-allowed`}>
                     🍛 Lunch {editRecord.lunch ? "✓" : ""}
                   </button>
 
@@ -803,11 +796,10 @@ export default function AdminAttendanceHistory() {
                         dinner: !editRecord.dinner,
                       })
                     }
-                    className={`py-2 rounded-xl text-xs font-bold transition ${
-                      editRecord.dinner
+                    className={`py-2 rounded-xl text-xs font-bold transition ${editRecord.dinner
                         ? "bg-purple-600 text-white"
                         : "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300"
-                    } disabled:opacity-40 disabled:cursor-not-allowed`}>
+                      } disabled:opacity-40 disabled:cursor-not-allowed`}>
                     🌙 Dinner {editRecord.dinner ? "✓" : ""}
                   </button>
                 </div>
