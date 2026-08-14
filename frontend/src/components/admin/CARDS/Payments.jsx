@@ -226,8 +226,8 @@ export const Payments = () => {
 
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${m.pending > 0
-                        ? "bg-red-100 text-red-700"
-                        : "bg-green-100 text-green-700"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
                       }`}
                   >
                     {m.pending > 0 ? "PENDING" : "PAID"}
@@ -260,8 +260,8 @@ export const Payments = () => {
                           onClick={() => handleChangePlan(m, planOption)}
                           disabled={isActive || isUpdating}
                           className={`flex-1 text-xs font-semibold px-2 py-1.5 rounded-lg border transition ${isActive
-                              ? "bg-blue-600 text-white border-blue-600 cursor-default"
-                              : "bg-white text-blue-700 border-blue-200 hover:bg-blue-100"
+                            ? "bg-blue-600 text-white border-blue-600 cursor-default"
+                            : "bg-white text-blue-700 border-blue-200 hover:bg-blue-100"
                             } disabled:opacity-60 disabled:cursor-not-allowed`}
                         >
                           {planOption}

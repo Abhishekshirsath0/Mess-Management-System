@@ -5,7 +5,7 @@ import {
   postAttendance,
   updateAttendance,
 } from "../../../service";
-import { PropagateLoader  } from "react-spinners";
+import { PropagateLoader } from "react-spinners";
 
 const todayStr = () => new Date().toISOString().split("T")[0];
 
@@ -61,9 +61,9 @@ export const View_Attends = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (todayStr() !== currentDate) {
-       
+
         loadData();
-        
+
       }
     }, 60 * 1000);
     return () => clearInterval(interval);
@@ -201,7 +201,7 @@ export const View_Attends = () => {
           </thead>
 
           <tbody>
-            
+
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => (
                 <tr key={member.id} className="border-t border-gray-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
@@ -298,13 +298,13 @@ export const View_Attends = () => {
             ) : (
               <tr>
                 <td colSpan="8" className="text-center p-6 text-gray-500">
-                    <div>
-                      {loading && (
-                        <div className="flex justify-center items-center h-full">
-                          <PropagateLoader color={"#6366f1"} />
-                        </div>
-                      )}
-                    </div>
+                  <div>
+                    {loading && (
+                      <div className="flex justify-center items-center h-full">
+                        <PropagateLoader color={"#6366f1"} />
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             )}

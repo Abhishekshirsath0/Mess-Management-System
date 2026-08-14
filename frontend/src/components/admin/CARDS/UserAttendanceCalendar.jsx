@@ -337,9 +337,8 @@ export default function UserAttendanceCalendar() {
                 return (
                   <div
                     key={`day-${dayNum}`}
-                    className={`min-h-[75px] sm:min-h-[95px] p-1.5 sm:p-2.5 rounded-xl border flex flex-col justify-between transition hover:shadow-md relative ${bgClass} ${
-                      isToday ? "ring-2 ring-indigo-600 dark:ring-indigo-400 font-extrabold" : ""
-                    }`}
+                    className={`min-h-[75px] sm:min-h-[95px] p-1.5 sm:p-2.5 rounded-xl border flex flex-col justify-between transition hover:shadow-md relative ${bgClass} ${isToday ? "ring-2 ring-indigo-600 dark:ring-indigo-400 font-extrabold" : ""
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs sm:text-sm font-black tracking-tight">{dayNum}</span>
