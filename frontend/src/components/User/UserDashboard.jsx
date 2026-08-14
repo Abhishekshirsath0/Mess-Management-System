@@ -269,17 +269,17 @@ export default function UserDashboard() {
       title: "Total Bill",
       value: `₹${billAmount}`,
       subtitle: `Plan ₹${planInfo.price}`,
-      icon: <Receipt className="w-4 h-4 sm:w-5 sm:h-5" />,
-      bg: "bg-blue-100 dark:bg-blue-950",
-      color: "text-blue-700 dark:text-blue-300",
+      icon: <Receipt className="w-4 h-4 sm:w-5 sm:h-5 text-white dark:text-white" />,
+      bg: "bg-black text-white dark:bg-slate-800",
+      color: "text-white",
     },
     {
       title: "Total Tiffins",
       value: tiffinCount,
       subtitle: "This Month",
-      icon: <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5" />,
-      bg: "bg-orange-100 dark:bg-orange-950",
-      color: "text-orange-700 dark:text-orange-300",
+      icon: <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-white dark:text-white" />,
+      bg: "bg-black text-white dark:bg-slate-800",
+      color: "text-white",
     },
     {
       title: "Payment Status",
@@ -288,20 +288,17 @@ export default function UserDashboard() {
       icon: <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />,
       bg:
         currentUser.PaymentStatus === "Pending"
-          ? "bg-red-100 dark:bg-red-950"
-          : "bg-green-100 dark:bg-green-950",
-      color:
-        currentUser.PaymentStatus === "Pending"
-          ? "text-red-700 dark:text-red-300"
-          : "text-green-700 dark:text-green-300",
+          ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-300"
+          : "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-300",
+      color: "",
     },
     {
       title: "Address",
       value: currentUser.address || "Nashik Road",
       subtitle: "Delivery Location",
-      icon: <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />,
-      bg: "bg-purple-100 dark:bg-purple-950",
-      color: "text-purple-700 dark:text-purple-300",
+      icon: <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-white dark:text-white" />,
+      bg: "bg-black text-white dark:bg-slate-800",
+      color: "text-white",
     },
   ];
 
@@ -316,7 +313,7 @@ export default function UserDashboard() {
   );
 
   const cardBgStyle = {
-    backgroundColor: theme === "light" ? "#faf9f5" : "#0b1328",
+    backgroundColor: theme === "light" ? "#ffffff" : "#0b1328",
   };
 
   if (loading) {
@@ -346,7 +343,7 @@ export default function UserDashboard() {
         {userCards.map((card, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl p-3.5 sm:p-5 border border-gray-200 dark:border-slate-800 shadow-xs hover:shadow-md transition flex flex-col justify-between"
+            className="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border-2 border-black dark:border-slate-800 shadow-xs hover:shadow-md transition flex flex-col justify-between text-black dark:text-white"
           >
             <div className="flex items-center justify-between gap-1 mb-2 sm:mb-4">
               <div
@@ -374,24 +371,24 @@ export default function UserDashboard() {
       </section>
 
       {/* MEALS */}
-      <section className="bg-white rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
+      <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <h2 className="text-2xl font-bold text-black dark:text-gray-50">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
                 Today's Meal
               </h2>
-              <h1 className="text-lg text-black dark:text-gray-200 font-semibold md:text-right md:ml-4">
+              <h1 className="text-lg text-gray-800 dark:text-gray-200 font-semibold md:text-right md:ml-4">
                 {today}
               </h1>
             </div>
 
-            <p className="text-black/80 dark:text-gray-300 text-sm mt-1 font-medium">
+            <p className="text-gray-600 dark:text-gray-300 text-sm mt-1 font-medium">
               Plan: {currentUser.plan || "STANDARD"}
             </p>
           </div>
 
-          <div className="bg-green-100 dark:bg-green-400 text-black dark:text-black px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
+          <div className="bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
             Active Menu
           </div>
         </div>

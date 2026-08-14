@@ -66,8 +66,7 @@ export default function CardsSection() {
       value: stats.attendanceVal,
       subtitle: stats.attendanceSub,
       icon: <CalendarCheck size={24} />,
-      bg: "bg-blue-100",
-      color: "text-blue-600",
+      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
       action: "View Attendance",
       path: "/attendance",
     },
@@ -76,18 +75,25 @@ export default function CardsSection() {
       value: stats.historyVal,
       subtitle: stats.historySub,
       icon: <History size={24} />,
-      bg: "bg-indigo-100",
-      color: "text-indigo-600",
+      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
       action: "View History",
       path: "/history",
+    },
+    {
+      title: "Calendar",
+      value: "Member Calendar",
+      subtitle: "Individual Tracking",
+      icon: <CalendarCheck size={24} />,
+      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      action: "Open Calendar",
+      path: "/calendar",
     },
     {
       title: "Meals",
       value: stats.mealsVal,
       subtitle: stats.mealsSub,
       icon: <UtensilsCrossed size={24} />,
-      bg: "bg-orange-100",
-      color: "text-orange-600",
+      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
       action: "Edit Meals",
       path: "/meals",
     },
@@ -96,8 +102,7 @@ export default function CardsSection() {
       value: stats.membersVal,
       subtitle: stats.membersSub,
       icon: <Users size={24} />,
-      bg: "bg-green-100",
-      color: "text-green-600",
+      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
       action: "Open Members",
       path: "/members",
     },
@@ -106,8 +111,7 @@ export default function CardsSection() {
       value: stats.paymentsVal,
       subtitle: stats.paymentsSub,
       icon: <Wallet size={24} />,
-      bg: "bg-purple-100",
-      color: "text-purple-600",
+      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
       action: "View Payments",
       path: "/payments",
     },
@@ -118,35 +122,35 @@ export default function CardsSection() {
       {cards.map((card, index) => (
         <div
           key={index}
-          className="bg-white rounded-2xl p-5 md:p-6 border shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-5 md:p-6 border-2 border-black dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-black dark:text-white"
         >
           {/* Top */}
           <div className="flex items-center justify-between mb-5">
             <div
-              className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center ${card.bg} ${card.color}`}
+              className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-bold ${card.bg}`}
             >
               {card.icon}
             </div>
 
-            <span className="text-xs md:text-sm text-gray-500 font-medium">
+            <span className="text-xs md:text-sm text-black dark:text-gray-300 font-semibold">
               {card.subtitle}
             </span>
           </div>
 
           {/* Content */}
           <div>
-            <h3 className="text-xs md:text-sm uppercase tracking-wide text-gray-500">
+            <h3 className="text-xs md:text-sm uppercase tracking-wide text-black dark:text-gray-400 font-bold">
               {card.title}
             </h3>
 
-            <p className="text-2xl md:text-3xl font-bold mt-2 text-black">
+            <p className="text-2xl md:text-3xl font-black mt-2 text-black dark:text-white">
               {card.value}
             </p>
           </div>
 
           {/* Button */}
           <Link to={`/admin${card.path}`}>
-            <button className="mt-5 w-full py-2 rounded-xl bg-black text-white text-sm hover:bg-gray-800 transition">
+            <button className="mt-5 w-full py-2.5 rounded-xl bg-black hover:bg-gray-800 text-white text-sm font-bold transition cursor-pointer">
               {card.action}
             </button>
           </Link>

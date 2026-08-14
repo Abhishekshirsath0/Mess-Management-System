@@ -32,10 +32,10 @@ export default function Navbar() {
   const historyPath = isAdmin ? "/admin/history" : "/history";
 
   return (
-    <header className="bg-white border-b sticky top-0 z-50">
+    <header className="bg-white dark:bg-white border-b-2 border-black dark:border-slate-800 sticky top-0 z-50 transition-colors">
       <div className="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-xl md:text-2xl font-bold text-black">
+        <Link to="/" className="text-xl  md:text-2xl font-bold text-gray-900 dark:text-white">
           MessMaster Pro
         </Link>
 
@@ -127,7 +127,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {open && (
-        <div className="md:hidden border-t bg-white px-4 py-4 space-y-4">
+        <div className="md:hidden border-t bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 px-4 py-4 space-y-4">
           {isAdmin && (
             <>
               <Link

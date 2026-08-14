@@ -99,7 +99,7 @@ export const Members = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-6">
+    <div className="w-full min-h-screen bg-gray-50 dark:bg-slate-950 p-6 text-gray-900 dark:text-white transition-colors">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
         <h1 className="text-3xl font-bold">Members Management</h1>

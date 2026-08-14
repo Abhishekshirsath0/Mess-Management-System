@@ -1,17 +1,168 @@
 @import "tailwindcss";
 
+/* =========================================================
+   BASE
+   ========================================================= */
+
 @layer base {
   html {
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   body {
-    background-color: #f8fafc;
-    color: #000;
     min-height: 100vh;
+    margin: 0;
+    background: #ffffff;
+    color: #000000;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  /* =======================================================
+     LIGHT MODE
+     Everything = WHITE background + BLACK text
+     ======================================================= */
+
+  html:not(.dark),
+  html:not(.dark) body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* All normal text elements */
+  html:not(.dark) h1,
+  html:not(.dark) h2,
+  html:not(.dark) h3,
+  html:not(.dark) h4,
+  html:not(.dark) h5,
+  html:not(.dark) h6,
+  html:not(.dark) p,
+  html:not(.dark) span,
+  html:not(.dark) label,
+  html:not(.dark) strong,
+  html:not(.dark) small,
+  html:not(.dark) div,
+  html:not(.dark) li,
+  html:not(.dark) td,
+  html:not(.dark) th,
+  html:not(.dark) a {
+    color: #000000;
+  }
+
+  /* All common containers */
+  html:not(.dark) header,
+  html:not(.dark) nav,
+  html:not(.dark) main,
+  html:not(.dark) section,
+  html:not(.dark) article,
+  html:not(.dark) aside,
+  html:not(.dark) footer,
+  html:not(.dark) div {
+    background-color: #ffffff;
+  }
+
+  /* Cards */
+  html:not(.dark) .bg-white,
+  html:not(.dark) .bg-gray-50,
+  html:not(.dark) .bg-gray-100,
+  html:not(.dark) .bg-gray-200,
+  html:not(.dark) .bg-gray-300,
+  html:not(.dark) .bg-slate-50,
+  html:not(.dark) .bg-slate-100,
+  html:not(.dark) .bg-slate-200,
+  html:not(.dark) .bg-slate-300,
+  html:not(.dark) .meal-card {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Text utility classes */
+  html:not(.dark) .text-black,
+  html:not(.dark) .text-gray-900,
+  html:not(.dark) .text-gray-800,
+  html:not(.dark) .text-gray-700,
+  html:not(.dark) .text-gray-600,
+  html:not(.dark) .text-gray-500,
+  html:not(.dark) .text-gray-400,
+  html:not(.dark) .text-slate-900,
+  html:not(.dark) .text-slate-800,
+  html:not(.dark) .text-slate-700,
+  html:not(.dark) .text-slate-600,
+  html:not(.dark) .text-slate-500 {
+    color: #000000 !important;
+  }
+
+  /* Borders */
+  html:not(.dark) .border,
+  html:not(.dark) .border-t,
+  html:not(.dark) .border-r,
+  html:not(.dark) .border-b,
+  html:not(.dark) .border-l,
+  html:not(.dark) .border-gray-100,
+  html:not(.dark) .border-gray-200,
+  html:not(.dark) .border-gray-300,
+  html:not(.dark) .border-slate-100,
+  html:not(.dark) .border-slate-200,
+  html:not(.dark) .border-slate-300 {
+    border-color: #000000 !important;
+  }
+
+  /* Inputs */
+  html:not(.dark) input,
+  html:not(.dark) select,
+  html:not(.dark) textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+
+  html:not(.dark) input::placeholder,
+  html:not(.dark) textarea::placeholder {
+    color: #000000 !important;
+    opacity: 0.6;
+  }
+
+  /* Tables */
+  html:not(.dark) table {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+
+  html:not(.dark) thead,
+  html:not(.dark) tbody,
+  html:not(.dark) tr,
+  html:not(.dark) td,
+  html:not(.dark) th {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+
+  /* Hover should remain almost white */
+  html:not(.dark) tr:hover,
+  html:not(.dark) .hover\:bg-gray-50:hover,
+  html:not(.dark) .hover\:bg-gray-100:hover,
+  html:not(.dark) .hover\:bg-slate-50:hover,
+  html:not(.dark) .hover\:bg-slate-100:hover {
+    background-color: #f5f5f5 !important;
+    color: #000000 !important;
+  }
+
+  /* Dropdowns / modals */
+  html:not(.dark) [role="dialog"],
+  html:not(.dark) [role="menu"] {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+@layer base {
   html.dark {
     color-scheme: dark;
     background-color: #0b1329;
@@ -22,149 +173,91 @@
     background-color: #0b1329;
     color: #f8fafc;
   }
-}
 
+  html.dark header,
+  html.dark nav {
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
 
-/* LIGHT MODE */
+  html.dark .bg-white {
+    background-color: #151e32 !important;
+    color: #f8fafc !important;
+  }
 
+  html.dark .bg-gray-50,
+  html.dark .bg-gray-100,
+  html.dark .bg-slate-50,
+  html.dark .bg-slate-100 {
+    background-color: #0b1329 !important;
+  }
 
-html:not(.dark),
-html:not(.dark) body {
-  color: #000 !important;
-}
+  html.dark .bg-gray-200,
+  html.dark .bg-slate-200 {
+    background-color: #1e293b !important;
+  }
 
-/* Make all headings/text black */
-/* html:not(.dark) h1, */
-/* html:not(.dark) h2, */
-/* html:not(.dark) h3, */
-html:not(.dark) h4,
-html:not(.dark) h5,
-html:not(.dark) h6,
-/* html:not(.dark) p, */
-/* html:not(.dark) span, */
-/* html:not(.dark) div, */
-html:not(.dark) label,
-html:not(.dark) strong,
-html:not(.dark) small,
-html:not(.dark) td,
-html:not(.dark) th {
-  color: #ffffff !important;
-}
+  html.dark .text-black,
+  html.dark .text-gray-900,
+  html.dark .text-gray-800,
+  html.dark .text-slate-900,
+  html.dark .text-slate-800 {
+    color: #f8fafc !important;
+  }
 
-/* Override Tailwind text colors */
-/* html:not(.dark) [class*="text-gray"], */
-html:not(.dark) [class*="text-slate"],
-html:not(.dark) .text-black,
-html:not(.dark) .text-black\/80 {
-  color: #000000 !important;
-}
+  html.dark .text-gray-700,
+  html.dark .text-gray-600,
+  html.dark .text-gray-500,
+  html.dark .text-slate-700,
+  html.dark .text-slate-600,
+  html.dark .text-slate-500 {
+    color: #94a3b8 !important;
+  }
 
-/* Inputs */
-/* html:not(.dark) input, */
-html:not(.dark) select,
-html:not(.dark) textarea {
-  color: #000 !important;
-}
+  html.dark .border,
+  html.dark .border-gray-100,
+  html.dark .border-gray-200,
+  html.dark .border-gray-300,
+  html.dark .border-slate-200,
+  html.dark .border-slate-300 {
+    border-color: #243049 !important;
+  }
 
-/* Tables */
-html:not(.dark) table,
-html:not(.dark) td,
-html:not(.dark) th {
-  color: #000 !important;
-}
+  html.dark input,
+  html.dark select,
+  html.dark textarea {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+  }
 
-/* Meal cards */
-html:not(.dark) .meal-card {
-  background: #faf9f5 !important;
-}
+  html.dark input::placeholder,
+  html.dark textarea::placeholder {
+    color: #64748b !important;
+  }
 
+  html.dark table {
+    color: #f8fafc !important;
+  }
 
-/* DARK MODE */
+  html.dark th {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
 
+  html.dark td {
+    border-color: #243049 !important;
+  }
 
-html.dark header,
-html.dark nav {
- 
-  border-color: #1e293b !important;
-  color: #f8fafc !important;
-}
+  html.dark tr:hover {
+    background-color: #1a253e !important;
+  }
 
-html.dark .bg-white {
-  background-color: #151e32 !important;
-  color: #f8fafc !important;
-}
-
-html.dark .bg-gray-50,
-html.dark .bg-gray-100,
-html.dark .bg-slate-50,
-html.dark .bg-slate-100 {
-  background-color: #0b1329 !important;
-}
-
-html.dark .bg-gray-200,
-html.dark .bg-slate-200 {
-  background-color: #1e293b !important;
-}
-
-html.dark .text-black,
-html.dark .text-gray-900,
-html.dark .text-gray-800,
-html.dark .text-slate-900,
-html.dark .text-slate-800 {
-  color: #f8fafc !important;
-}
-
-html.dark .text-gray-700,
-html.dark .text-gray-600,
-html.dark .text-gray-500,
-html.dark .text-slate-700,
-html.dark .text-slate-600,
-html.dark .text-slate-500 {
-  color: #94a3b8 !important;
-}
-
-html.dark .border,
-html.dark .border-gray-100,
-html.dark .border-gray-200,
-html.dark .border-gray-300,
-html.dark .border-slate-200,
-html.dark .border-slate-300 {
-  border-color: #243049 !important;
-}
-
-html.dark input,
-html.dark select,
-html.dark textarea {
-  background-color: #0f172a !important;
-  color: #f8fafc !important;
-  border-color: #334155 !important;
-}
-
-html.dark input::placeholder,
-html.dark textarea::placeholder {
-  color: #64748b !important;
-}
-
-html.dark table {
-  color: #f8fafc !important;
-}
-
-html.dark th {
-  background-color: #1e293b !important;
-  color: #f8fafc !important;
-}
-
-html.dark td {
-  border-color: #243049 !important;
-}
-
-html.dark tr:hover {
-  background-color: #1a253e !important;
-}
-
-html.dark .shadow-xl,
-html.dark .shadow-lg,
-html.dark .shadow-2xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
-    0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+  html.dark .shadow-xl,
+  html.dark .shadow-lg,
+  html.dark .shadow-2xl {
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.5),
+      0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+  }
 }

@@ -269,53 +269,53 @@ export default function AdminAttendanceHistory() {
         </div>
 
         {/* Absent */}
-        <div className="bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/60 p-4 rounded-2xl">
+        <div className="bg-white dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-rose-700 dark:text-rose-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">
               Absent Members
             </span>
             <UserX className="w-5 h-5" />
           </div>
-          <p className="text-2xl font-black text-rose-900 dark:text-rose-100">
+          <p className="text-2xl font-black text-black dark:text-rose-100">
             {totalAbsent}
           </p>
         </div>
 
         {/* Lunch */}
-        <div className="bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/60 p-4 rounded-2xl">
+        <div className="bg-white dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-amber-700 dark:text-amber-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">
               Lunch Records
             </span>
             <Utensils className="w-5 h-5" />
           </div>
-          <p className="text-2xl font-black text-amber-900 dark:text-amber-100">
+          <p className="text-2xl font-black text-black dark:text-amber-100">
             {totalLunch}
           </p>
         </div>
 
         {/* Dinner */}
-        <div className="bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/60 p-4 rounded-2xl">
+        <div className="bg-white dark:bg-purple-950/50 border border-purple-300 dark:border-purple-800/60 p-4 rounded-2xl">
           <div className="flex items-center justify-between text-purple-700 dark:text-purple-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">
               Dinner Records
             </span>
             <Utensils className="w-5 h-5" />
           </div>
-          <p className="text-2xl font-black text-purple-900 dark:text-purple-100">
+          <p className="text-2xl font-black text-black dark:text-purple-100">
             {totalDinner}
           </p>
         </div>
 
         {/* Extra Tiffin */}
-        <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 p-4 rounded-2xl col-span-2 sm:col-span-1">
+        <div className="bg-white dark:bg-blue-950/50 border border-blue-300 dark:border-blue-800/60 p-4 rounded-2xl col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-blue-700 dark:text-blue-300 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider">
               Extra Tiffins
             </span>
             <Package className="w-5 h-5" />
           </div>
-          <p className="text-2xl font-black text-blue-900 dark:text-blue-100">
+          <p className="text-2xl font-black text-black dark:text-blue-100">
             {totalExtraTiffins}
           </p>
         </div>

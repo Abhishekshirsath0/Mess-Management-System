@@ -258,6 +258,81 @@ export const getTodayMeal = async () => {
   }
 };
 
+// ==================== ABSENCE DATE RANGE =======================
+
+export const postAbsence = async (absenceData) => {
+  try {
+    const response = await axios.post(`${API}/absence`, absenceData, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "POST ABSENCE ERROR:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
+export const getAbsences = async (params = {}) => {
+  try {
+    const response = await axios.get(`${API}/absence`, {
+      headers: getAuthHeaders(),
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("GET ABSENCES ERROR:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const getUserAbsences = async (userId) => {
+  try {
+    const response = await axios.get(`${API}/absence/user/${userId}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "GET USER ABSENCES ERROR:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
+export const updateAbsence = async (id, absenceData) => {
+  try {
+    const response = await axios.put(`${API}/absence/${id}`, absenceData, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "UPDATE ABSENCE ERROR:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
+export const deleteAbsence = async (id) => {
+  try {
+    const response = await axios.delete(`${API}/absence/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "DELETE ABSENCE ERROR:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
 // ==================== LOGOUT =======================
 
 export const logoutUser = () => {
