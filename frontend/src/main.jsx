@@ -10,7 +10,7 @@ import { Edit_Meal } from "./components/admin/CARDS/Edit_Meal";
 import { Payments } from "./components/admin/CARDS/Payments";
 import Dashboard from "./components/admin/Dashboard";
 import AdminHistory from "./components/admin/AdminHistory";
-import UserAttendanceCalendar from "./components/admin/CARDS/UserAttendanceCalendar";
+import UserAttendanceCalendar from "./components/admin/cards/UserAttendanceCalendar";
 import UserHistory from "./components/User/UserHistory";
 import Login from "./components/common/Login";
 import Register from "./components/common/Register";

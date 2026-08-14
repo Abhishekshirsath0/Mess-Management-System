@@ -323,164 +323,164 @@ export default function UserDashboard() {
 
   return (
     <>
-    <div className="space-y-6 text-black dark:text-white">
-      {isOffline && <OfflineBanner />}
+      <div className="space-y-6 text-black dark:text-white">
+        {isOffline && <OfflineBanner />}
 
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-black dark:text-white">
-            Welcome, {currentUser.name}
-          </h1>
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-black dark:text-white">
+              Welcome, {currentUser.name}
+            </h1>
 
-          <div className="flex items-center gap-2 text-black/80 dark:text-gray-300 mt-1 text-sm font-medium">
-            <CalendarDays size={16} />
-            <span>{today}</span>
+            <div className="flex items-center gap-2 text-black/80 dark:text-gray-300 mt-1 text-sm font-medium">
+              <CalendarDays size={16} />
+              <span>{today}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* CARDS */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-        {userCards.map((card, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border-2 border-black dark:border-slate-800 shadow-xs hover:shadow-md transition flex flex-col justify-between text-black dark:text-white"
-          >
-            <div className="flex items-center justify-between gap-1 mb-2 sm:mb-4">
-              <div
-                className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold shrink-0 ${card.bg} ${card.color}`}
-              >
-                {card.icon}
+        {/* CARDS */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          {userCards.map((card, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border-2 border-black dark:border-slate-800 shadow-xs hover:shadow-md transition flex flex-col justify-between text-black dark:text-white"
+            >
+              <div className="flex items-center justify-between gap-1 mb-2 sm:mb-4">
+                <div
+                  className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold shrink-0 ${card.bg} ${card.color}`}
+                >
+                  {card.icon}
+                </div>
+
+                <span className="text-[10px] sm:text-xs font-semibold text-black/80 dark:text-gray-300 truncate">
+                  {card.subtitle}
+                </span>
               </div>
 
-              <span className="text-[10px] sm:text-xs font-semibold text-black/80 dark:text-gray-300 truncate">
-                {card.subtitle}
-              </span>
+              <div>
+                <h3 className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-black/80 dark:text-gray-300 truncate">
+                  {card.title}
+                </h3>
+
+                <p className="text-base sm:text-2xl font-black mt-0.5 sm:mt-1 text-black dark:text-gray-50 truncate">
+                  {card.value}
+                </p>
+              </div>
             </div>
+          ))}
+        </section>
 
+        {/* MEALS */}
+        <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-black/80 dark:text-gray-300 truncate">
-                {card.title}
-              </h3>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
+                  Today's Meal
+                </h2>
+                <h1 className="text-lg text-gray-800 dark:text-gray-200 font-semibold md:text-right md:ml-4">
+                  {today}
+                </h1>
+              </div>
 
-              <p className="text-base sm:text-2xl font-black mt-0.5 sm:mt-1 text-black dark:text-gray-50 truncate">
-                {card.value}
+              <p className="text-gray-600 dark:text-gray-300 text-sm mt-1 font-medium">
+                Plan: {currentUser.plan || "STANDARD"}
               </p>
             </div>
-          </div>
-        ))}
-      </section>
 
-      {/* MEALS */}
-      <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
-                Today's Meal
-              </h2>
-              <h1 className="text-lg text-gray-800 dark:text-gray-200 font-semibold md:text-right md:ml-4">
-                {today}
-              </h1>
+            <div className="bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
+              Active Menu
+            </div>
+          </div>
+
+          {/* LUNCH */}
+          <div
+            style={cardBgStyle}
+            className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 mb-6 shadow-xs transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-black text-black dark:text-orange flex items-center gap-2">
+                🍛 Lunch
+              </h3>
+              <span className="text-sm font-bold text-black dark:text-slate-200">
+                8:00 AM - 3:00 PM
+              </span>
             </div>
 
-            <p className="text-gray-600 dark:text-gray-300 text-sm mt-1 font-medium">
-              Plan: {currentUser.plan || "STANDARD"}
-            </p>
+            {menuLoaded && lunchItems.length === 0 ? (
+              <NotUpdated />
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {lunchItems.map((item, i) => (
+                  <span key={i} className={getFoodStyle("lunch")}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
-            Active Menu
-          </div>
-        </div>
-
-        {/* LUNCH */}
-        <div
-          style={cardBgStyle}
-          className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 mb-6 shadow-xs transition-colors"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-black text-black dark:text-orange flex items-center gap-2">
-              🍛 Lunch
-            </h3>
-            <span className="text-sm font-bold text-black dark:text-slate-200">
-              8:00 AM - 3:00 PM
-            </span>
-          </div>
-
-          {menuLoaded && lunchItems.length === 0 ? (
-            <NotUpdated />
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {lunchItems.map((item, i) => (
-                <span key={i} className={getFoodStyle("lunch")}>
-                  {item}
+          {/* DINNER */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* VEG */}
+            <div
+              style={cardBgStyle}
+              className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs transition-colors"
+            >
+              <h4 className="font-black text-black dark:text-green-400 mb-3 flex items-center justify-between">
+                <span className="flex items-center gap-2 text-black dark:text-green-400 font-black">
+                  {mealIcons.veg} Veg Dinner
                 </span>
-              ))}
+                <span className="text-sm font-bold text-black dark:text-slate-200">
+                  7:00 PM - 10:00 PM
+                </span>
+              </h4>
+
+              {menuLoaded && dinnerVegItems.length === 0 ? (
+                <NotUpdated />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {dinnerVegItems.map((item, i) => (
+                    <span key={i} className={getFoodStyle("veg")}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* DINNER */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* VEG */}
-          <div
-            style={cardBgStyle}
-            className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs transition-colors"
-          >
-            <h4 className="font-black text-black dark:text-green-400 mb-3 flex items-center justify-between">
-              <span className="flex items-center gap-2 text-black dark:text-green-400 font-black">
-                {mealIcons.veg} Veg Dinner
-              </span>
-              <span className="text-sm font-bold text-black dark:text-slate-200">
-                7:00 PM - 10:00 PM
-              </span>
-            </h4>
+            {/* NON VEG */}
+            <div
+              style={cardBgStyle}
+              className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs transition-colors"
+            >
+              <h4 className="font-black text-black dark:text-red-400 mb-3 flex items-center justify-between">
+                <span className="flex items-center gap-2 text-black dark:text-red-400 font-black">
+                  {mealIcons.nonveg} Non-Veg Dinner
+                </span>
+                <span className="text-sm font-bold text-black dark:text-slate-200">
+                  7:00 PM - 10:00 PM
+                </span>
+              </h4>
 
-            {menuLoaded && dinnerVegItems.length === 0 ? (
-              <NotUpdated />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {dinnerVegItems.map((item, i) => (
-                  <span key={i} className={getFoodStyle("veg")}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-            )}
+              {menuLoaded && dinnerNonVegItems.length === 0 ? (
+                <NotUpdated />
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {dinnerNonVegItems.map((item, i) => (
+                    <span key={i} className={getFoodStyle("nonveg")}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-
-          {/* NON VEG */}
-          <div
-            style={cardBgStyle}
-            className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs transition-colors"
-          >
-            <h4 className="font-black text-black dark:text-red-400 mb-3 flex items-center justify-between">
-              <span className="flex items-center gap-2 text-black dark:text-red-400 font-black">
-                {mealIcons.nonveg} Non-Veg Dinner
-              </span>
-              <span className="text-sm font-bold text-black dark:text-slate-200">
-                7:00 PM - 10:00 PM
-              </span>
-            </h4>
-
-            {menuLoaded && dinnerNonVegItems.length === 0 ? (
-              <NotUpdated />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {dinnerNonVegItems.map((item, i) => (
-                  <span key={i} className={getFoodStyle("nonveg")}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-    </div>
-     <Footer />
-   </>
+        </section>
+      </div>
+      <Footer />
+    </>
   );
 }
