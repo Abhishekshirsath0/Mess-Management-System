@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getUserdatafromserver, getAttendanceByDate  } from "../../service";
+import { getUserdatafromserver, getAttendanceByDate } from "../../service";
 import { RingLoader } from "react-spinners"
 const todayStr = () => new Date().toISOString().split("T")[0];
 
@@ -107,11 +107,10 @@ export default function AttendanceTable() {
 
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        member.payment === "Paid"
+                      className={`px-3 py-1 rounded-full text-sm ${member.payment === "Paid"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
-                      }`}
+                        }`}
                     >
                       {member.payment}
                     </span>
@@ -119,13 +118,12 @@ export default function AttendanceTable() {
 
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        member.status === "Present"
+                      className={`px-3 py-1 rounded-full text-sm ${member.status === "Present"
                           ? "bg-green-100 text-green-700"
                           : member.status === "Absent"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
+                            ? "bg-red-100 text-red-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
                     >
                       {member.status}
                     </span>

@@ -20,7 +20,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        
+
       </div>
 
       {/* Cards */}
@@ -31,7 +31,7 @@ export default function Dashboard() {
 
       {/* Performance */}
       <PerformanceSection />
-      
+
     </div>
   );
 }
