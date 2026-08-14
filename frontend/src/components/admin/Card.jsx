@@ -29,16 +29,26 @@ export default function CardsSection() {
     const fetchDashboardStats = async () => {
       try {
         const date = todayStr();
+
         const [users, records] = await Promise.all([
           getUserdatafromserver(),
           getAttendanceByDate(date),
         ]);
 
         const totalUsers = users.length;
-        const presentCount = records.filter((r) => r.status === "present").length;
 
-        const totalPaid = users.reduce((acc, u) => acc + (u.paid || 0), 0);
-        const pendingUsers = users.filter((u) => u.paymentStatus === "Pending").length;
+        const presentCount = records.filter(
+          (r) => r.status === "present"
+        ).length;
+
+        const totalPaid = users.reduce(
+          (acc, u) => acc + (u.paid || 0),
+          0
+        );
+
+        const pendingUsers = users.filter(
+          (u) => u.paymentStatus === "Pending"
+        ).length;
 
         setStats({
           attendanceVal: `${presentCount} / ${totalUsers}`,
@@ -65,8 +75,7 @@ export default function CardsSection() {
       title: "Attendance",
       value: stats.attendanceVal,
       subtitle: stats.attendanceSub,
-      icon: <CalendarCheck size={24} />,
-      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      icon: <CalendarCheck size={22} strokeWidth={2.5} />,
       action: "View Attendance",
       path: "/attendance",
     },
@@ -74,8 +83,7 @@ export default function CardsSection() {
       title: "History",
       value: stats.historyVal,
       subtitle: stats.historySub,
-      icon: <History size={24} />,
-      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      icon: <History size={22} strokeWidth={2.5} />,
       action: "View History",
       path: "/history",
     },
@@ -83,8 +91,7 @@ export default function CardsSection() {
       title: "Calendar",
       value: "Member Calendar",
       subtitle: "Individual Tracking",
-      icon: <CalendarCheck size={24} />,
-      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      icon: <CalendarCheck size={22} strokeWidth={2.5} />,
       action: "Open Calendar",
       path: "/calendar",
     },
@@ -92,8 +99,7 @@ export default function CardsSection() {
       title: "Meals",
       value: stats.mealsVal,
       subtitle: stats.mealsSub,
-      icon: <UtensilsCrossed size={24} />,
-      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      icon: <UtensilsCrossed size={22} strokeWidth={2.5} />,
       action: "Edit Meals",
       path: "/meals",
     },
@@ -101,8 +107,7 @@ export default function CardsSection() {
       title: "Members",
       value: stats.membersVal,
       subtitle: stats.membersSub,
-      icon: <Users size={24} />,
-      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      icon: <Users size={22} strokeWidth={2.5} />,
       action: "Open Members",
       path: "/members",
     },
@@ -110,47 +115,141 @@ export default function CardsSection() {
       title: "Payments",
       value: stats.paymentsVal,
       subtitle: stats.paymentsSub,
-      icon: <Wallet size={24} />,
-      bg: "bg-black text-white dark:bg-slate-800 dark:text-white",
+      icon: <Wallet size={22} strokeWidth={2.5} />,
       action: "View Payments",
       path: "/payments",
     },
   ];
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 md:gap-6">
+    <section
+      className="
+        grid
+        grid-cols-1
+        sm:grid-cols-2
+        lg:grid-cols-3
+        gap-5
+        md:gap-6
+        w-full
+      "
+    >
       {cards.map((card, index) => (
         <div
           key={index}
-          className="bg-white dark:bg-slate-900 rounded-2xl p-5 md:p-6 border-2 border-black dark:border-slate-800 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-black dark:text-white"
+          className="
+            group
+            min-h-[230px]
+            bg-white
+            dark:bg-slate-900
+            border-2
+            border-black
+            dark:border-slate-700
+            rounded-2xl
+            p-5
+            md:p-6
+            shadow-sm
+            hover:shadow-lg
+            hover:-translate-y-1
+            transition-all
+            duration-300
+            flex
+            flex-col
+          "
         >
-          {/* Top */}
-          <div className="flex items-center justify-between mb-5">
+          {/* HEADER */}
+          <div className="flex items-start justify-between gap-4">
+            {/* Icon */}
             <div
-              className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-bold ${card.bg}`}
+              className="
+                shrink-0
+                w-12
+                h-12
+                rounded-xl
+                bg-black
+                text-white
+                flex
+                items-center
+                justify-center
+                group-hover:scale-105
+                transition-transform
+                duration-300
+              "
             >
               {card.icon}
             </div>
 
-            <span className="text-xs md:text-sm text-black dark:text-gray-300 font-semibold">
+            {/* Subtitle */}
+            <span
+              className="
+                text-xs
+                md:text-sm
+                font-semibold
+                text-right
+                leading-5
+                text-black
+                dark:text-gray-300
+              "
+            >
               {card.subtitle}
             </span>
           </div>
 
-          {/* Content */}
-          <div>
-            <h3 className="text-xs md:text-sm uppercase tracking-wide text-black dark:text-gray-400 font-bold">
+          {/* CONTENT */}
+          <div className="mt-6 flex-1">
+            <h3
+              className="
+                text-xs
+                md:text-sm
+                uppercase
+                tracking-wider
+                font-bold
+                text-black
+                dark:text-gray-400
+              "
+            >
               {card.title}
             </h3>
 
-            <p className="text-2xl md:text-3xl font-black mt-2 text-black dark:text-white">
+            <p
+              className="
+                mt-2
+                text-2xl
+                md:text-3xl
+                font-black
+                tracking-tight
+                text-black
+                dark:text-white
+                break-words
+              "
+            >
               {card.value}
             </p>
           </div>
 
-          {/* Button */}
-          <Link to={`/admin${card.path}`}>
-            <button className="mt-5 w-full py-2.5 rounded-xl bg-black hover:bg-gray-800 text-white text-sm font-bold transition cursor-pointer">
+          {/* BUTTON */}
+          <Link
+            to={`/admin${card.path}`}
+            className="block mt-6"
+          >
+            <button
+              className="
+                w-full
+                h-11
+                rounded-xl
+                bg-black
+                text-white
+                text-sm
+                font-bold
+                border-2
+                border-black
+                hover:bg-white
+                hover:text-black
+                dark:hover:bg-slate-800
+                transition-all
+                duration-200
+                cursor-pointer
+              "
+            >
               {card.action}
             </button>
           </Link>

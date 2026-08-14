@@ -21,7 +21,7 @@ export const postUserdata = async (req, res) => {
       Password: hashedPassword,
       Usertype: Usertype || "user",
       Plan: Plan || "STANDARD",
-      
+
     });
 
     const savedUser = await newUser.save();

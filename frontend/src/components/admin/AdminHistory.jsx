@@ -959,9 +959,7 @@ export default function AdminHistory() {
             </div>
 
 
-            {/* =================================================
-                PAGINATION
-            ================================================= */}
+     
 
             <div className="p-4 border-t border-gray-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
 

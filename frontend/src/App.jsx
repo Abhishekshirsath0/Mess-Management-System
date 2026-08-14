@@ -1,5 +1,4 @@
 import Navbar from "./components/common/Navbar";
-import Footer from "./components/common/Footer";
 import { Outlet, useLocation } from "react-router-dom";
 import UserDashboard from "./components/User/UserDashboard";
 
@@ -19,7 +18,7 @@ export default function App() {
         </div>
       </div>
 
-      <Footer />
+     
     </div>
   );
 }

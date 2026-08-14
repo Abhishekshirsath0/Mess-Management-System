@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Footer from "../common/Footer.jsx";
 import {
   Wallet,
   UtensilsCrossed,
@@ -321,6 +322,7 @@ export default function UserDashboard() {
   }
 
   return (
+    <>
     <div className="space-y-6 text-black dark:text-white">
       {isOffline && <OfflineBanner />}
 
@@ -478,5 +480,7 @@ export default function UserDashboard() {
         </div>
       </section>
     </div>
+     <Footer />
+   </>
   );
 }
