@@ -6,14 +6,12 @@ import userRouter from "./Router/userRouter.js";
 import attendanceRouter from "./Router/attendanceRouter.js";
 import mealRouter from "./Router/mealRouter.js";
 import absenceRouter from "./Router/absenceRouter.js";
-
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
   cors({
     origin: "http://localhost:5173",
