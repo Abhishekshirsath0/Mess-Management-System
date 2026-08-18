@@ -4,11 +4,11 @@ import { verifyToken, verifyAdmin } from "../middleware/auth.js";
 
 const userRouter = express.Router();
 
-// Public routes - no authentication required
+//no authentication required
 userRouter.post("/", userController.postUserdata); // Register
 userRouter.post("/login", userController.loginUser); // Login
 
-// Protected routes - authentication required
+// authentication required
 userRouter.get("/", verifyToken, userController.getUserdata);
 userRouter.put("/:id", verifyToken, userController.updateUser);
 userRouter.delete("/:id", verifyToken, verifyAdmin, userController.deleteUser);

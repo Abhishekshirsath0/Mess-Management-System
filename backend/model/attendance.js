@@ -40,7 +40,7 @@ const attendanceSchema = new Schema(
     }
 );
 
-// One record per student per day — no more separate Lunch/Dinner docs
+//One record per student per day
 attendanceSchema.index(
     { userId: 1, date: 1 },
     { unique: true }
