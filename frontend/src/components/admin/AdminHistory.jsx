@@ -835,8 +835,7 @@ export default function AdminHistory() {
                       User
                     </th>
 
-                    <th className="p-4">
-                      Mobile / Email
+                    <th className="p-4">                  Mobile / Email
                     </th>
 
                     <th className="p-4">
