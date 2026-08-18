@@ -22,6 +22,7 @@ export default function Disclaimer() {
         reserves the right to substitute menu items of equivalent nutritional value when necessary.
       </p>
 
+      
       <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">3. Service Availability</h2>
       <p>
         We strive to ensure continuous system and meal service availability. However, MessMaster Pro is not liable for
