@@ -5,33 +5,44 @@ export default function ReturnPolicy() {
   return (
     <PolicyPageLayout icon={RotateCcw} title="Return Policy">
       <p>
-        Thank you for subscribing to MessMaster Pro meal services. Because our service involves freshly prepared,
-        perishable food items and daily meal preparation, standard physical product return policies do not apply.
+        Thank you for using MessMaster Pro. Since we provide freshly prepared
+        and perishable food, food items cannot be returned after they have been
+        prepared or served.
       </p>
 
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">1. Food Item Return Eligibility</h2>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">
+        1. Food Return Policy
+      </h2>
       <p>
-        Perishable food items (lunch, dinner, or extra tiffin meals) delivered or served at the mess facility cannot be
-        returned once prepared or consumed due to health and safety regulations.
+        Lunch, dinner, and extra tiffin meals cannot be returned once they are
+        prepared or served. This is because the food is fresh and perishable.
       </p>
 
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">2. Damaged or Quality Issues</h2>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">
+        2. Damaged or Poor-Quality Food
+      </h2>
       <p>
-        If a tiffin container or meal served is compromised, spilled, or fails to meet quality standards upon delivery,
-        please inform the mess administrator immediately within 2 hours of meal service time. Replacement meals or meal
-        credits will be provided at the discretion of the mess manager.
+        If your meal is damaged, spilled, or has a quality issue, please inform
+        the mess administrator within 2 hours of receiving the meal. Depending
+        on the situation, we may provide a replacement meal or meal credit.
       </p>
 
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">3. Tiffin Container Return</h2>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">
+        3. Tiffin Box Return
+      </h2>
       <p>
-        Students subscribing to tiffin delivery options are issued reusable tiffin boxes. Issued tiffin boxes must be
-        returned clean and undamaged upon plan termination. Security deposit deductions may apply for unreturned or
-        broken tiffin containers.
+        If you use our tiffin delivery service, you will receive a reusable
+        tiffin box. The tiffin box must be returned in good condition when your
+        subscription ends. A security deposit may be deducted if the box is
+        lost or damaged.
       </p>
 
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">4. Contact Support</h2>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">
+        4. Contact Us
+      </h2>
       <p>
-        For any return inquiries or meal condition reports, reach out to <b>support@messmasterpro.com</b> or visit the
+        If you have any questions or problems with your meal or tiffin box,
+        please contact us at <b>support@messmasterpro.com</b> or visit the
         mess office.
       </p>
     </PolicyPageLayout>
