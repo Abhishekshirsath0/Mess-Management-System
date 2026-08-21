@@ -20,6 +20,8 @@ import {
   AlertCircle,
   CheckCircle2,
   X,
+  Utensils,
+  HelpCircle,
 } from "lucide-react";
 
 export default function MarkAbsence() {
@@ -30,6 +32,7 @@ export default function MarkAbsence() {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [mealType, setMealType] = useState("Both");
   const [reason, setReason] = useState("");
 
   // Loading & status states
@@ -40,6 +43,9 @@ export default function MarkAbsence() {
   const [success, setSuccess] = useState(null);
   const [formError, setFormError] = useState("");
 
+  // Confirmation Modal State
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -47,6 +53,7 @@ export default function MarkAbsence() {
   const [editingAbsence, setEditingAbsence] = useState(null);
   const [editFromDate, setEditFromDate] = useState("");
   const [editToDate, setEditToDate] = useState("");
+  const [editMealType, setEditMealType] = useState("Both");
   const [editReason, setEditReason] = useState("");
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState("");
@@ -87,7 +94,17 @@ export default function MarkAbsence() {
     }
   };
 
-  const handleSaveAbsence = async (e) => {
+  const formatDDMMYYYY = (dateStr) => {
+    if (!dateStr) return "";
+    const cleanDate = dateStr.split("T")[0];
+    const parts = cleanDate.split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+  };
+
+  const handleFormSubmitInit = (e) => {
     e.preventDefault();
     setFormError("");
     setSuccess(null);
@@ -109,19 +126,31 @@ export default function MarkAbsence() {
       return;
     }
 
+    // Open confirmation modal
+    setShowConfirmModal(true);
+  };
+
+  const executeSaveAbsence = async () => {
+    setShowConfirmModal(false);
     try {
       setSubmitting(true);
+      setFormError("");
       const res = await postAbsence({
         userId: selectedUserId,
         fromDate,
         toDate,
+        mealType,
         reason: reason.trim(),
       });
 
-      setSuccess(res.message || "Absence range saved successfully.");
+      setSuccess(
+        res.message ||
+        `Absence marked successfully from ${formatDDMMYYYY(fromDate)} to ${formatDDMMYYYY(toDate)}.`
+      );
       setSelectedUserId("");
       setFromDate("");
       setToDate("");
+      setMealType("Both");
       setReason("");
       fetchAbsences();
     } catch (err) {
@@ -134,10 +163,11 @@ export default function MarkAbsence() {
 
   const handleOpenEditModal = (item) => {
     setEditingAbsence(item);
-    const fDate = item.fromDate ? new Date(item.fromDate).toISOString().split("T")[0] : "";
-    const tDate = item.toDate ? new Date(item.toDate).toISOString().split("T")[0] : "";
+    const fDate = item.fromDate ? item.fromDate.split("T")[0] : "";
+    const tDate = item.toDate ? item.toDate.split("T")[0] : "";
     setEditFromDate(fDate);
     setEditToDate(tDate);
+    setEditMealType(item.mealType || "Both");
     setEditReason(item.reason || "");
     setEditError("");
   };
@@ -160,6 +190,7 @@ export default function MarkAbsence() {
       await updateAbsence(editingAbsence._id, {
         fromDate: editFromDate,
         toDate: editToDate,
+        mealType: editMealType,
         reason: editReason.trim(),
       });
 
@@ -207,6 +238,8 @@ export default function MarkAbsence() {
     return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)) + 1);
   };
 
+  const selectedUserObj = users.find((u) => u.id === selectedUserId);
+
   const filteredAbsences = absences.filter((item) => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
@@ -214,11 +247,13 @@ export default function MarkAbsence() {
     const email = item.userId?.Email || "";
     const mobile = String(item.userId?.Mobile || "");
     const reasonText = item.reason || "";
+    const mType = item.mealType || "";
     return (
       userName.toLowerCase().includes(term) ||
       email.toLowerCase().includes(term) ||
       mobile.includes(term) ||
-      reasonText.toLowerCase().includes(term)
+      reasonText.toLowerCase().includes(term) ||
+      mType.toLowerCase().includes(term)
     );
   });
 
@@ -229,10 +264,10 @@ export default function MarkAbsence() {
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-3 text-gray-900 dark:text-white">
             <CalendarOff className="w-7 h-7 text-rose-600 dark:text-rose-400" />
-            Mark Member Absence
+            Mark Student Absence
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Specify date ranges to mark members absent. System defaults apply outside the range.
+            Specify planned date ranges and meal types to mark students absent in the system.
           </p>
         </div>
 
@@ -277,7 +312,7 @@ export default function MarkAbsence() {
       <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border-2 border-black dark:border-slate-800 shadow-sm">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <CalendarIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          Create New Absence Range
+          Mark Planned Absence Range
         </h2>
 
         {formError && (
@@ -287,12 +322,12 @@ export default function MarkAbsence() {
           </div>
         )}
 
-        <form onSubmit={handleSaveAbsence} className="space-y-4">
+        <form onSubmit={handleFormSubmitInit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Member Selection */}
+            {/* Student Selection */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                Select Member <span className="text-rose-500">*</span>
+                Select Student <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -302,10 +337,10 @@ export default function MarkAbsence() {
                   disabled={loadingUsers}
                   className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm font-semibold outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-gray-900 dark:text-white cursor-pointer"
                 >
-                  <option value="">-- Choose Member --</option>
-                  {users.map((u) => (
+                  <option value="">-- Select Student --</option>
+                  {users.map((u, index) => (
                     <option key={u.id} value={u.id}>
-                      {u.name} ({u.mobile || u.email || u.id.slice(-4)})
+                      Roll #{index + 1} - {u.name} ({u.mobile || u.email})
                     </option>
                   ))}
                 </select>
@@ -339,20 +374,45 @@ export default function MarkAbsence() {
             </div>
           </div>
 
-          {/* Reason (Optional) */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-              Reason / Remark <span className="text-gray-400 font-normal">(Optional)</span>
-            </label>
-            <div className="relative">
-              <FileText className="w-4 h-4 absolute left-3.5 top-3 text-gray-400" />
-              <input
-                type="text"
-                placeholder="e.g. Out of town, Sick leave, Exam break"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-gray-900 dark:text-white"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Meal Type Selection */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                Meal Type <span className="text-rose-500">*</span>
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {["Lunch", "Dinner", "Both"].map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setMealType(type)}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border cursor-pointer ${mealType === type
+                        ? "bg-black text-white dark:bg-indigo-600 dark:border-indigo-500 border-black shadow-xs"
+                        : "bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700"
+                      }`}
+                  >
+                    <Utensils className="w-3.5 h-3.5" />
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Reason (Optional) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                Reason / Remark <span className="text-gray-400 font-normal">(Optional)</span>
+              </label>
+              <div className="relative">
+                <FileText className="w-4 h-4 absolute left-3.5 top-3 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="e.g. Out of station, Sick leave, Exam break"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500 text-gray-900 dark:text-white"
+                />
+              </div>
             </div>
           </div>
 
@@ -367,13 +427,74 @@ export default function MarkAbsence() {
                 <>Saving Absence...</>
               ) : (
                 <>
-                  <Save className="w-4 h-4" /> Save Absence Range
+                  <Save className="w-4 h-4" /> Mark Absence
                 </>
               )}
             </button>
           </div>
         </form>
       </div>
+
+      {/* CONFIRMATION DIALOG MODAL */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-black dark:border-slate-800 max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center gap-3 text-amber-600 dark:text-amber-400">
+              <div className="p-3 bg-amber-100 dark:bg-amber-950/80 rounded-2xl">
+                <HelpCircle className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">
+                Confirm Mark Absence
+              </h3>
+            </div>
+
+            <div className="p-4 bg-gray-50 dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
+              <p className="text-sm font-bold text-gray-900 dark:text-white">
+                Are you sure you want to mark this student absent from{" "}
+                <span className="text-rose-600 dark:text-rose-400">
+                  {formatDDMMYYYY(fromDate)}
+                </span>{" "}
+                to{" "}
+                <span className="text-rose-600 dark:text-rose-400">
+                  {formatDDMMYYYY(toDate)}
+                </span>
+                ?
+              </p>
+
+              <div className="text-xs text-gray-600 dark:text-gray-300 pt-1 space-y-1">
+                <div>
+                  <strong>Student:</strong> {selectedUserObj?.name || "Selected Student"}
+                </div>
+                <div>
+                  <strong>Meal Type:</strong> {mealType}
+                </div>
+                {reason && (
+                  <div>
+                    <strong>Reason:</strong> {reason}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={executeSaveAbsence}
+                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
+              >
+                Confirm Mark Absence
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* EXISTING ABSENCE RANGES LIST / TABLE */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-black dark:border-slate-800 shadow-sm p-6 space-y-4">
@@ -409,7 +530,7 @@ export default function MarkAbsence() {
             <CalendarOff className="w-10 h-10 mx-auto mb-2 opacity-50" />
             <p className="text-sm font-semibold">No absence ranges found.</p>
             <p className="text-xs text-gray-400 mt-0.5">
-              Use the form above to add an absence range for any mess member.
+              Use the form above to add an absence range for any student.
             </p>
           </div>
         ) : (
@@ -417,9 +538,10 @@ export default function MarkAbsence() {
             <table className="w-full text-left text-sm border-collapse">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-slate-800 text-xs font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-800/50">
-                  <th className="p-3.5 rounded-l-xl">Member Name</th>
+                  <th className="p-3.5 rounded-l-xl">Student Name</th>
                   <th className="p-3.5">From Date</th>
                   <th className="p-3.5">To Date</th>
+                  <th className="p-3.5">Meal Type</th>
                   <th className="p-3.5">Duration</th>
                   <th className="p-3.5">Reason</th>
                   <th className="p-3.5 text-right rounded-r-xl">Actions</th>
@@ -428,7 +550,7 @@ export default function MarkAbsence() {
               <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                 {filteredAbsences.map((item) => {
                   const days = calculateDays(item.fromDate, item.toDate);
-                  const memberName = item.userId?.Name || item.userId?.name || "Unknown User";
+                  const memberName = item.userId?.Name || item.userId?.name || "Unknown Student";
                   const contact = item.userId?.Mobile || item.userId?.Email || "";
 
                   return (
@@ -449,6 +571,11 @@ export default function MarkAbsence() {
                       </td>
                       <td className="p-3.5 font-medium text-gray-800 dark:text-gray-200">
                         {formatDate(item.toDate)}
+                      </td>
+                      <td className="p-3.5">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900">
+                          {item.mealType || "Both"}
+                        </span>
                       </td>
                       <td className="p-3.5">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900">
@@ -502,9 +629,9 @@ export default function MarkAbsence() {
             </div>
 
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Updating absence for member:{" "}
+              Updating absence for student:{" "}
               <strong className="text-gray-900 dark:text-white">
-                {editingAbsence.userId?.Name || editingAbsence.userId?.name || "User"}
+                {editingAbsence.userId?.Name || editingAbsence.userId?.name || "Student"}
               </strong>
             </p>
 
@@ -538,6 +665,27 @@ export default function MarkAbsence() {
                   onChange={(e) => setEditToDate(e.target.value)}
                   className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                  Meal Type
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["Lunch", "Dinner", "Both"].map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setEditMealType(type)}
+                      className={`py-2 px-2 rounded-lg text-xs font-bold border cursor-pointer ${editMealType === type
+                          ? "bg-indigo-600 text-white border-indigo-600"
+                          : "bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-slate-700"
+                        }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>

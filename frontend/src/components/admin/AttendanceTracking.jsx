@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getUserdatafromserver, getAttendanceByDate } from "../../service";
-import { RingLoader } from "react-spinners"
+import { RingLoader } from "react-spinners";
 const todayStr = () => new Date().toISOString().split("T")[0];
 
 export default function AttendanceTable() {
@@ -17,7 +17,7 @@ export default function AttendanceTable() {
           getAttendanceByDate(date),
         ]);
 
-        const mapped = users.map((u) => {
+        const mapped = users.map((u, index) => {
           const rec = records.find((r) => String(r.userId) === String(u.id));
           let lastEntryText = "--";
           if (rec) {
@@ -30,6 +30,7 @@ export default function AttendanceTable() {
 
           return {
             id: u.id,
+            rollNo: index + 1,
             name: u.name,
             mobile: u.mobile,
             payment: u.paymentStatus || "Pending",
@@ -50,38 +51,40 @@ export default function AttendanceTable() {
   }, []);
 
   const filteredMembers = members.filter((member) =>
-    (member.name ?? "").toLowerCase().includes(search.toLowerCase())
+    (member.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
+    String(member.rollNo).includes(search)
   );
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <RingLoader color={"#ffffffff"} />
+      <div className="flex justify-center items-center h-full py-12">
+        <RingLoader color={"#6366f1"} />
       </div>
     );
   }
 
   return (
-    <section className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+    <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="p-4 md:p-6 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="p-4 md:p-6 border-b border-gray-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h2 className="text-xl md:text-2xl font-bold">
           Today's Attendance
         </h2>
 
         <input
           type="text"
-          placeholder="Search member..."
+          placeholder="Search by name, roll no..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-black w-full md:w-72"
+          className="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-72"
         />
       </div>
 
       <div className="overflow-y-auto max-h-[500px]">
         <table className="w-full min-w-[900px]">
-          <thead className="bg-slate-100 sticky top-0">
+          <thead className="bg-slate-100 dark:bg-slate-800 sticky top-0 border-b border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-200">
             <tr>
+              <th className="text-left p-4">Roll No</th>
               <th className="text-left p-4">Member</th>
               <th className="text-left p-4">Mobile</th>
               <th className="text-left p-4">Payment</th>
@@ -92,25 +95,30 @@ export default function AttendanceTable() {
 
           <tbody>
             {filteredMembers.length > 0 ? (
-              filteredMembers.map((member) => (
+              filteredMembers.map((member, index) => (
                 <tr
                   key={member.id}
-                  className="border-t hover:bg-slate-50"
+                  className="border-t border-gray-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 >
+                  <td className="p-4 font-bold text-gray-700 dark:text-gray-300">
+                    {index + 1}
+                  </td>
+
                   <td className="p-4 font-medium">
                     {member.name}
                   </td>
 
-                  <td className="p-4">
+                  <td className="p-4 text-sm text-gray-600 dark:text-gray-400">
                     {member.mobile}
                   </td>
 
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-sm ${member.payment === "Paid"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                        }`}
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        member.payment === "Paid"
+                          ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800"
+                          : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800"
+                      }`}
                     >
                       {member.payment}
                     </span>
@@ -118,18 +126,19 @@ export default function AttendanceTable() {
 
                   <td className="p-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-sm ${member.status === "Present"
-                          ? "bg-green-100 text-green-700"
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        member.status === "Present"
+                          ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800"
                           : member.status === "Absent"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
+                          ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800"
+                          : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
+                      }`}
                     >
                       {member.status}
                     </span>
                   </td>
 
-                  <td className="p-4 text-right">
+                  <td className="p-4 text-right font-medium text-gray-700 dark:text-gray-300">
                     {member.lastEntry}
                   </td>
                 </tr>
@@ -137,8 +146,8 @@ export default function AttendanceTable() {
             ) : (
               <tr>
                 <td
-                  colSpan="5"
-                  className="text-center p-6 text-gray-500"
+                  colSpan="6"
+                  className="text-center p-6 text-gray-500 dark:text-gray-400"
                 >
                   No members found
                 </td>

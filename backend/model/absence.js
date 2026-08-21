@@ -15,6 +15,11 @@ const absenceSchema = new Schema(
       type: Date,
       required: true,
     },
+    mealType: {
+      type: String,
+      enum: ["Lunch", "Dinner", "Both"],
+      default: "Both",
+    },
     reason: {
       type: String,
       trim: true,

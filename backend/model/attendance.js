@@ -45,6 +45,8 @@ attendanceSchema.index(
     { userId: 1, date: 1 },
     { unique: true }
 );
+attendanceSchema.index({ date: 1 });
+attendanceSchema.index({ userId: 1 });
 
 const Attendance =
     mongoose.models.Attendance ||

@@ -1,5 +1,6 @@
 import Absence from "../model/absence.js";
 import User from "../model/user.js";
+import Attendance from "../model/attendance.js";
 
 const normalizeFromDate = (dateInput) => {
   const dateStr =
@@ -17,10 +18,63 @@ const normalizeToDate = (dateInput) => {
   return new Date(`${dateStr}T23:59:59.999Z`);
 };
 
-// Create a new absence range
+const syncAttendanceRecords = async (userObj, start, end, mealType = "Both") => {
+  const dates = [];
+  let curr = new Date(start);
+  const finish = new Date(end);
+
+  while (curr <= finish) {
+    dates.push(new Date(curr));
+    curr.setUTCDate(curr.getUTCDate() + 1);
+  }
+
+  const selectedMeal = mealType || "Both";
+
+  for (const d of dates) {
+    const dateStr = d.toISOString().slice(0, 10);
+    const normalizedDate = new Date(`${dateStr}T00:00:00.000Z`);
+    const existingRec = await Attendance.findOne({
+      userId: userObj._id,
+      date: normalizedDate,
+    });
+
+    let lunch = false;
+    let dinner = false;
+
+    if (selectedMeal === "Lunch") {
+      lunch = false;
+      dinner = existingRec ? Boolean(existingRec.dinner) : false;
+    } else if (selectedMeal === "Dinner") {
+      dinner = false;
+      lunch = existingRec ? Boolean(existingRec.lunch) : false;
+    } else {
+      // Both
+      lunch = false;
+      dinner = false;
+    }
+
+    const status = lunch || dinner ? "present" : "absent";
+
+    await Attendance.findOneAndUpdate(
+      { userId: userObj._id, date: normalizedDate },
+      {
+        $set: {
+          userName: userObj.Name || userObj.name || "Member",
+          status,
+          lunch,
+          dinner,
+          date: normalizedDate,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+};
+
+// Create a new absence range & mark attendance records
 export const createAbsence = async (req, res) => {
   try {
-    const { userId, fromDate, toDate, reason } = req.body;
+    const { userId, fromDate, toDate, mealType, reason } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "Member (userId) is required" });
@@ -46,36 +100,45 @@ export const createAbsence = async (req, res) => {
       return res.status(404).json({ message: "Selected user not found" });
     }
 
-    // Check for overlapping range for this user
-    const overlap = await Absence.findOne({
+    const selectedMealType = ["Lunch", "Dinner", "Both"].includes(mealType)
+      ? mealType
+      : "Both";
+
+    // Update existing overlapping absence record or create a new one
+    let absenceDoc = await Absence.findOne({
       userId,
       fromDate: { $lte: end },
       toDate: { $gte: start },
     });
 
-    if (overlap) {
-      return res.status(400).json({
-        message:
-          "An absence range already overlaps with the selected dates for this member",
+    if (absenceDoc) {
+      absenceDoc.fromDate = start;
+      absenceDoc.toDate = end;
+      absenceDoc.mealType = selectedMealType;
+      if (reason !== undefined) absenceDoc.reason = reason;
+      await absenceDoc.save();
+    } else {
+      absenceDoc = new Absence({
+        userId,
+        fromDate: start,
+        toDate: end,
+        mealType: selectedMealType,
+        reason: reason || "",
+        createdBy: req.user?.userId || null,
       });
+      await absenceDoc.save();
     }
 
-    const newAbsence = new Absence({
-      userId,
-      fromDate: start,
-      toDate: end,
-      reason: reason || "",
-      createdBy: req.user?.userId || null,
-    });
+    // Sync Attendance records for each date in range
+    await syncAttendanceRecords(userExists, start, end, selectedMealType);
 
-    await newAbsence.save();
-    const populated = await Absence.findById(newAbsence._id).populate(
+    const populated = await Absence.findById(absenceDoc._id).populate(
       "userId",
       "Name Email Mobile"
     );
 
     return res.status(201).json({
-      message: "Absence range saved successfully",
+      message: "Absence range and attendance updated successfully",
       data: populated,
     });
   } catch (error) {
@@ -131,19 +194,25 @@ export const getAbsencesByUserId = async (req, res) => {
   }
 };
 
-// Update an absence range
+// Update an absence range & re-sync attendance
 export const updateAbsence = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fromDate, toDate, reason } = req.body;
+    const { fromDate, toDate, mealType, reason } = req.body;
 
     const existing = await Absence.findById(id);
     if (!existing) {
       return res.status(404).json({ message: "Absence range not found" });
     }
 
+    const userExists = await User.findById(existing.userId);
+    if (!userExists) {
+      return res.status(404).json({ message: "Associated user not found" });
+    }
+
     const start = fromDate ? normalizeFromDate(fromDate) : existing.fromDate;
     const end = toDate ? normalizeToDate(toDate) : existing.toDate;
+    const selectedMealType = mealType || existing.mealType || "Both";
 
     if (start > end) {
       return res
@@ -151,26 +220,14 @@ export const updateAbsence = async (req, res) => {
         .json({ message: "From Date cannot be after To Date" });
     }
 
-    // Check overlap excluding current record
-    const overlap = await Absence.findOne({
-      _id: { $ne: id },
-      userId: existing.userId,
-      fromDate: { $lte: end },
-      toDate: { $gte: start },
-    });
-
-    if (overlap) {
-      return res.status(400).json({
-        message:
-          "Updated dates overlap with another existing absence range for this member",
-      });
-    }
-
     existing.fromDate = start;
     existing.toDate = end;
+    existing.mealType = selectedMealType;
     if (reason !== undefined) existing.reason = reason;
 
     await existing.save();
+    await syncAttendanceRecords(userExists, start, end, selectedMealType);
+
     const populated = await Absence.findById(existing._id).populate(
       "userId",
       "Name Email Mobile"

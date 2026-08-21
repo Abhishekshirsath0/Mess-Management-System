@@ -1,26 +1,58 @@
+import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 import AdminLayout from "./components/admin/AdminLayout";
-import { View_Attends } from "./components/admin/CARDS/View_Attends";
-import { Members } from "./components/admin/CARDS/Members";
-import { Edit_Meal } from "./components/admin/CARDS/Edit_Meal";
-import { Payments } from "./components/admin/CARDS/Payments";
-import Dashboard from "./components/admin/Dashboard";
-import AdminHistory from "./components/admin/AdminHistory";
-import UserAttendanceCalendar from "./components/admin/cards/UserAttendanceCalendar";
-import UserHistory from "./components/User/UserHistory";
-import Login from "./components/common/Login";
-import Register from "./components/common/Register";
-import AboutUs from "./components/common/AboutUs";
-import ContactUs from "./components/common/ContactUs";
-import PrivacyPolicy from "./components/common/PrivacyPolicy";
-import ReturnPolicy from "./components/common/ReturnPolicy";
-import RefundPolicy from "./components/common/RefundPolicy";
-import Disclaimer from "./components/common/Disclaimer";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
+import { RingLoader } from "react-spinners";
+
+// LAZY LOADED ROUTE COMPONENTS
+const Dashboard = lazy(() => import("./components/admin/Dashboard"));
+const ViewAttendsWrapper = lazy(() =>
+  import("./components/admin/CARDS/View_Attends").then((module) => ({
+    default: module.View_Attends,
+  }))
+);
+const MembersWrapper = lazy(() =>
+  import("./components/admin/CARDS/Members").then((module) => ({
+    default: module.Members,
+  }))
+);
+const EditMealWrapper = lazy(() =>
+  import("./components/admin/CARDS/Edit_Meal").then((module) => ({
+    default: module.Edit_Meal,
+  }))
+);
+const PaymentsWrapper = lazy(() =>
+  import("./components/admin/CARDS/Payments").then((module) => ({
+    default: module.Payments,
+  }))
+);
+const AdminHistory = lazy(() => import("./components/admin/AdminHistory"));
+const UserAttendanceCalendar = lazy(() =>
+  import("./components/admin/cards/UserAttendanceCalendar")
+);
+const MarkAbsence = lazy(() =>
+  import("./components/admin/cards/MarkAbsence")
+);
+const UserHistory = lazy(() => import("./components/User/UserHistory"));
+const Login = lazy(() => import("./components/common/Login"));
+const Register = lazy(() => import("./components/common/Register"));
+const AboutUs = lazy(() => import("./components/common/AboutUs"));
+const ContactUs = lazy(() => import("./components/common/ContactUs"));
+const PrivacyPolicy = lazy(() => import("./components/common/PrivacyPolicy"));
+const ReturnPolicy = lazy(() => import("./components/common/ReturnPolicy"));
+const RefundPolicy = lazy(() => import("./components/common/RefundPolicy"));
+const Disclaimer = lazy(() => import("./components/common/Disclaimer"));
+
+const PageFallback = () => (
+  <div className="flex justify-center items-center py-24">
+    <RingLoader color="#6366f1" size={50} />
+  </div>
+);
 
 const router = createBrowserRouter([
   {
@@ -31,33 +63,59 @@ const router = createBrowserRouter([
         path: "history",
         element: (
           <ProtectedRoute>
-            <UserHistory />
+            <Suspense fallback={<PageFallback />}>
+              <UserHistory />
+            </Suspense>
           </ProtectedRoute>
         ),
       },
       {
         path: "about",
-        element: <AboutUs />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <AboutUs />
+          </Suspense>
+        ),
       },
       {
         path: "contact",
-        element: <ContactUs />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <ContactUs />
+          </Suspense>
+        ),
       },
       {
         path: "privacy-policy",
-        element: <PrivacyPolicy />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <PrivacyPolicy />
+          </Suspense>
+        ),
       },
       {
         path: "return-policy",
-        element: <ReturnPolicy />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <ReturnPolicy />
+          </Suspense>
+        ),
       },
       {
         path: "refund-policy",
-        element: <RefundPolicy />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <RefundPolicy />
+          </Suspense>
+        ),
       },
       {
         path: "disclaimer",
-        element: <Disclaimer />,
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <Disclaimer />
+          </Suspense>
+        ),
       },
       {
         path: "admin",
@@ -67,13 +125,70 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          { index: true, element: <Dashboard /> },
-          { path: "attendance", element: <View_Attends /> },
-          { path: "history", element: <AdminHistory /> },
-          { path: "calendar", element: <UserAttendanceCalendar /> },
-          { path: "meals", element: <Edit_Meal /> },
-          { path: "members", element: <Members /> },
-          { path: "payments", element: <Payments /> },
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <Dashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "attendance",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <ViewAttendsWrapper />
+              </Suspense>
+            ),
+          },
+          {
+            path: "absence",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <MarkAbsence />
+              </Suspense>
+            ),
+          },
+          {
+            path: "history",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <AdminHistory />
+              </Suspense>
+            ),
+          },
+          {
+            path: "calendar",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <UserAttendanceCalendar />
+              </Suspense>
+            ),
+          },
+          {
+            path: "meals",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <EditMealWrapper />
+              </Suspense>
+            ),
+          },
+          {
+            path: "members",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <MembersWrapper />
+              </Suspense>
+            ),
+          },
+          {
+            path: "payments",
+            element: (
+              <Suspense fallback={<PageFallback />}>
+                <PaymentsWrapper />
+              </Suspense>
+            ),
+          },
         ],
       },
     ],
@@ -81,16 +196,26 @@ const router = createBrowserRouter([
 
   {
     path: "Login",
-    element: <Login />,
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <Login />
+      </Suspense>
+    ),
   },
   {
     path: "register",
-    element: <Register />,
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <Register />
+      </Suspense>
+    ),
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-    <RouterProvider router={router} />
-  </ThemeProvider>,
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  </ThemeProvider>
 );
