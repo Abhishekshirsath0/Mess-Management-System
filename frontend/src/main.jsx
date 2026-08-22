@@ -41,6 +41,8 @@ const MarkAbsence = lazy(() =>
 const UserHistory = lazy(() => import("./components/User/UserHistory"));
 const Login = lazy(() => import("./components/common/Login"));
 const Register = lazy(() => import("./components/common/Register"));
+const ForgotPassword = lazy(() => import("./components/common/ForgotPassword"));
+const ResetPassword = lazy(() => import("./components/common/ResetPassword"));
 const AboutUs = lazy(() => import("./components/common/AboutUs"));
 const ContactUs = lazy(() => import("./components/common/ContactUs"));
 const PrivacyPolicy = lazy(() => import("./components/common/PrivacyPolicy"));
@@ -203,10 +205,50 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "login",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <Login />
+      </Suspense>
+    ),
+  },
+  {
     path: "register",
     element: (
       <Suspense fallback={<PageFallback />}>
         <Register />
+      </Suspense>
+    ),
+  },
+  {
+    path: "forgot-password",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <ForgotPassword />
+      </Suspense>
+    ),
+  },
+  {
+    path: "ForgotPassword",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <ForgotPassword />
+      </Suspense>
+    ),
+  },
+  {
+    path: "reset-password/:token",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <ResetPassword />
+      </Suspense>
+    ),
+  },
+  {
+    path: "ResetPassword/:token",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <ResetPassword />
       </Suspense>
     ),
   },

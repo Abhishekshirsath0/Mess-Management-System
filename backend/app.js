@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./Router/userRouter.js";
+import authRouter from "./Router/authRouter.js";
 import attendanceRouter from "./Router/attendanceRouter.js";
 import mealRouter from "./Router/mealRouter.js";
 import absenceRouter from "./Router/absenceRouter.js";
@@ -19,6 +20,7 @@ app.use(
   })
 );
 
+app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/meal", mealRouter);

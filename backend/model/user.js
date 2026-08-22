@@ -23,6 +23,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       minlength: [6, "Password must be at least 6 characters"],
+      select: false,
     },
     Usertype: { type: String, enum: ["user", "admin"], default: "user" },
     Plan: {
@@ -35,6 +36,8 @@ const UserSchema = new Schema(
     Deposit: { type: Number, default: 0 },
     PendingAmount: { type: Number, default: 3600 },
     DietType: { type: String, enum: ["Pure Veg", "Mixed"], default: "Mixed" },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   { timestamps: true }
 );

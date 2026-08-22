@@ -65,6 +65,27 @@ export const loginUser = async (credentials) => {
   }
 };
 
+export const forgotPassword = async (email) => {
+  try {
+    const response = await axios.post(`${API}/auth/forgot-password`, { email });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const resetPassword = async (token, password, confirmPassword) => {
+  try {
+    const response = await axios.post(`${API}/auth/reset-password/${token}`, {
+      password,
+      confirmPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const getUserdatafromserver = async () => {
   try {
     const response = await axios.get(`${API}/user`, {

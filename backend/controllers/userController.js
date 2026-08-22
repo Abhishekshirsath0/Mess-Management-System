@@ -2,7 +2,7 @@ import User from "../model/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "mess_management_secret_key_123";
+const JWT_SECRET = process.env.JWT_SECRET || "71a1567f574122600060c086d8971a1f41e6d68abed01e01470c8130c31240a3";
 
 export const postUserdata = async (req, res) => {
   try {
@@ -46,7 +46,7 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const user = await User.findOne({ Email: email });
+    const user = await User.findOne({ Email: email }).select("+Password");
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
