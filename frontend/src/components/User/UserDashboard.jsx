@@ -11,8 +11,13 @@ import {
   CalendarDays,
   WifiOff,
   SignalLow,
+  CheckCircle2,
 } from "lucide-react";
-import { getTodayMeal, getUserAttendanceStats } from "../../service";
+import {
+  getTodayMeal,
+  getUserAttendanceStats,
+  getUserMealAssignment,
+} from "../../service";
 import { useTheme } from "../../context/ThemeContext";
 
 /* ---------------- PLANS ---------------- */
@@ -50,8 +55,6 @@ const getFoodStyle = (type) => {
 };
 
 /* ---------------- SKELETON PRIMITIVES ---------------- */
-// Base shimmering block. Uses the same rounded/border language as the real
-// UI so the skeleton reads as a "ghost" of the content that's loading.
 const Bone = ({ className = "" }) => (
   <div
     className={`animate-pulse rounded-md bg-gray-200 dark:bg-slate-700/80 ${className}`}
@@ -93,10 +96,6 @@ const SkeletonMealBlock = ({ chips = 3 }) => (
   </div>
 );
 
-/* ---------------- NETWORK STATUS UI ---------------- */
-// Persistent banner shown whenever the browser reports no connection.
-// Rendered both in the skeleton and the loaded view so it never disappears
-// mid-session if the connection drops later.
 const OfflineBanner = () => (
   <div className="flex items-center gap-2 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-sm font-semibold px-4 py-2.5 rounded-xl">
     <WifiOff size={16} className="shrink-0" />
@@ -104,8 +103,6 @@ const OfflineBanner = () => (
   </div>
 );
 
-// Shown only while loading, and only once the fetch has taken longer than
-// expected — a signal to the user that it's the network, not a freeze.
 const SlowNetworkNotice = () => (
   <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 text-amber-700 dark:text-amber-300 text-sm font-semibold px-4 py-2.5 rounded-xl animate-pulse">
     <SignalLow size={16} className="shrink-0" />
@@ -118,7 +115,6 @@ const DashboardSkeleton = ({ isOffline, isSlow }) => (
     {isOffline && <OfflineBanner />}
     {!isOffline && isSlow && <SlowNetworkNotice />}
 
-    {/* HEADER */}
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div className="space-y-2">
         <Bone className="h-8 w-56" />
@@ -126,14 +122,12 @@ const DashboardSkeleton = ({ isOffline, isSlow }) => (
       </div>
     </div>
 
-    {/* CARDS */}
     <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {Array.from({ length: 4 }).map((_, i) => (
         <SkeletonCard key={i} />
       ))}
     </section>
 
-    {/* MEALS */}
     <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="space-y-2">
@@ -153,6 +147,12 @@ const DashboardSkeleton = ({ isOffline, isSlow }) => (
   </div>
 );
 
+const NotUpdated = () => (
+  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">
+    Menu for today has not been updated yet.
+  </p>
+);
+
 export default function UserDashboard() {
   const { theme } = useTheme();
 
@@ -161,7 +161,7 @@ export default function UserDashboard() {
     if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) { }
+      } catch (e) {}
     }
     return {
       name: "Abhishek",
@@ -178,15 +178,14 @@ export default function UserDashboard() {
     dinnerVeg: [],
     dinnerNonVeg: [],
   });
+  const [activeMealAssignment, setActiveMealAssignment] = useState(null);
   const [menuLoaded, setMenuLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
-  // True once a load has been in-flight longer than SLOW_LOAD_THRESHOLD ms.
   const [slowLoading, setSlowLoading] = useState(false);
-  // Mirrors the browser's connectivity state so we can warn the user even
-  // if a fetch hasn't been attempted yet (e.g. right after going offline).
   const [isOffline, setIsOffline] = useState(
     typeof navigator !== "undefined" ? !navigator.onLine : false
   );
+
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -194,7 +193,6 @@ export default function UserDashboard() {
     day: "numeric",
   });
 
-  // How long a load can run before we tell the user it's the network.
   const SLOW_LOAD_THRESHOLD = 4000;
 
   useEffect(() => {
@@ -215,14 +213,11 @@ export default function UserDashboard() {
       setLoading(true);
       setSlowLoading(false);
 
-      // Only flag "slow" if we're still loading after the threshold —
-      // avoids flashing the notice on normal, fast loads.
       const slowTimer = setTimeout(() => {
         if (!cancelled) setSlowLoading(true);
       }, SLOW_LOAD_THRESHOLD);
 
       try {
-        // Load meal
         const meal = await getTodayMeal();
         if (meal) {
           setTodayMenu({
@@ -233,25 +228,35 @@ export default function UserDashboard() {
         }
       } catch (err) {
         console.error("Error loading today's meal:", err);
-      } finally {
-        clearTimeout(slowTimer);
-        if (!cancelled) {
-          setMenuLoaded(true);
-          setLoading(false);
-          setSlowLoading(false);
-        }
       }
 
-      try {
-        // Load attendance stats if user id is available
-        if (currentUser.id) {
+      if (currentUser.id) {
+        try {
           const stats = await getUserAttendanceStats(currentUser.id);
           if (stats) {
             setTiffinCount(stats.totalTiffins || 0);
           }
+        } catch (err) {
+          console.error("Error loading attendance stats:", err);
         }
-      } catch (err) {
-        console.error("Error loading attendance stats:", err);
+
+        try {
+          const assignment = await getUserMealAssignment(currentUser.id);
+          if (assignment && assignment.status === "active") {
+            setActiveMealAssignment(assignment.mealType);
+          } else {
+            setActiveMealAssignment(null);
+          }
+        } catch (err) {
+          console.error("Error loading user meal assignment:", err);
+        }
+      }
+
+      clearTimeout(slowTimer);
+      if (!cancelled) {
+        setMenuLoaded(true);
+        setLoading(false);
+        setSlowLoading(false);
       }
     };
 
@@ -307,19 +312,17 @@ export default function UserDashboard() {
   const dinnerVegItems = todayMenu.dinnerVeg;
   const dinnerNonVegItems = todayMenu.dinnerNonVeg;
 
-  const NotUpdated = () => (
-    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium italic">
-      Menu not updated yet
-    </p>
-  );
-
-  const cardBgStyle = {
-    backgroundColor: theme === "light" ? "#ffffff" : "#0b1328",
-  };
+  const cardBgStyle =
+    theme === "dark"
+      ? { backgroundColor: "#0f172a" }
+      : { backgroundColor: "#ffffff" };
 
   if (loading) {
     return <DashboardSkeleton isOffline={isOffline} isSlow={slowLoading} />;
   }
+
+  const isLunchActive = activeMealAssignment === "Lunch" || activeMealAssignment === "Both";
+  const isDinnerActive = activeMealAssignment === "Dinner" || activeMealAssignment === "Both";
 
   return (
     <>
@@ -340,7 +343,32 @@ export default function UserDashboard() {
           </div>
         </div>
 
-        {/* CARDS */}
+        {/* RECURRING MEAL ASSIGNMENT BANNER */}
+        <div className="bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+              <CheckCircle2 size={22} />
+            </div>
+            <div>
+              <p className="text-xs uppercase font-bold tracking-wider text-indigo-700 dark:text-indigo-400">
+                Daily Recurring Meal Assignment
+              </p>
+              <h2 className="text-lg font-extrabold text-indigo-950 dark:text-indigo-100">
+                {activeMealAssignment
+                  ? `Active Meal: ${activeMealAssignment}`
+                  : "No Active Daily Meal Assigned"}
+              </h2>
+            </div>
+          </div>
+
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 w-fit">
+            {activeMealAssignment
+              ? "Applies Every Day Automatically"
+              : "Contact Admin to Assign Meal"}
+          </span>
+        </div>
+
+        {/* STATS CARDS */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {userCards.map((card, index) => (
             <div
@@ -372,13 +400,13 @@ export default function UserDashboard() {
           ))}
         </section>
 
-        {/* MEALS */}
+        {/* MEALS DISPLAY */}
         <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
-                  Today's Meal
+                  Today's Menu
                 </h2>
                 <h1 className="text-lg text-gray-800 dark:text-gray-200 font-semibold md:text-right md:ml-4">
                   {today}
@@ -395,15 +423,26 @@ export default function UserDashboard() {
             </div>
           </div>
 
-          {/* LUNCH */}
+          {/* LUNCH CARD */}
           <div
             style={cardBgStyle}
-            className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 mb-6 shadow-xs transition-colors"
+            className={`rounded-2xl border p-5 mb-6 shadow-xs transition-all ${
+              isLunchActive
+                ? "border-orange-400 dark:border-orange-600 ring-2 ring-orange-400/30"
+                : "border-gray-200 dark:border-slate-700/80"
+            }`}
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-black text-black dark:text-orange flex items-center gap-2">
-                🍛 Lunch
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-black text-black dark:text-orange flex items-center gap-2">
+                  🍛 Lunch
+                </h3>
+                {isLunchActive && (
+                  <span className="text-xs font-bold bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200 px-2.5 py-0.5 rounded-full border border-orange-300">
+                    Assigned to You
+                  </span>
+                )}
+              </div>
               <span className="text-sm font-bold text-black dark:text-slate-200">
                 8:00 AM - 3:00 PM
               </span>
@@ -422,21 +461,32 @@ export default function UserDashboard() {
             )}
           </div>
 
-          {/* DINNER */}
+          {/* DINNER CARDS */}
           <div className="grid md:grid-cols-2 gap-4">
-            {/* VEG */}
+            {/* VEG DINNER */}
             <div
               style={cardBgStyle}
-              className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs transition-colors"
+              className={`rounded-2xl border p-5 shadow-xs transition-all ${
+                isDinnerActive
+                  ? "border-green-400 dark:border-green-600 ring-2 ring-green-400/30"
+                  : "border-gray-200 dark:border-slate-700/80"
+              }`}
             >
-              <h4 className="font-black text-black dark:text-green-400 mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-2 text-black dark:text-green-400 font-black">
-                  {mealIcons.veg} Veg Dinner
-                </span>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-black text-black dark:text-green-400 flex items-center gap-2">
+                    {mealIcons.veg} Veg Dinner
+                  </h4>
+                  {isDinnerActive && (
+                    <span className="text-xs font-bold bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200 px-2 py-0.5 rounded-full border border-green-300">
+                      Assigned
+                    </span>
+                  )}
+                </div>
                 <span className="text-sm font-bold text-black dark:text-slate-200">
                   7:00 PM - 10:00 PM
                 </span>
-              </h4>
+              </div>
 
               {menuLoaded && dinnerVegItems.length === 0 ? (
                 <NotUpdated />
@@ -451,19 +501,30 @@ export default function UserDashboard() {
               )}
             </div>
 
-            {/* NON VEG */}
+            {/* NON VEG DINNER */}
             <div
               style={cardBgStyle}
-              className="rounded-2xl border border-gray-200 dark:border-slate-700/80 p-5 shadow-xs transition-colors"
+              className={`rounded-2xl border p-5 shadow-xs transition-all ${
+                isDinnerActive
+                  ? "border-red-400 dark:border-red-600 ring-2 ring-red-400/30"
+                  : "border-gray-200 dark:border-slate-700/80"
+              }`}
             >
-              <h4 className="font-black text-black dark:text-red-400 mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-2 text-black dark:text-red-400 font-black">
-                  {mealIcons.nonveg} Non-Veg Dinner
-                </span>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-black text-black dark:text-red-400 flex items-center gap-2">
+                    {mealIcons.nonveg} Non-Veg Dinner
+                  </h4>
+                  {isDinnerActive && (
+                    <span className="text-xs font-bold bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200 px-2 py-0.5 rounded-full border border-red-300">
+                      Assigned
+                    </span>
+                  )}
+                </div>
                 <span className="text-sm font-bold text-black dark:text-slate-200">
                   7:00 PM - 10:00 PM
                 </span>
-              </h4>
+              </div>
 
               {menuLoaded && dinnerNonVegItems.length === 0 ? (
                 <NotUpdated />

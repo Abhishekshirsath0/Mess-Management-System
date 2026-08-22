@@ -2,6 +2,20 @@ import axios from "axios";
 
 const API = "http://localhost:8000/api";
 
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      if (!window.location.pathname.toLowerCase().includes("/login")) {
+        window.location.href = "/Login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // ================= USER =================
 
 export const mapUser = (user) => ({
@@ -350,6 +364,60 @@ export const deleteAbsence = async (id) => {
       "DELETE ABSENCE ERROR:",
       error.response?.data || error.message
     );
+    throw error.response?.data || error;
+  }
+};
+
+// ==================== RECURRING MEAL ASSIGNMENT =======================
+
+export const assignUserMeal = async (userId, mealType) => {
+  try {
+    const response = await axios.post(
+      `${API}/meal-assignment`,
+      { userId, mealType },
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("ASSIGN USER MEAL ERROR:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const resetUserMeal = async (userId) => {
+  try {
+    const response = await axios.post(
+      `${API}/meal-assignment/reset`,
+      { userId },
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("RESET USER MEAL ERROR:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const getUserMealAssignment = async (userId) => {
+  try {
+    const response = await axios.get(`${API}/meal-assignment/user/${userId}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("GET USER MEAL ASSIGNMENT ERROR:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export const getAllMealAssignments = async () => {
+  try {
+    const response = await axios.get(`${API}/meal-assignment`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("GET ALL MEAL ASSIGNMENTS ERROR:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };

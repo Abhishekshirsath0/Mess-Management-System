@@ -42,8 +42,6 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
-UserSchema.index({ Email: 1 });
-UserSchema.index({ Mobile: 1 });
 UserSchema.index({ Name: 1 });
 
 const User = mongoose.models.User || mongoose.model("User", UserSchema);

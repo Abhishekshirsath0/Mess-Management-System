@@ -7,6 +7,7 @@ import authRouter from "./Router/authRouter.js";
 import attendanceRouter from "./Router/attendanceRouter.js";
 import mealRouter from "./Router/mealRouter.js";
 import absenceRouter from "./Router/absenceRouter.js";
+import mealAssignmentRouter from "./Router/mealAssignmentRouter.js";
 dotenv.config();
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/user", userRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/meal", mealRouter);
 app.use("/api/absence", absenceRouter);
+app.use("/api/meal-assignment", mealAssignmentRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
