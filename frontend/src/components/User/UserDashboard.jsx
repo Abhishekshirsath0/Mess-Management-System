@@ -344,29 +344,7 @@ export default function UserDashboard() {
         </div>
 
         {/* RECURRING MEAL ASSIGNMENT BANNER */}
-        <div className="bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
-              <CheckCircle2 size={22} />
-            </div>
-            <div>
-              <p className="text-xs uppercase font-bold tracking-wider text-indigo-700 dark:text-indigo-400">
-                Daily Recurring Meal Assignment
-              </p>
-              <h2 className="text-lg font-extrabold text-indigo-950 dark:text-indigo-100">
-                {activeMealAssignment
-                  ? `Active Meal: ${activeMealAssignment}`
-                  : "No Active Daily Meal Assigned"}
-              </h2>
-            </div>
-          </div>
-
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 w-fit">
-            {activeMealAssignment
-              ? "Applies Every Day Automatically"
-              : "Contact Admin to Assign Meal"}
-          </span>
-        </div>
+   
 
         {/* STATS CARDS */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">

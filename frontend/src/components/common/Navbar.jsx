@@ -78,18 +78,17 @@ export default function Navbar() {
           <Link
             to="/"
             className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          >
+          > 
             Home
           </Link>
 
-          {!isAdmin && (
-            <Link
-              to={historyPath}
-              className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-            >
-              History
-            </Link>
-          )}
+          <Link
+            to="/history"
+            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
+          >
+            History
+          </Link>
+
         </nav>
 
         {/* Right Side */}
