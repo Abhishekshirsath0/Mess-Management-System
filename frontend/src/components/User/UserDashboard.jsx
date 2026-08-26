@@ -429,13 +429,18 @@ export default function UserDashboard() {
             {menuLoaded && lunchItems.length === 0 ? (
               <NotUpdated />
             ) : (
-              <div className="flex flex-wrap gap-2">
-                {lunchItems.map((item, i) => (
-                  <span key={i} className={getFoodStyle("lunch")}>
-                    {item}
-                  </span>
-                ))}
-              </div>
+                <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    {lunchItems.map((item, i) => (
+                      <span
+                        key={i}
+                        className={`${getFoodStyle("lunch")} !bg-yellow-500 dark:!bg-yellow-500`}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
             )}
           </div>
 
@@ -469,13 +474,16 @@ export default function UserDashboard() {
               {menuLoaded && dinnerVegItems.length === 0 ? (
                 <NotUpdated />
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {dinnerVegItems.map((item, i) => (
-                    <span key={i} className={getFoodStyle("veg")}>
-                      {item}
-                    </span>
-                  ))}
-                </div>
+                  <div className="flex flex-wrap gap-2">
+                    {dinnerVegItems.map((item, i) => (
+                      <span
+                        key={i}
+                        className={`${getFoodStyle("veg")} !bg-green-500 dark:!bg-green-500`}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
               )}
             </div>
 
@@ -507,13 +515,16 @@ export default function UserDashboard() {
               {menuLoaded && dinnerNonVegItems.length === 0 ? (
                 <NotUpdated />
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {dinnerNonVegItems.map((item, i) => (
-                    <span key={i} className={getFoodStyle("nonveg")}>
-                      {item}
-                    </span>
-                  ))}
-                </div>
+                  <div className="flex flex-wrap gap-2">
+                    {dinnerNonVegItems.map((item, i) => (
+                      <span
+                        key={i}
+                        className={`${getFoodStyle("nonveg")} !bg-red-500 dark:!bg-red-500`}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
               )}
             </div>
           </div>

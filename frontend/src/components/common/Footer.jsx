@@ -81,9 +81,9 @@ export default function Footer() {
               Mess Contact
             </h3>
             <div className="space-y-1.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
-              <p>📍 Nashik Road, Nashik</p>
-              <p>📞 +91 98765 43210</p>
-              <p>✉️ support@messmasterpro.com</p>
+              <p>📍 Trimbak Road Mahiravanni Nashik,</p>
+              <p>📞 +91 8010731546</p>
+              <p>✉️ [EMAIL_ADDRESS]</p>
               <p className="pt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
                 🟢 Mess Service Active
               </p>
