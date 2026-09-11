@@ -36,6 +36,7 @@ const UserSchema = new Schema(
     Deposit: { type: Number, default: 0 },
     PendingAmount: { type: Number, default: 3600 },
     DietType: { type: String, enum: ["Pure Veg", "Mixed"], default: "Mixed" },
+    isConfirmed: { type: Boolean, default: false },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },

@@ -40,6 +40,7 @@ export const Payments = () => {
           gender: u.gender,
           paid: paidAmount,
           pending: pendingAmount,
+          deposit: u.deposit || 0,
           paymentStatus: u.paymentStatus || (pendingAmount === 0 ? "Paid" : "Pending"),
           plan: {
             name: planName,
@@ -86,15 +87,17 @@ export const Payments = () => {
     const newPaidAmount = depositMember.paid + addedAmount;
     const newPendingAmount = Math.max(0, depositMember.plan.amount - newPaidAmount);
     const newStatus = newPendingAmount === 0 ? "Paid" : "Pending";
+    const newDeposit = (depositMember.deposit || 0) + addedAmount;
 
     setIsSubmitting(true);
     try {
       await updateUser(depositMember.id, {
         PaidAmount: newPaidAmount,
         PendingAmount: newPendingAmount,
+        Deposit: newDeposit,
         PaymentStatus: newStatus,
       });
-      alert(`Successfully added ₹${addedAmount} to ${depositMember.name}'s account.`);
+      alert(`Successfully added deposit of ₹${addedAmount} to ${depositMember.name}'s account.`);
       setDepositMember(null);
       setDepositAmount("");
       fetchMembers();
@@ -141,6 +144,7 @@ export const Payments = () => {
         acc.totalUsers += 1;
         acc.totalPaid += m.paid;
         acc.totalPending += m.pending;
+        acc.totalDeposited += (m.deposit || 0);
         acc.totalPlanAmount += m.plan.amount;
         return acc;
       },
@@ -148,6 +152,7 @@ export const Payments = () => {
         totalUsers: 0,
         totalPaid: 0,
         totalPending: 0,
+        totalDeposited: 0,
         totalPlanAmount: 0,
       }
     );
@@ -180,29 +185,36 @@ export const Payments = () => {
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border p-4 rounded-2xl">
-          <p className="text-gray-500 text-xs">Total Users</p>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <div className="bg-white border p-4 rounded-2xl dark:bg-slate-900 dark:border-slate-800">
+          <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold">Total Users</p>
           <h2 className="text-2xl font-bold">{stats.totalUsers}</h2>
         </div>
 
-        <div className="bg-blue-50 border p-4 rounded-2xl">
-          <p className="text-gray-500 text-xs">Total Plan Amount</p>
-          <h2 className="text-2xl font-bold text-blue-700">
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl dark:bg-blue-950/40 dark:border-blue-900/60">
+          <p className="text-blue-700 dark:text-blue-400 text-xs font-semibold">Total Plan Amount</p>
+          <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-300">
             ₹{stats.totalPlanAmount}
           </h2>
         </div>
 
-        <div className="bg-green-50 border p-4 rounded-2xl">
-          <p className="text-gray-500 text-xs">Total Paid</p>
-          <h2 className="text-2xl font-bold text-green-700">
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl dark:bg-emerald-950/40 dark:border-emerald-900/60">
+          <p className="text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">Total Deposited</p>
+          <h2 className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+            ₹{stats.totalDeposited}
+          </h2>
+        </div>
+
+        <div className="bg-green-50 border border-green-200 p-4 rounded-2xl dark:bg-green-950/40 dark:border-green-900/60">
+          <p className="text-green-700 dark:text-green-400 text-xs font-semibold">Total Paid</p>
+          <h2 className="text-2xl font-bold text-green-700 dark:text-green-300">
             ₹{stats.totalPaid}
           </h2>
         </div>
 
-        <div className="bg-red-50 border p-4 rounded-2xl">
-          <p className="text-gray-500 text-xs">Total Pending</p>
-          <h2 className="text-2xl font-bold text-red-700">
+        <div className="bg-red-50 border border-red-200 p-4 rounded-2xl dark:bg-red-950/40 dark:border-red-900/60">
+          <p className="text-red-700 dark:text-red-400 text-xs font-semibold">Total Pending</p>
+          <h2 className="text-2xl font-bold text-red-700 dark:text-red-300">
             ₹{stats.totalPending}
           </h2>
         </div>
@@ -285,7 +297,11 @@ export const Payments = () => {
                 </div>
 
                 {/* PAYMENT */}
-                <div className="flex gap-3 mt-4">
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <span className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 px-3 py-1 rounded-lg text-xs font-extrabold border border-emerald-300 dark:border-emerald-800">
+                    User Deposited: ₹{m.deposit}
+                  </span>
+
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-semibold">
                     Paid: ₹{m.paid}
                   </span>
@@ -348,6 +364,10 @@ export const Payments = () => {
               </div>
 
               <div className="bg-gray-50 p-3 rounded-xl text-xs text-gray-600 space-y-1">
+                <div className="flex justify-between">
+                  <span>User Deposited:</span>
+                  <b className="text-emerald-600 font-extrabold">₹{depositMember.deposit}</b>
+                </div>
                 <div className="flex justify-between">
                   <span>Current Paid:</span>
                   <b>₹{depositMember.paid}</b>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   CalendarCheck,
-  CalendarOff,
   History,
   UtensilsCrossed,
   Users,
@@ -46,6 +45,8 @@ export default function CardsSection() {
           (acc, u) => acc + (u.paid || 0),
           0
         );
+
+       
 
         const pendingUsers = users.filter(
           (u) => u.paymentStatus === "Pending"

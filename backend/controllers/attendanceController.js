@@ -261,3 +261,79 @@ export const getUserAttendanceHistory = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch user attendance history" });
     }
 };
+
+export const getUserAttendanceByDate = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { date } = req.query;
+        if (!date) {
+            return res.status(400).json({ message: "date query parameter is required" });
+        }
+
+        const dateStr = typeof date === "string" ? date.slice(0, 10) : new Date(date).toISOString().slice(0, 10);
+        const start = new Date(`${dateStr}T00:00:00.000Z`);
+        const end = new Date(`${dateStr}T23:59:59.999Z`);
+
+        const record = await Attendance.findOne({
+            userId,
+            date: { $gte: start, $lte: end },
+        });
+
+        res.status(200).json({
+            message: "User attendance for date fetched successfully",
+            data: record || null,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to fetch user attendance by date" });
+    }
+};
+
+export const saveUserMealSelection = async (req, res) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            return res.status(401).json({ message: "Authentication required" });
+        }
+
+        const { date, lunch, dinner, extraTiffin } = req.body;
+        if (!date) {
+            return res.status(400).json({ message: "date is required" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const normalizedDate = normalizeDateToUTC(date);
+        const isLunch = Boolean(lunch);
+        const isDinner = Boolean(dinner);
+        const countExtra = Number(extraTiffin) || 0;
+        const status = isLunch || isDinner ? "present" : "absent";
+
+        const updated = await Attendance.findOneAndUpdate(
+            { userId, date: normalizedDate },
+            {
+                $set: {
+                    userName: user.Name,
+                    status,
+                    lunch: isLunch,
+                    dinner: isDinner,
+                    extraTiffin: countExtra,
+                    date: normalizedDate,
+                },
+            },
+            { new: true, upsert: true }
+        );
+
+        res.status(200).json({
+            message: "Meal selection saved successfully",
+            data: updated,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to save meal selection", error: error.message });
+    }
+};
+

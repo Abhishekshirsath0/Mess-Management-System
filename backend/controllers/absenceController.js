@@ -30,13 +30,22 @@ const syncAttendanceRecords = async (userObj, start, end, mealType = "Both") => 
 
   const selectedMeal = mealType || "Both";
 
-  for (const d of dates) {
+  // Batch query all existing attendance records in date range to avoid N+1 queries
+  const existingRecords = await Attendance.find({
+    userId: userObj._id,
+    date: { $gte: start, $lte: finish },
+  });
+
+  const existingMap = new Map();
+  for (const rec of existingRecords) {
+    const key = rec.date.toISOString().slice(0, 10);
+    existingMap.set(key, rec);
+  }
+
+  const ops = dates.map((d) => {
     const dateStr = d.toISOString().slice(0, 10);
     const normalizedDate = new Date(`${dateStr}T00:00:00.000Z`);
-    const existingRec = await Attendance.findOne({
-      userId: userObj._id,
-      date: normalizedDate,
-    });
+    const existingRec = existingMap.get(dateStr);
 
     let lunch = false;
     let dinner = false;
@@ -48,26 +57,31 @@ const syncAttendanceRecords = async (userObj, start, end, mealType = "Both") => 
       dinner = false;
       lunch = existingRec ? Boolean(existingRec.lunch) : false;
     } else {
-      // Both
       lunch = false;
       dinner = false;
     }
 
     const status = lunch || dinner ? "present" : "absent";
 
-    await Attendance.findOneAndUpdate(
-      { userId: userObj._id, date: normalizedDate },
-      {
-        $set: {
-          userName: userObj.Name || userObj.name || "Member",
-          status,
-          lunch,
-          dinner,
-          date: normalizedDate,
+    return {
+      updateOne: {
+        filter: { userId: userObj._id, date: normalizedDate },
+        update: {
+          $set: {
+            userName: userObj.Name || userObj.name || "Member",
+            status,
+            lunch,
+            dinner,
+            date: normalizedDate,
+          },
         },
+        upsert: true,
       },
-      { upsert: true, new: true }
-    );
+    };
+  });
+
+  if (ops.length > 0) {
+    await Attendance.bulkWrite(ops);
   }
 };
 

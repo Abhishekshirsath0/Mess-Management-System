@@ -30,6 +30,17 @@ attendanceRouter.put(
 
 // User accessible routes
 attendanceRouter.get(
+  "/user-date/:userId",
+  verifyToken,
+  verifyUserOrAdmin,
+  attendanceController.getUserAttendanceByDate,
+);
+attendanceRouter.post(
+  "/user-select",
+  verifyToken,
+  attendanceController.saveUserMealSelection,
+);
+attendanceRouter.get(
   "/user/:userId",
   verifyToken,
   verifyUserOrAdmin,

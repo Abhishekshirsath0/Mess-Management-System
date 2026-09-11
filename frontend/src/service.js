@@ -1,6 +1,19 @@
 import axios from "axios";
 
-const API = "http://localhost:8000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
+export const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return true;
+    const payload = JSON.parse(atob(parts[1]));
+    if (!payload || !payload.exp) return false;
+    return payload.exp * 1000 < Date.now();
+  } catch (e) {
+    return true;
+  }
+};
 
 axios.interceptors.response.use(
   (response) => response,
@@ -9,7 +22,7 @@ axios.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       if (!window.location.pathname.toLowerCase().includes("/login")) {
-        window.location.href = "/Login";
+        window.location.href = "/login";
       }
     }
     return Promise.reject(error);
@@ -31,7 +44,9 @@ export const mapUser = (user) => ({
   paymentStatus: user.PaymentStatus || "Pending",
   paid: user.PaidAmount ?? 0,
   pending: user.PendingAmount ?? 3600,
+  deposit: user.Deposit ?? 0,
   dietType: user.DietType || "Mixed",
+  isConfirmed: Boolean(user.isConfirmed),
 });
 
 export const postUserdata = async (userdata) => {
@@ -192,6 +207,39 @@ export const updateAttendance = async (records) => {
       error.response?.data || error.message,
     );
     throw error;
+  }
+};
+
+export const getUserAttendanceForUserAndDate = async (userId, date) => {
+  try {
+    const response = await axios.get(`${API}/attendance/user-date/${userId}`, {
+      headers: getAuthHeaders(),
+      params: { date },
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      "GET USER ATTENDANCE BY DATE ERROR:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const postUserMealSelection = async ({ date, lunch, dinner, extraTiffin }) => {
+  try {
+    const response = await axios.post(
+      `${API}/attendance/user-select`,
+      { date, lunch, dinner, extraTiffin },
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "POST USER MEAL SELECTION ERROR:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
   }
 };
 

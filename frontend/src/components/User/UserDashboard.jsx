@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Footer from "../common/Footer.jsx";
 import {
   Wallet,
@@ -12,11 +12,17 @@ import {
   WifiOff,
   SignalLow,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  X,
 } from "lucide-react";
 import {
   getTodayMeal,
   getUserAttendanceStats,
   getUserMealAssignment,
+  getUserAttendanceForUserAndDate,
+  postUserMealSelection,
 } from "../../service";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -25,6 +31,14 @@ const PLANS = {
   BASIC: { price: 1800, meals: ["dinner"] },
   STANDARD: { price: 3600, meals: ["lunch", "dinner"] },
   PREMIUM: { price: 4200, meals: ["breakfast", "lunch", "dinner"] },
+};
+
+const getTodayDateStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 /* ---------------- ICONS ---------------- */
@@ -186,6 +200,16 @@ export default function UserDashboard() {
     typeof navigator !== "undefined" ? !navigator.onLine : false
   );
 
+  // Date-based persistent meal selection state
+  const [selectedDate, setSelectedDate] = useState(getTodayDateStr());
+  const [dateMealState, setDateMealState] = useState({
+    lunch: false,
+    dinner: false,
+    extraTiffin: 0,
+    hasCustomRecord: false,
+  });
+  const [savingMealSelection, setSavingMealSelection] = useState(false);
+
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -204,6 +228,34 @@ export default function UserDashboard() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
+  }, []);
+
+  // Fetch date-based meal selection from DB
+  const loadDateMealSelection = useCallback(async (dateStr, userId, activeAssign) => {
+    if (!userId || !dateStr) return;
+    try {
+      const rec = await getUserAttendanceForUserAndDate(userId, dateStr);
+      if (rec) {
+        setDateMealState({
+          lunch: Boolean(rec.lunch),
+          dinner: Boolean(rec.dinner),
+          extraTiffin: rec.extraTiffin || 0,
+          hasCustomRecord: true,
+        });
+      } else {
+        // Fallback default from active meal assignment if any
+        const defaultLunch = activeAssign === "Lunch" || activeAssign === "Both";
+        const defaultDinner = activeAssign === "Dinner" || activeAssign === "Both";
+        setDateMealState({
+          lunch: defaultLunch,
+          dinner: defaultDinner,
+          extraTiffin: 0,
+          hasCustomRecord: false,
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load meal selection for date:", err);
+    }
   }, []);
 
   useEffect(() => {
@@ -230,6 +282,7 @@ export default function UserDashboard() {
         console.error("Error loading today's meal:", err);
       }
 
+      let currentAssign = null;
       if (currentUser.id) {
         try {
           const stats = await getUserAttendanceStats(currentUser.id);
@@ -243,6 +296,7 @@ export default function UserDashboard() {
         try {
           const assignment = await getUserMealAssignment(currentUser.id);
           if (assignment && assignment.status === "active") {
+            currentAssign = assignment.mealType;
             setActiveMealAssignment(assignment.mealType);
           } else {
             setActiveMealAssignment(null);
@@ -250,6 +304,8 @@ export default function UserDashboard() {
         } catch (err) {
           console.error("Error loading user meal assignment:", err);
         }
+
+        await loadDateMealSelection(selectedDate, currentUser.id, currentAssign);
       }
 
       clearTimeout(slowTimer);
@@ -265,7 +321,48 @@ export default function UserDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [currentUser]);
+  }, [currentUser, selectedDate, loadDateMealSelection]);
+
+  const handleToggleMeal = async (type) => {
+    if (!currentUser.id || savingMealSelection) return;
+    const newLunch = type === "lunch" ? !dateMealState.lunch : dateMealState.lunch;
+    const newDinner = type === "dinner" ? !dateMealState.dinner : dateMealState.dinner;
+
+    setSavingMealSelection(true);
+    try {
+      await postUserMealSelection({
+        date: selectedDate,
+        lunch: newLunch,
+        dinner: newDinner,
+        extraTiffin: dateMealState.extraTiffin,
+      });
+
+      setDateMealState({
+        lunch: newLunch,
+        dinner: newDinner,
+        extraTiffin: dateMealState.extraTiffin,
+        hasCustomRecord: true,
+      });
+
+      const updatedStats = await getUserAttendanceStats(currentUser.id).catch(() => null);
+      if (updatedStats) {
+        setTiffinCount(updatedStats.totalTiffins || 0);
+      }
+    } catch (err) {
+      alert("Failed to save meal selection for selected date.");
+    } finally {
+      setSavingMealSelection(false);
+    }
+  };
+
+  const handleShiftDate = (offsetDays) => {
+    const d = new Date(selectedDate + "T00:00:00.000Z");
+    d.setUTCDate(d.getUTCDate() + offsetDays);
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    setSelectedDate(`${year}-${month}-${day}`);
+  };
 
   const planInfo = PLANS[currentUser.plan] || PLANS.STANDARD;
   const billAmount = currentUser.paid || planInfo.price;
@@ -286,6 +383,14 @@ export default function UserDashboard() {
       icon: <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-white dark:text-white" />,
       bg: "bg-black text-white dark:bg-slate-800",
       color: "text-white",
+    },
+    {
+      title: "Deposited",
+      value: `₹${currentUser.deposit || 0}`,
+      subtitle: "Admin Deposited",
+      icon: <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-800 dark:text-emerald-300" />,
+      bg: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800",
+      color: "text-emerald-700 dark:text-emerald-400",
     },
     {
       title: "Payment Status",
@@ -347,7 +452,7 @@ export default function UserDashboard() {
    
 
         {/* STATS CARDS */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <section className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           {userCards.map((card, index) => (
             <div
               key={index}
@@ -376,6 +481,126 @@ export default function UserDashboard() {
               </div>
             </div>
           ))}
+        </section>
+
+        {/* PERSISTENT DAY-BASED MEAL SELECTION */}
+        <section className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-indigo-500/80 dark:border-indigo-800 shadow-md p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-gray-200 dark:border-slate-800 pb-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+                <CalendarDays className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                Persistent Day-Based Meal Selection
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Select your meal choices per calendar day. Your selection is permanently saved in the database.
+              </p>
+            </div>
+
+            {/* DATE CONTROLS */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleShiftDate(-1)}
+                className="p-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl border border-gray-300 dark:border-slate-700 text-gray-800 dark:text-gray-200 transition cursor-pointer"
+                title="Previous Day"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+
+              <button
+                onClick={() => handleShiftDate(1)}
+                className="p-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl border border-gray-300 dark:border-slate-700 text-gray-800 dark:text-gray-200 transition cursor-pointer"
+                title="Next Day"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setSelectedDate(getTodayDateStr())}
+                className="px-3 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-bold transition hover:bg-indigo-100 cursor-pointer"
+              >
+                Today
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* LUNCH SELECTION */}
+            <div className={`p-5 rounded-2xl border-2 transition-all ${
+              dateMealState.lunch
+                ? "bg-emerald-50/70 border-emerald-500 dark:bg-emerald-950/40 dark:border-emerald-700"
+                : "bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700"
+            }`}>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-extrabold text-base flex items-center gap-2 text-gray-900 dark:text-white">
+                  🍛 Lunch Selection
+                </h3>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-extrabold flex items-center gap-1 ${
+                  dateMealState.lunch
+                    ? "bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100"
+                    : "bg-gray-200 text-gray-700 dark:bg-slate-700 dark:text-gray-300"
+                }`}>
+                  {dateMealState.lunch ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                  {dateMealState.lunch ? "SELECTED" : "NOT SELECTED"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
+                Date: <b className="text-gray-900 dark:text-white">{selectedDate}</b>
+              </p>
+              <button
+                disabled={savingMealSelection}
+                onClick={() => handleToggleMeal("lunch")}
+                className={`w-full py-2.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  dateMealState.lunch
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                    : "bg-gray-900 hover:bg-black text-white dark:bg-slate-700 dark:hover:bg-slate-600"
+                } disabled:opacity-50`}
+              >
+                {savingMealSelection ? "Saving..." : dateMealState.lunch ? "Unselect Lunch" : "Select Lunch"}
+              </button>
+            </div>
+
+            {/* DINNER SELECTION */}
+            <div className={`p-5 rounded-2xl border-2 transition-all ${
+              dateMealState.dinner
+                ? "bg-purple-50/70 border-purple-500 dark:bg-purple-950/40 dark:border-purple-700"
+                : "bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700"
+            }`}>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-extrabold text-base flex items-center gap-2 text-gray-900 dark:text-white">
+                  🌙 Dinner Selection
+                </h3>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-extrabold flex items-center gap-1 ${
+                  dateMealState.dinner
+                    ? "bg-purple-200 text-purple-900 dark:bg-purple-900 dark:text-purple-100"
+                    : "bg-gray-200 text-gray-700 dark:bg-slate-700 dark:text-gray-300"
+                }`}>
+                  {dateMealState.dinner ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                  {dateMealState.dinner ? "SELECTED" : "NOT SELECTED"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
+                Date: <b className="text-gray-900 dark:text-white">{selectedDate}</b>
+              </p>
+              <button
+                disabled={savingMealSelection}
+                onClick={() => handleToggleMeal("dinner")}
+                className={`w-full py-2.5 rounded-xl font-bold text-xs transition cursor-pointer ${
+                  dateMealState.dinner
+                    ? "bg-purple-600 hover:bg-purple-700 text-white shadow-xs"
+                    : "bg-gray-900 hover:bg-black text-white dark:bg-slate-700 dark:hover:bg-slate-600"
+                } disabled:opacity-50`}
+              >
+                {savingMealSelection ? "Saving..." : dateMealState.dinner ? "Unselect Dinner" : "Select Dinner"}
+              </button>
+            </div>
+          </div>
         </section>
 
         {/* MEALS DISPLAY */}

@@ -22,7 +22,7 @@ const mapUsersWithAttendance = (users, records) => {
       rollNo: index + 1,
       name: u.name,
       mobile: String(u.mobile),
-      payment: u.payment ?? "Unpaid",
+      payment: u.paymentStatus ?? "Pending",
       status: rec ? (rec.status === "present" ? "Active" : "Inactive") : "Inactive",
       lunch: rec?.lunch ?? false,
       dinner: rec?.dinner ?? false,
@@ -147,17 +147,15 @@ export const View_Attends = () => {
   const [loading, setLoading] = useState(true);
   const [showMarkAbsence, setShowMarkAbsence] = useState(false);
 
-  const loadData = async () => {
+  const loadData = async (dateToLoad = currentDate) => {
     try {
-      const date = todayStr();
       setLoading(true);
       const [users, records] = await Promise.all([
         getUserdatafromserver(),
-        getAttendanceByDate(date),
+        getAttendanceByDate(dateToLoad),
       ]);
       setMembers(mapUsersWithAttendance(users, records));
       setAttendanceSaved(records.length > 0);
-      setCurrentDate(date);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -166,19 +164,9 @@ export const View_Attends = () => {
     }
   };
 
-  // Initial load
+  // Initial load and reload on date change
   useEffect(() => {
-    loadData();
-  }, []);
-
-  // Check every minute whether the date has rolled over
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (todayStr() !== currentDate) {
-        loadData();
-      }
-    }, 60 * 1000);
-    return () => clearInterval(interval);
+    loadData(currentDate);
   }, [currentDate]);
 
   // MEMOIZED FILTERED MEMBERS
@@ -260,14 +248,14 @@ export const View_Attends = () => {
   const handleSaveOrUpdate = async () => {
     try {
       setSaving(true);
-      const today = todayStr();
+      const targetDate = currentDate || todayStr();
 
       const payload = members
-        .filter((m) => m.lunch || m.dinner)
+        .filter((m) => m.lunch || m.dinner || m.extraTiffin > 0)
         .map((m) => ({
           userId: m.id,
           userName: m.name,
-          date: today,
+          date: targetDate,
           status: m.status === "Active" ? "present" : "absent",
           lunch: m.lunch,
           dinner: m.dinner,
@@ -275,7 +263,7 @@ export const View_Attends = () => {
         }));
 
       if (payload.length === 0) {
-        showWarning("No lunch/dinner marked for any member — nothing to save.");
+        showWarning("No lunch/dinner/tiffin marked for any member — nothing to save.");
         setSaving(false);
         return;
       }
@@ -288,11 +276,11 @@ export const View_Attends = () => {
 
       showSuccess(
         attendanceSaved
-          ? "Attendance Updated Successfully!"
-          : "Attendance Saved Successfully!"
+          ? `Attendance Updated for ${targetDate} Successfully!`
+          : `Attendance Saved for ${targetDate} Successfully!`
       );
 
-      await loadData();
+      await loadData(targetDate);
     } catch (error) {
       console.error(error);
       showError(
@@ -352,15 +340,38 @@ export const View_Attends = () => {
         <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col text-gray-900 dark:text-white">
           {/* HEADER */}
           <div className="p-4 md:p-6 border-b border-gray-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h2 className="text-xl md:text-2xl font-bold">Today's Attendance</h2>
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold">Attendance & Meal Selection</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Managing date: <b className="text-indigo-600 dark:text-indigo-400">{currentDate}</b>
+              </p>
+            </div>
 
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, roll no, mobile..."
-              className="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-72"
-            />
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Date:</label>
+                <input
+                  type="date"
+                  value={currentDate}
+                  onChange={(e) => setCurrentDate(e.target.value)}
+                  className="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold"
+                />
+                <button
+                  onClick={() => setCurrentDate(todayStr())}
+                  className="px-2.5 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold border border-gray-300 dark:border-slate-700 hover:bg-gray-200 transition cursor-pointer"
+                >
+                  Today
+                </button>
+              </div>
+
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search member..."
+                className="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-60 text-xs"
+              />
+            </div>
           </div>
 
           {/* TABLE */}

@@ -1,6 +1,7 @@
 import Navbar from "./components/common/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import UserDashboard from "./components/User/UserDashboard";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 export default function App() {
   const location = useLocation();
@@ -13,12 +14,14 @@ export default function App() {
         <Navbar />
 
         <div className="max-w-7xl mx-auto px-2 md:px-4 py-4">
-          {isUserHome && <UserDashboard />}
+          {isUserHome && (
+            <ProtectedRoute>
+              <UserDashboard />
+            </ProtectedRoute>
+          )}
           <Outlet />
         </div>
       </div>
-
-
     </div>
   );
 }

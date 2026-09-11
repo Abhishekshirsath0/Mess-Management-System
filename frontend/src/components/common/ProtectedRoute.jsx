@@ -1,14 +1,27 @@
 import { Navigate } from "react-router-dom";
+import { isTokenExpired } from "../../service";
 
 export default function ProtectedRoute({ children, requiredRole = null }) {
   const token = localStorage.getItem("token");
   const userStr = localStorage.getItem("user");
-  const user = userStr ? JSON.parse(userStr) : null;
+  let user = null;
 
-  // Check if user is authenticated
-  if (!token || !user) {
-    return <Navigate to="/Login" replace />;
+  if (userStr) {
+    try {
+      user = JSON.parse(userStr);
+    } catch (e) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
   }
+
+  // Check if token exists and is valid (not expired)
+  if (!token || !user || isTokenExpired(token)) {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    return <Navigate to="/login" replace />;
+  }
+
   // Check if specific role is required (for admin routes)
   if (requiredRole && user.role !== requiredRole) {
     return <Navigate to="/" replace />;
@@ -16,3 +29,4 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
 
   return children;
 }
+

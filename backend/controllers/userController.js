@@ -2,26 +2,35 @@ import User from "../model/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "71a1567f574122600060c086d8971a1f41e6d68abed01e01470c8130c31240a3";
+const getJwtSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is not defined");
+  }
+  return process.env.JWT_SECRET;
+};
 
 export const postUserdata = async (req, res) => {
   try {
-    const { Name, Mobile, Parent_Mob, Email, DietType, Address, Gender, Password, Usertype, Plan } = req.body;
+    const { Name, Mobile, Parent_Mob, Email, DietType, Address, Gender, Password, Plan } = req.body;
 
+    if (!Email || !Password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const normalizedEmail = Email.trim().toLowerCase();
     const hashedPassword = await bcrypt.hash(Password, 10);
 
     const newUser = new User({
       Name,
       Mobile,
       Parent_Mob,
-      Email,
+      Email: normalizedEmail,
       DietType: DietType || "Mixed",
       Address,
       Gender,
       Password: hashedPassword,
-      Usertype: Usertype || "user",
+      Usertype: "user", // Security enforcement: Public registration always creates standard 'user'
       Plan: Plan || "STANDARD",
-
     });
 
     const savedUser = await newUser.save();
@@ -46,7 +55,12 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const user = await User.findOne({ Email: email }).select("+Password");
+    const normalizedEmail = email.trim().toLowerCase();
+    const escapedEmail = normalizedEmail.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const user = await User.findOne({
+      Email: new RegExp("^" + escapedEmail + "$", "i"),
+    }).select("+Password");
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -58,8 +72,8 @@ export const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, role: user.Usertype, email: user.Email },
-      JWT_SECRET,
-      { expiresIn: "7d" }
+      getJwtSecret(),
+      { expiresIn: "10d" }
     );
 
     const { Password: _, ...userWithoutPassword } = user.toObject();
@@ -85,17 +99,27 @@ export const getUserdata = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-
     const updateData = { ...req.body };
 
     // Prevent password update from this route
     delete updateData.Password;
 
+    // Security: Non-admins cannot alter administrative/financial fields
+    const isAdmin = req.user && req.user.role === "admin";
+    if (!isAdmin) {
+      delete updateData.Usertype;
+      delete updateData.PaymentStatus;
+      delete updateData.PaidAmount;
+      delete updateData.PendingAmount;
+      delete updateData.Deposit;
+      delete updateData.isConfirmed;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       updateData,
       {
-        returnDocument: "after",
+        new: true,
         runValidators: true,
       }
     ).select("-Password");
@@ -110,7 +134,6 @@ export const updateUser = async (req, res) => {
       message: "User updated successfully",
       user: updatedUser,
     });
-
   } catch (error) {
     console.error("Update user error:", error);
 
@@ -131,4 +154,4 @@ export const deleteUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-};
+};

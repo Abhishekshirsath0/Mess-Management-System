@@ -12,22 +12,22 @@ import { RingLoader } from "react-spinners";
 // LAZY LOADED ROUTE COMPONENTS
 const Dashboard = lazy(() => import("./components/admin/Dashboard"));
 const ViewAttendsWrapper = lazy(() =>
-  import("./components/admin/CARDS/View_Attends").then((module) => ({
+  import("./components/admin/cards/View_Attends").then((module) => ({
     default: module.View_Attends,
   }))
 );
 const MembersWrapper = lazy(() =>
-  import("./components/admin/CARDS/Members").then((module) => ({
+  import("./components/admin/cards/Members").then((module) => ({
     default: module.Members,
   }))
 );
 const EditMealWrapper = lazy(() =>
-  import("./components/admin/CARDS/Edit_Meal").then((module) => ({
+  import("./components/admin/cards/Edit_Meal").then((module) => ({
     default: module.Edit_Meal,
   }))
 );
 const PaymentsWrapper = lazy(() =>
-  import("./components/admin/CARDS/Payments").then((module) => ({
+  import("./components/admin/cards/Payments").then((module) => ({
     default: module.Payments,
   }))
 );
@@ -197,7 +197,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "Login",
+    path: "login",
     element: (
       <Suspense fallback={<PageFallback />}>
         <Login />
@@ -205,7 +205,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "login",
+    path: "Login",
     element: (
       <Suspense fallback={<PageFallback />}>
         <Login />
@@ -229,23 +229,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "ForgotPassword",
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <ForgotPassword />
-      </Suspense>
-    ),
-  },
-  {
     path: "reset-password/:token",
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <ResetPassword />
-      </Suspense>
-    ),
-  },
-  {
-    path: "ResetPassword/:token",
     element: (
       <Suspense fallback={<PageFallback />}>
         <ResetPassword />

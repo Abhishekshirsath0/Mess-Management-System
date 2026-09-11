@@ -1,7 +1,11 @@
 import jwt from "jsonwebtoken";
 
-
-const JWT_SECRET = process.env.JWT_SECRET || "71a1567f574122600060c086d8971a1f41e6d68abed01e01470c8130c31240a3";
+const getJwtSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is missing");
+  }
+  return process.env.JWT_SECRET;
+};
 
 export const verifyToken = (req, res, next) => {
   try {
@@ -12,21 +16,20 @@ export const verifyToken = (req, res, next) => {
       token = authHeader.split(" ")[1];
     } else if (req.headers.token) {
       token = req.headers.token;
-    } else if (req.query && req.query.token) {
-      token = req.query.token;
     }
 
     if (!token) {
       return res.status(401).json({ message: "Access token required" });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid or expired token", error: error.message });
   }
 };
+
 
 export const verifyAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {

@@ -42,6 +42,7 @@ export const Members = () => {
         gender: u.gender,
         role: u.role ?? "user",
         dietType: u.dietType ?? "Mixed",
+        isConfirmed: u.isConfirmed ?? false,
         paid: u.paid ?? 0,
         pending: u.pending ?? 0,
         assignedMeal: assignmentMap[u.id] || null,
@@ -58,6 +59,23 @@ export const Members = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const toggleConfirmed = async (id) => {
+    const target = members.find((m) => m.id === id);
+    if (!target) return;
+    const newStatus = !target.isConfirmed;
+    const statusText = newStatus ? "CONFIRMED" : "NOT CONFIRMED";
+    if (confirm(`Are you sure you want to change confirmation status for ${target.name} to ${statusText}?`)) {
+      try {
+        await updateUser(id, { isConfirmed: newStatus });
+        setMembers((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, isConfirmed: newStatus } : m))
+        );
+      } catch (err) {
+        alert("Failed to update confirmation status");
+      }
+    }
+  };
 
   const toggleRole = async (id) => {
     const target = members.find((m) => m.id === id);
@@ -96,7 +114,7 @@ export const Members = () => {
   };
 
   const filtered = members
-    .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((m) => (m.name || "").toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
       if (a.role === "admin" && b.role !== "admin") return -1;
       if (a.role !== "admin" && b.role === "admin") return 1;
@@ -207,7 +225,7 @@ export const Members = () => {
                   </span>
                 </div>
 
-                {/* BADGES: DIET TYPE & ACTIVE RECURRING MEAL */}
+                {/* BADGES: DIET TYPE, CONFIRMATION STATUS & ACTIVE RECURRING MEAL */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -217,6 +235,16 @@ export const Members = () => {
                     }`}
                   >
                     {m.dietType}
+                  </span>
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-extrabold border ${
+                      m.isConfirmed
+                        ? "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800"
+                        : "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800"
+                    }`}
+                  >
+                    Confirmed: {m.isConfirmed ? "Yes" : "No"}
                   </span>
 
                   <span
@@ -290,6 +318,16 @@ export const Members = () => {
 
               {/* ACTION BUTTONS */}
               <div className="pt-4 border-t border-gray-100 dark:border-slate-800 flex justify-end gap-2">
+                <button
+                  onClick={() => toggleConfirmed(m.id)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
+                    m.isConfirmed
+                      ? "bg-amber-600 hover:bg-amber-700 text-white"
+                      : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  }`}
+                >
+                  {m.isConfirmed ? "Mark Unconfirmed" : "Confirm Member"}
+                </button>
                 <button
                   onClick={() => toggleRole(m.id)}
                   className="bg-gray-900 dark:bg-slate-800 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer"

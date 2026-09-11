@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyToken, verifyAdmin } from "../middleware/auth.js";
+import { verifyToken, verifyAdmin, verifyUserOrAdmin } from "../middleware/auth.js";
 import {
   assignMeal,
   resetMeal,
@@ -15,6 +15,7 @@ mealAssignmentRouter.post("/reset", verifyToken, verifyAdmin, resetMeal);
 mealAssignmentRouter.get("/", verifyToken, verifyAdmin, getAllMealAssignments);
 
 // User / Admin route to view individual assignment
-mealAssignmentRouter.get("/user/:userId", verifyToken, getUserMealAssignment);
+mealAssignmentRouter.get("/user/:userId", verifyToken, verifyUserOrAdmin, getUserMealAssignment);
 
 export default mealAssignmentRouter;
+
