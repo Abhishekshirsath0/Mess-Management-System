@@ -7,12 +7,12 @@ export default function PrivacyPolicy() {
       <p>
         At MessMaster Pro, accessible from our mess web application, one of our main priorities is the privacy of our
         visitors and members. This Privacy Policy document contains types of information that is collected and recorded
-        by MessMaster Pro and how we use it.
+        by MessMaster Proand how we use it.
       </p>
 
       <h2 className="text-lg font-bold text-gray-900 dark:text-white pt-2">1. Information We Collect</h2>
       <p>
-        When you register for a MessMaster Pro account, we collect personal information including your full name,
+        When you register for a MessMaster Proaccount, we collect personal information including your full name,
         mobile number, parent phone number, email address, physical address, gender, dietary preferences (Pure Veg or
         Mixed), and selected subscription plan (BASIC, STANDARD, PREMIUM).
       </p>

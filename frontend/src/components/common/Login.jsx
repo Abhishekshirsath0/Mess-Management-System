@@ -79,7 +79,7 @@ export default function Login() {
         </h2>
 
         <p className="mt-2 text-center text-sm text-gray-600">
-          MessMaster Pro — Mess Management System
+          MessMaster Pro— Mess Management System
         </p>
       </div>
 

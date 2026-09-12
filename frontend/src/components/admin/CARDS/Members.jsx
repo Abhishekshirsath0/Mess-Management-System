@@ -60,35 +60,19 @@ export const Members = () => {
     loadData();
   }, []);
 
-  const toggleConfirmed = async (id) => {
-    const target = members.find((m) => m.id === id);
-    if (!target) return;
-    const newStatus = !target.isConfirmed;
-    const statusText = newStatus ? "CONFIRMED" : "NOT CONFIRMED";
-    if (confirm(`Are you sure you want to change confirmation status for ${target.name} to ${statusText}?`)) {
-      try {
-        await updateUser(id, { isConfirmed: newStatus });
-        setMembers((prev) =>
-          prev.map((m) => (m.id === id ? { ...m, isConfirmed: newStatus } : m))
-        );
-      } catch (err) {
-        alert("Failed to update confirmation status");
-      }
-    }
-  };
-
   const toggleRole = async (id) => {
     const target = members.find((m) => m.id === id);
     if (!target) return;
     const newRole = target.role === "admin" ? "user" : "admin";
-
-    try {
-      await updateUser(id, { Usertype: newRole });
-      setMembers((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, role: newRole } : m))
-      );
-    } catch (err) {
-      alert("Failed to update user role");
+    if (confirm(`Are you sure you want to change the role of ${target.name} to ${newRole.toUpperCase()}?`)) {
+      try {
+        await updateUser(id, { Usertype: newRole });
+        setMembers((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, role: newRole } : m))
+        );
+      } catch (err) {
+        alert("Failed to update user role");
+      }
     }
   };
 
@@ -318,16 +302,6 @@ export const Members = () => {
 
               {/* ACTION BUTTONS */}
               <div className="pt-4 border-t border-gray-100 dark:border-slate-800 flex justify-end gap-2">
-                <button
-                  onClick={() => toggleConfirmed(m.id)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
-                    m.isConfirmed
-                      ? "bg-amber-600 hover:bg-amber-700 text-white"
-                      : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                  }`}
-                >
-                  {m.isConfirmed ? "Mark Unconfirmed" : "Confirm Member"}
-                </button>
                 <button
                   onClick={() => toggleRole(m.id)}
                   className="bg-gray-900 dark:bg-slate-800 hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer"

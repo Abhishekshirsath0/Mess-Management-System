@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { logoutUser } from "../../service";
-import { LogOut, AlertCircle, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -10,7 +10,7 @@ export default function Navbar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme("dark");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -78,7 +78,7 @@ export default function Navbar() {
           <Link
             to="/"
             className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          > 
+          >
             Home
           </Link>
 
@@ -112,7 +112,6 @@ export default function Navbar() {
             )}
           </button>
 
-          <button className="text-xl hidden md:block">🔔</button>
 
           {user ? (
             <div className="flex items-center gap-3">

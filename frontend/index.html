@@ -9,7 +9,7 @@
       (function() {
         try {
           var t = localStorage.getItem('theme');
-          var isDark = t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var isDark = t ? t === 'dark' : true;
           if (isDark) {
             document.documentElement.classList.add('dark');
             document.documentElement.style.backgroundColor = '#0b1329';

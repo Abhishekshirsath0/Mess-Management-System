@@ -12,7 +12,7 @@ export default function AboutUs() {
           Revolutionizing Mess & Tiffin Management
         </h1>
         <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
-          MessMaster Pro is a modern, web-based platform built to simplify daily meal tracking, attendance recording, menu management, and automated subscription handling for messes and students.
+          MessMaster Prois a modern, web-based platform built to simplify daily meal tracking, attendance recording, menu management, and automated subscription handling for messes and students.
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export default function AboutUs() {
           <HeartHandshake className="text-indigo-600 dark:text-indigo-400" /> Our Mission
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-          Our mission is to eliminate paper registers and manual ledger errors by delivering an intuitive, real-time web solution. Whether you are a student tracking your monthly meal records or a mess administrator managing hundreds of daily diners, MessMaster Pro ensures accuracy, speed, and peace of mind.
+          Our mission is to eliminate paper registers and manual ledger errors by delivering an intuitive, real-time web solution. Whether you are a student tracking your monthly meal records or a mess administrator managing hundreds of daily diners, MessMaster Proensures accuracy, speed, and peace of mind.
         </p>
       </div>
     </div>
