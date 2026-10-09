@@ -21,23 +21,28 @@ const MembersWrapper = lazy(() =>
     default: module.Members,
   }))
 );
+
 const EditMealWrapper = lazy(() =>
   import("./components/admin/cards/Edit_Meal").then((module) => ({
     default: module.Edit_Meal,
   }))
 );
+
 const PaymentsWrapper = lazy(() =>
   import("./components/admin/cards/Payments").then((module) => ({
     default: module.Payments,
   }))
 );
-const AdminHistory = lazy(() => import("./components/admin/AdminHistory"));
+
 const UserAttendanceCalendar = lazy(() =>
   import("./components/admin/cards/UserAttendanceCalendar")
 );
+
 const MarkAbsence = lazy(() =>
   import("./components/admin/cards/MarkAbsence")
 );
+
+const AdminHistory = lazy(() => import("./components/admin/AdminHistory"));
 const UserHistory = lazy(() => import("./components/User/UserHistory"));
 const Login = lazy(() => import("./components/common/Login"));
 const Register = lazy(() => import("./components/common/Register"));

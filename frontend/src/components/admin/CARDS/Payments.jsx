@@ -180,13 +180,13 @@ export const Payments = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search member..."
-          className="border px-4 py-2 rounded-xl md:w-72"
+          className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-white px-4 py-2 rounded-xl md:w-72 outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white border p-4 rounded-2xl dark:bg-slate-900 dark:border-slate-800">
+        <div className="bg-white border border-gray-200 p-4 rounded-2xl dark:bg-slate-900 dark:border-slate-800">
           <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold">Total Users</p>
           <h2 className="text-2xl font-bold">{stats.totalUsers}</h2>
         </div>
@@ -199,8 +199,8 @@ export const Payments = () => {
         </div>
 
         <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl dark:bg-emerald-950/40 dark:border-emerald-900/60">
-          <p className="text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">Total Deposited</p>
-          <h2 className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+          <p className="text-green-700 dark:text-green-400 text-xs font-semibold">Total Deposited</p>
+          <h2 className="text-2xl font-bold text-green-700 dark:text-green-300">
             ₹{stats.totalDeposited}
           </h2>
         </div>
@@ -226,20 +226,20 @@ export const Payments = () => {
           filtered.map((m) => (
             <div
               key={m.id}
-              className="bg-white border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+              className="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between transition-colors"
             >
               <div>
                 {/* HEADER */}
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h2 className="text-xl font-bold">{m.name}</h2>
-                    <p className="text-sm text-gray-500">{m.phone}</p>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{m.name}</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{m.phone}</p>
                   </div>
 
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${m.pending > 0
-                      ? "bg-red-100 text-red-700"
-                      : "bg-green-100 text-green-700"
+                      ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800/60"
+                      : "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800/60"
                       }`}
                   >
                     {m.pending > 0 ? "PENDING" : "PAID"}
@@ -247,16 +247,16 @@ export const Payments = () => {
                 </div>
 
                 {/* PLAN */}
-                <div className="mb-4 bg-blue-50 border rounded-2xl p-4">
+                <div className="mb-4 bg-blue-50 border border-blue-200 dark:bg-blue-950/40 dark:border-blue-900/60 rounded-2xl p-4">
                   <div className="flex justify-between mb-2">
-                    <span className="font-semibold text-blue-700">
+                    <span className="font-semibold text-blue-700 dark:text-blue-300">
                       {m.plan.name} PLAN
                     </span>
 
-                    <span className="font-bold">₹{m.plan.amount}</span>
+                    <span className="font-bold text-blue-900 dark:text-blue-100">₹{m.plan.amount}</span>
                   </div>
 
-                  <p className="text-xs text-gray-500 mb-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                     Total bill for this plan
                   </p>
 
@@ -273,7 +273,7 @@ export const Payments = () => {
                           disabled={isActive || isUpdating}
                           className={`flex-1 text-xs font-semibold px-2 py-1.5 rounded-lg border transition ${isActive
                             ? "bg-blue-600 text-white border-blue-600 cursor-default"
-                            : "bg-white text-blue-700 border-blue-200 hover:bg-blue-100"
+                            : "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-slate-700 hover:bg-blue-100 dark:hover:bg-slate-700"
                             } disabled:opacity-60 disabled:cursor-not-allowed`}
                         >
                           {planOption}
@@ -284,7 +284,7 @@ export const Payments = () => {
                 </div>
 
                 {/* DETAILS */}
-                <div className="text-sm space-y-1 text-gray-700">
+                <div className="text-sm space-y-1 text-gray-700 dark:text-gray-300">
                   <p>
                     <b>Parent:</b> {m.parentPhone}
                   </p>
@@ -302,11 +302,11 @@ export const Payments = () => {
                     User Deposited: ₹{m.deposit}
                   </span>
 
-                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-xs font-semibold">
+                  <span className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 px-3 py-1 rounded-lg text-xs font-semibold border border-green-200 dark:border-green-800/60">
                     Paid: ₹{m.paid}
                   </span>
 
-                  <span className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs font-semibold">
+                  <span className="bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 px-3 py-1 rounded-lg text-xs font-semibold border border-red-200 dark:border-red-800/60">
                     Pending: ₹{m.pending}
                   </span>
                 </div>
@@ -316,7 +316,7 @@ export const Payments = () => {
               <div className="mt-5 flex justify-end gap-2">
                 <button
                   onClick={() => setDepositMember(m)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition cursor-pointer"
                 >
                   + Deposit
                 </button>
@@ -324,7 +324,7 @@ export const Payments = () => {
                 <button
                   onClick={() => handleMarkPaid(m)}
                   disabled={m.pending === 0}
-                  className="bg-black text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="bg-black dark:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
                 >
                   {m.pending === 0 ? "Paid" : "Mark Full Paid"}
                 </button>
@@ -332,7 +332,7 @@ export const Payments = () => {
             </div>
           ))
         ) : (
-          <p className="text-gray-500 col-span-full text-center py-10">
+          <p className="text-gray-500 dark:text-gray-400 col-span-full text-center py-10">
             No members found
           </p>
         )}
@@ -340,16 +340,16 @@ export const Payments = () => {
 
       {/* DEPOSIT MODAL */}
       {depositMember && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-xl border">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-3xl p-6 w-full max-w-md shadow-xl border border-gray-200 dark:border-slate-800">
             <h2 className="text-xl font-bold mb-1">Deposit Amount</h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
               Add payment for <b>{depositMember.name}</b>
             </p>
 
             <form onSubmit={handleCustomDeposit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                   Enter Amount (₹)
                 </label>
                 <input
@@ -359,14 +359,14 @@ export const Payments = () => {
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(e.target.value)}
                   placeholder="e.g. 500 or 2000"
-                  className="w-full border px-4 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
+                  className="w-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white px-4 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
                 />
               </div>
 
-              <div className="bg-gray-50 p-3 rounded-xl text-xs text-gray-600 space-y-1">
+              <div className="bg-gray-50 dark:bg-slate-800/80 p-3 rounded-xl text-xs text-gray-600 dark:text-gray-300 space-y-1 border border-gray-200 dark:border-slate-700">
                 <div className="flex justify-between">
                   <span>User Deposited:</span>
-                  <b className="text-emerald-600 font-extrabold">₹{depositMember.deposit}</b>
+                  <b className="text-emerald-600 dark:text-emerald-400 font-extrabold">₹{depositMember.deposit}</b>
                 </div>
                 <div className="flex justify-between">
                   <span>Current Paid:</span>
@@ -374,7 +374,7 @@ export const Payments = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Current Pending:</span>
-                  <b className="text-red-600">₹{depositMember.pending}</b>
+                  <b className="text-red-600 dark:text-red-400">₹{depositMember.pending}</b>
                 </div>
               </div>
 
@@ -385,14 +385,14 @@ export const Payments = () => {
                     setDepositMember(null);
                     setDepositAmount("");
                   }}
-                  className="px-4 py-2 border rounded-xl text-sm font-semibold hover:bg-gray-100"
+                  className="px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-xl text-sm font-semibold hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition"
                 >
                   {isSubmitting ? "Processing..." : "Confirm Deposit"}
                 </button>

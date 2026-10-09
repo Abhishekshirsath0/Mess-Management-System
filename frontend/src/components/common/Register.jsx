@@ -62,13 +62,13 @@ export default function Register() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 antialiased relative">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white flex items-center justify-center px-4 py-12 antialiased relative transition-colors">
       {/* Top right theme toggle */}
       <div className="absolute top-6 right-6">
         <button
           onClick={toggleTheme}
           title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
         >
           {theme === "dark" ? (
             <>
@@ -85,14 +85,14 @@ export default function Register() {
       </div>
 
       <div className="w-full max-w-lg">
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-xl shadow-gray-200/50 p-8 sm:p-10">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-xl p-8 sm:p-10 transition-colors">
 
           {/* Header Section */}
           <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center text-white text-2xl font-black tracking-wider shadow-md shadow-black/20">
+            <div className="w-14 h-14 rounded-2xl bg-black dark:bg-slate-800 flex items-center justify-center text-white text-2xl font-black tracking-wider shadow-md border border-gray-800 dark:border-slate-700">
               M
             </div>
-            <h1 className="mt-5 text-3xl font-extrabold text-gray-900 tracking-tight">
+            <h1 className="mt-5 text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
               Create an Account
             </h1>
             <p className="mt-2 text-sm text-gray-500 font-medium">

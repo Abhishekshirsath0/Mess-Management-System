@@ -49,7 +49,7 @@ export default function Navbar() {
   const historyPath = isAdmin ? "/admin/history" : "/history";
 
   return (
-    <header className="bg-white dark:bg-white border-b-2 border-black dark:border-slate-800 sticky top-0 z-50 transition-colors">
+    <header className="bg-white dark:bg-slate-900 border-b-2 border-black dark:border-slate-800 sticky top-0 z-50 transition-colors">
       <div className="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
@@ -57,38 +57,58 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-6">
-          {isAdmin && (
+        <nav className="hidden md:flex gap-4">
+          {isAdmin ? (
             <>
               <Link
                 to="/admin"
-                className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
+                aria-current={location.pathname === "/admin" ? "page" : undefined}
+                className={`font-semibold h-10 py-2 mt-2 px-3.5 rounded-xl transition-all ${
+                  location.pathname === "/admin"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                  : "text-gray-700  dark:text-gray-200 bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-800"
+                }`}
               >
                 Dashboard
               </Link>
               <Link
                 to="/admin/history"
-                className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
+                aria-current={location.pathname === "/admin/history" ? "page" : undefined}
+                className={`font-semibold h-10 py-2 mt-2 px-3.5 rounded-xl transition-all ${
+                  location.pathname === "/admin/history"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-gray-700  dark:text-gray-200 bg-gray-200 dark:bg-slate-800 hover:bg-gray-300 dark:hover:bg-slate-800"
+                }`}
               >
                 Admin History
               </Link>
             </>
+          ) : (
+            <>
+              <Link
+                to="/"
+                aria-current={location.pathname === "/" ? "page" : undefined}
+                className={`font-semibold h-10 py-2 mt-2 px-3.5 rounded-xl transition-all ${
+                  location.pathname === "/"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                  : "text-gray-700 dark:text-gray-200 bg-gray-100 light:bg-blue-200 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-800"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/history"
+                aria-current={location.pathname === "/history" ? "page" : undefined}
+                className={`font-semibold h-10 py-2 mt-2 px-3.5 rounded-xl transition-all ${
+                  location.pathname === "/history"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                  : "text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-800"
+                }`}
+              >
+                History
+              </Link>
+            </>
           )}
-
-          <Link
-            to="/"
-            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          >
-            Home
-          </Link>
-
-          <Link
-            to="/history"
-            className="font-semibold h-10 py-2 mt-2 hover:bg-gray-900 bg-black text-white px-3 rounded-xl"
-          >
-            History
-          </Link>
-
         </nav>
 
         {/* Right Side */}
@@ -120,7 +140,7 @@ export default function Navbar() {
               </div>
               <button
                 onClick={() => setShowLogoutModal(true)}
-                className="font-semibold h-10 py-2 text-sm hover:bg-red-700 bg-red-600 text-white px-3 rounded-xl transition cursor-pointer flex items-center gap-1.5"
+                className="font-semibold h-10 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200 dark:border-red-900 px-3 rounded-xl transition cursor-pointer flex items-center gap-1.5"
               >
                 <LogOut className="w-4 h-4" />
                 Logout

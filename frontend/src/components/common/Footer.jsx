@@ -19,7 +19,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs uppercase tracking-wider font-extrabold text-gray-900 dark:text-white mb-3">
+            <h3 className="text-xs tracking-wider font-extrabold text-gray-900 dark:text-white mb-3">
               Company
             </h3>
             <ul className="space-y-2 text-xs font-semibold">
@@ -48,7 +48,7 @@ export default function Footer() {
 
           {/* Legal Policies */}
           <div>
-            <h3 className="text-xs uppercase tracking-wider font-extrabold text-gray-900 dark:text-white mb-3">
+            <h3 className="text-xs tracking-wider font-extrabold text-gray-900 dark:text-white mb-3">
               Legal & Policies
             </h3>
             <ul className="space-y-2 text-xs font-semibold">
@@ -77,14 +77,14 @@ export default function Footer() {
 
           {/* Contact Details */}
           <div>
-            <h3 className="text-xs uppercase tracking-wider font-extrabold text-gray-900 dark:text-white mb-3">
+            <h3 className="text-xs tracking-wider font-extrabold text-gray-900 dark:text-white mb-3">
               Mess Contact
             </h3>
             <div className="space-y-1.5 text-xs text-gray-500 dark:text-gray-400 font-medium">
               <p>📍 Trimbak Road Mahiravanni Nashik,</p>
               <p>📞 +91 8010731546</p>
-              <p>✉️ [EMAIL_ADDRESS]</p>
-              <p className="pt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+              <p>✉️ support@messmaster.com</p>
+              <p className="pt-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
                 🟢 Mess Service Active
               </p>
             </div>

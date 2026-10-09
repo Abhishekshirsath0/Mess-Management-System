@@ -1057,7 +1057,6 @@ export default function AdminHistory() {
           </>
 
         )}
-
       </div>
 
     </div>

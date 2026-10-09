@@ -441,8 +441,8 @@ export default function UserDashboard() {
               Welcome, {currentUser.name}
             </h1>
 
-            <div className="flex items-center gap-2 text-black/80 dark:text-gray-300 mt-1 text-sm font-medium">
-              <CalendarDays size={16} />
+            <div className="flex items-center gap-1.5 text-black/80 dark:text-gray-300 mt-1 text-sm font-medium -ml-0.5">
+              <CalendarDays size={16} className="shrink-0" />
               <span>{today}</span>
             </div>
           </div>
@@ -471,11 +471,11 @@ export default function UserDashboard() {
               </div>
 
               <div>
-                <h3 className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-black/80 dark:text-gray-300 truncate">
+                <h2 className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-black/80 dark:text-gray-300 truncate">
                   {card.title}
-                </h3>
+                </h2>
 
-                <p className="text-base sm:text-2xl font-black mt-0.5 sm:mt-1 text-black dark:text-gray-50 truncate">
+                <p className="text-base sm:text-2xl font-black mt-0.5 sm:mt-1 text-black dark:text-gray-50 break-words">
                   {card.value}
                 </p>
               </div>
@@ -493,9 +493,9 @@ export default function UserDashboard() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
                   Today's Menu
                 </h2>
-                <h1 className="text-lg text-gray-800 dark:text-gray-200 font-semibold md:text-right md:ml-4">
+                <p className="text-lg text-gray-800 dark:text-gray-200 font-semibold md:text-right md:ml-4">
                   {today}
-                </h1>
+                </p>
               </div>
 
               <p className="text-gray-600 dark:text-gray-300 text-sm mt-1 font-medium">
@@ -503,9 +503,10 @@ export default function UserDashboard() {
               </p>
             </div>
 
-            <div className="bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-bold border border-green-300 dark:border-green-800">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800/60">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
               Active Menu
-            </div>
+            </span>
           </div>
 
           {/* LUNCH CARD */}
@@ -519,9 +520,9 @@ export default function UserDashboard() {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-black text-black dark:text-orange flex items-center gap-2">
+                <h2 className="text-lg dark:text-yellow-400 font-black text-black dark:text-orange flex items-center gap-2">
                   🍛 Lunch
-                </h3>
+                </h2>
                 {isLunchActive && (
                   <span className="text-xs font-bold bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200 px-2.5 py-0.5 rounded-full border border-orange-300">
                     Assigned to You
@@ -529,7 +530,7 @@ export default function UserDashboard() {
                 )}
               </div>
               <span className="text-sm font-bold text-black dark:text-slate-200">
-                8:00 AM - 3:00 PM
+                8:00 am – 3:00 pm
               </span>
             </div>
 
@@ -574,7 +575,7 @@ export default function UserDashboard() {
                   )}
                 </div>
                 <span className="text-sm font-bold text-black dark:text-slate-200">
-                  7:00 PM - 10:00 PM
+                  7:00 pm – 10:00 pm
                 </span>
               </div>
 
@@ -615,7 +616,7 @@ export default function UserDashboard() {
                   )}
                 </div>
                 <span className="text-sm font-bold text-black dark:text-slate-200">
-                  7:00 PM - 10:00 PM
+                  7:00 pm – 10:00 pm
                 </span>
               </div>
 

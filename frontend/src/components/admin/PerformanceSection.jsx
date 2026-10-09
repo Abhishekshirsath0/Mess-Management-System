@@ -110,7 +110,7 @@ export default function PerformanceSection() {
 
   if (loading) {
     return (
-      <div className="p-6 text-center text-slate-500">
+      <div className="p-6 text-center text-slate-500 dark:text-gray-400 font-medium">
         Loading mess performance...
       </div>
     );
@@ -118,7 +118,7 @@ export default function PerformanceSection() {
 
   if (error) {
     return (
-      <div className="p-6 text-center text-red-600">
+      <div className="p-6 text-center text-red-600 dark:text-red-400 font-medium">
         {error}
       </div>
     );
@@ -127,49 +127,49 @@ export default function PerformanceSection() {
   return (
     <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
       {/* Plan-wise collection rate */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm">
-        <h2 className="text-xl md:text-2xl font-bold mb-1 text-slate-900">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-6 shadow-sm transition-colors">
+        <h2 className="text-xl md:text-2xl font-bold mb-1 text-slate-900 dark:text-white">
           Collection Rate by Plan
         </h2>
-        <p className="text-xs text-slate-500 mb-6">
+        <p className="text-xs text-slate-500 dark:text-gray-400 mb-6">
           % of plan amount collected, per plan tier
         </p>
 
         <div className="h-52 md:h-64 flex items-end gap-3 md:gap-4">
           {planPerformance.map((item, index) => (
             <div key={index} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-              <span className="text-xs font-semibold text-slate-700">{item.pct}%</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-gray-200">{item.pct}%</span>
               <div
-                className="w-full bg-black rounded-t-xl transition-all duration-300"
+                className="w-full bg-black dark:bg-black rounded-t-xl transition-all duration-300"
                 style={{ height: `${item.pct}%` }}
                 title={`${item.label}: ${item.pct}%`}
               />
-              <span className="text-xs text-slate-500">{item.label}</span>
+              <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">{item.label}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Overall collection health */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 shadow-sm">
-        <h2 className="text-xl md:text-2xl font-bold mb-1 text-slate-900">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-6 shadow-sm transition-colors">
+        <h2 className="text-xl md:text-2xl font-bold mb-1 text-slate-900 dark:text-white">
           Overall Mess Performance
         </h2>
-        <p className="text-xs text-slate-500 mb-6">
+        <p className="text-xs text-slate-500 dark:text-gray-400 mb-6">
           Live snapshot from payment records
         </p>
 
         <div className="space-y-6">
           {overallStats.map((item, index) => (
             <div key={index}>
-              <div className="flex justify-between mb-2 text-sm md:text-base text-slate-800">
+              <div className="flex justify-between mb-2 text-sm md:text-base text-slate-800 dark:text-gray-200 font-medium">
                 <span>{item.title}</span>
-                <span className="font-semibold">{item.amount}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{item.amount}</span>
               </div>
 
-              <div className="h-3 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-black rounded-full transition-all duration-300"
+                  className="h-full bg-black dark:bg-emerald-500 rounded-full transition-all duration-300"
                   style={{ width: item.progress }}
                 />
               </div>
