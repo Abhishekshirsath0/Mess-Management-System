@@ -17,7 +17,7 @@
       url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.038'/%3E%3C/svg%3E"),
       /* Center bright luminous creamy glow */
       radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.5) 35%, rgba(255, 255, 255, 0) 70%),
-      /* Top-left: soft icy cyan and pastel blue */s
+      /* Top-left: soft icy cyan and pastel blue */
       radial-gradient(ellipse 70% 60% at 0% 0%, rgba(190, 235, 250, 0.72) 0%, rgba(210, 243, 253, 0.35) 45%, rgba(255, 255, 255, 0) 75%),
       /* Bottom-left: subtle blush pink & pale rose */
       radial-gradient(ellipse 65% 65% at 0% 100%, rgba(254, 215, 226, 0.68) 0%, rgba(255, 232, 238, 0.3) 45%, rgba(255, 255, 255, 0) 75%),
