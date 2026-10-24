@@ -136,7 +136,7 @@ export const Members = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 dark:bg-slate-950 p-6 text-gray-900 dark:text-white transition-colors">
+    <div className="w-full min-h-screen bg-transparent dark:bg-slate-950 p-6 text-gray-900 dark:text-white transition-colors">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
         <div>

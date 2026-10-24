@@ -187,7 +187,7 @@ export const Edit_Meal = () => {
   })}`;
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 dark:bg-slate-950 p-6 text-gray-900 dark:text-white transition-colors">
+    <div className="w-full min-h-screen bg-transparent dark:bg-slate-950 p-6 text-gray-900 dark:text-white transition-colors">
       {/* HEADER */}
       <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
         <div>

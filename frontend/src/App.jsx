@@ -9,7 +9,7 @@ export default function App() {
   const isUserHome = location.pathname === "/";
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-white dark:bg-slate-950 text-black dark:text-gray-100 transition-colors">
+    <div className="min-h-screen flex flex-col justify-between bg-transparent dark:bg-slate-950 text-black dark:text-gray-100 transition-colors">
       <div>
         <Navbar />
 

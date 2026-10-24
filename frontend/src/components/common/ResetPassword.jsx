@@ -67,7 +67,7 @@ export default function ResetPassword() {
     (error.toLowerCase().includes("expired") || error.toLowerCase().includes("invalid"));
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col justify-center px-6 py-12 relative transition-colors">
+    <div className="min-h-screen bg-transparent dark:bg-slate-950 flex flex-col justify-center px-6 py-12 relative transition-colors">
       {/* Top right theme toggle */}
       <div className="absolute top-6 right-6">
         <button

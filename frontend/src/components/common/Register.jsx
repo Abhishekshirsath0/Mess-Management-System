@@ -62,7 +62,7 @@ export default function Register() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white flex items-center justify-center px-4 py-12 antialiased relative transition-colors">
+    <main className="min-h-screen bg-transparent dark:bg-slate-950 text-gray-900 dark:text-white flex items-center justify-center px-4 py-12 antialiased relative transition-colors">
       {/* Top right theme toggle */}
       <div className="absolute top-6 right-6">
         <button
