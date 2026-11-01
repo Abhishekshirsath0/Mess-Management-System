@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getUserdatafromserver, getUserAttendanceHistory } from "../../../service";
+import { getUserdatafromserver, getUserAttendanceHistory, getMeals } from "../../../service";
 import { RingLoader } from "react-spinners";
 import { Calendar as CalendarIcon, User, RefreshCw, ChevronLeft, ChevronRight, Utensils, Package } from "lucide-react";
 import AttendanceColorLegend from "../../common/AttendanceColorLegend";
@@ -15,9 +15,27 @@ export default function UserAttendanceCalendar() {
   });
 
   const [records, setRecords] = useState([]);
+  const [weeklyMeals, setWeeklyMeals] = useState({});
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingAttendance, setLoadingAttendance] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchWeeklySchedule = async () => {
+      try {
+        const schedule = await getMeals();
+        const map = {};
+        (schedule || []).forEach((m) => {
+          const day = m.day || m.weekday;
+          if (day) map[day.toLowerCase()] = m;
+        });
+        setWeeklyMeals(map);
+      } catch (err) {
+        console.warn("Failed to load weekly schedule for calendar:", err);
+      }
+    };
+    fetchWeeklySchedule();
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -312,6 +330,12 @@ export default function UserAttendanceCalendar() {
                 const rec = recordsByDateMap[dateKey];
                 const isToday = dateKey === todayStr;
 
+                const [calYStr, calMStr] = selectedMonth.split("-");
+                const dayDate = new Date(+calYStr, +calMStr - 1, dayNum);
+                const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const weekdayName = dayNames[dayDate.getDay()];
+                const dayMeal = weeklyMeals[weekdayName?.toLowerCase()];
+
                 let bgClass =
                   "bg-white dark:bg-amber-950/70 border-2 border-amber-400 dark:border-amber-800 text-black dark:text-amber-100";
                 let statusLabel = "Not Marked";
@@ -356,6 +380,15 @@ export default function UserAttendanceCalendar() {
                         {statusLabel}
                       </span>
                     </div>
+
+                    {dayMeal && (dayMeal.lunch?.veg?.[0] || dayMeal.dinner?.veg?.[0]) && (
+                      <div
+                        className="text-[9px] text-gray-600 dark:text-gray-400 truncate my-0.5 font-medium"
+                        title={`${weekdayName} Scheduled Menu:\nLunch: ${dayMeal.lunch?.veg?.join(", ") || "-"}\nDinner: ${dayMeal.dinner?.veg?.join(", ") || "-"}`}
+                      >
+                        🍴 {dayMeal.lunch?.veg?.[0] || dayMeal.dinner?.veg?.[0]}
+                      </div>
+                    )}
 
                     {rec && rec.status === "present" ? (
                       <div className="flex flex-wrap gap-1 text-[9px] sm:text-[10px] font-semibold mt-auto">

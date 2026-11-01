@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { postMeal, getMeals } from "../../../service"; // adjust path to your api.js
+import { postMeal, getMeals } from "../../../service";
 import { RingLoader } from "react-spinners";
+import { useToast } from "../../../context/ToastContext";
+import { Calendar, Repeat, Utensils } from "lucide-react";
 
 const DAY_NAMES = [
   "Monday",
@@ -13,8 +15,6 @@ const DAY_NAMES = [
 ];
 
 // Formats a Date object as YYYY-MM-DD using LOCAL date parts
-// (never use toISOString() for this — it converts to UTC first
-// and can silently shift the date by a day depending on timezone)
 const formatLocalDate = (date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -44,24 +44,26 @@ const buildWeekTemplate = (weekOffset) => {
     return {
       id: `day-${i}`, // stable id per weekday slot
       day,
-      date: formatLocalDate(date), // FIXED: was date.toISOString().slice(0, 10)
+      date: formatLocalDate(date),
       veg: [],
       nonVeg: [],
-      dbId: null, // will hold the real MongoDB _id once saved/fetched
+      dbId: null, // holds MongoDB _id once saved/fetched
     };
   });
 };
 
 export const Edit_Meal = () => {
+  const { showSuccess, showError } = useToast();
   const [mealType, setMealType] = useState("Lunch");
   const [weekOffset, setWeekOffset] = useState(0); // 0 = this week, 1 = next week, -1 = last week
   const [meals, setMeals] = useState(() => buildWeekTemplate(0));
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
 
-  // Rebuild the 7-day template whenever the week changes,
-  // then merge in whatever's already saved for those exact dates
+  // Fetch the persistent recurring schedule from DB whenever week or mealType changes
   useEffect(() => {
+    let cancelled = false;
+
     const fetchMeals = async () => {
       setLoading(true);
       const template = buildWeekTemplate(weekOffset);
@@ -70,9 +72,15 @@ export const Edit_Meal = () => {
         const saved = await getMeals();
         const field = mealType.toLowerCase(); // "lunch" or "dinner"
 
+        if (cancelled) return;
+
         const merged = template.map((slot) => {
-          const match = saved.find(
-            (m) => formatLocalDate(new Date(m.date)) === slot.date // FIXED: was toISOString
+          // Match by persistent weekday first; fallback to date for legacy records
+          const match = (saved || []).find(
+            (m) =>
+              (m.day && m.day.toLowerCase() === slot.day.toLowerCase()) ||
+              (m.weekday && m.weekday.toLowerCase() === slot.day.toLowerCase()) ||
+              (m.date && formatLocalDate(new Date(m.date)) === slot.date)
           );
 
           if (match) {
@@ -90,13 +98,20 @@ export const Edit_Meal = () => {
         setMeals(merged);
       } catch (error) {
         console.error("Failed to load meals:", error);
-        setMeals(template); // fall back to empty template if fetch fails
+        if (!cancelled) {
+          setMeals(template);
+          if (showError) showError("Failed to load weekly meal schedule.");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchMeals();
+
+    return () => {
+      cancelled = true;
+    };
   }, [weekOffset, mealType]);
 
   const handleMenuChange = (id, category, index, value) => {
@@ -127,48 +142,68 @@ export const Edit_Meal = () => {
       prev.map((meal) =>
         meal.id === id
           ? {
-            ...meal,
-            [category]: meal[category].filter((_, i) => i !== index),
-          }
+              ...meal,
+              [category]: meal[category].filter((_, i) => i !== index),
+            }
           : meal
       )
     );
   };
 
   const handleSaveCard = async (meal) => {
-    const cleanedMeal = {
-      ...meal,
-      veg: meal.veg.map((item) => item.trim()).filter(Boolean),
-      nonVeg: meal.nonVeg.map((item) => item.trim()).filter(Boolean),
-    };
+    const cleanedVeg = meal.veg.map((item) => item.trim()).filter(Boolean);
+    const cleanedNonVeg = meal.nonVeg.map((item) => item.trim()).filter(Boolean);
 
-    if (cleanedMeal.veg.length === 0 && cleanedMeal.nonVeg.length === 0) {
-      alert("Please add at least one menu item.");
+    if (cleanedVeg.length === 0 && cleanedNonVeg.length === 0) {
+      if (showError) {
+        showError("Please add at least one menu item.");
+      } else {
+        alert("Please add at least one menu item.");
+      }
       return;
     }
 
     setSavingId(meal.id);
 
     try {
-      const saved = await postMeal(cleanedMeal, mealType);
+      const saved = await postMeal(
+        {
+          day: meal.day,
+          weekday: meal.day,
+          date: meal.date,
+          veg: cleanedVeg,
+          nonVeg: cleanedNonVeg,
+        },
+        mealType
+      );
 
       setMeals((prev) =>
         prev.map((m) =>
           m.id === meal.id
             ? {
-              ...m,
-              dbId: saved._id,
-              veg: cleanedMeal.veg,
-              nonVeg: cleanedMeal.nonVeg,
-            }
+                ...m,
+                dbId: saved._id,
+                veg: cleanedVeg,
+                nonVeg: cleanedNonVeg,
+              }
             : m
         )
       );
 
-      alert(`${meal.day} (${mealType}) saved successfully.`);
+      const successMsg = `Recurring ${meal.day} (${mealType}) saved successfully.`;
+      if (showSuccess) {
+        showSuccess(successMsg);
+      } else {
+        alert(successMsg);
+      }
     } catch (error) {
-      console.error(error);
-      alert(`Failed to save ${meal.day}`);
+      console.error("[handleSaveCard Error]:", error);
+      const errMsg = error.message || `Failed to save ${meal.day}`;
+      if (showError) {
+        showError(errMsg);
+      } else {
+        alert(errMsg);
+      }
     } finally {
       setSavingId(null);
     }
@@ -191,8 +226,15 @@ export const Edit_Meal = () => {
       {/* HEADER */}
       <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
         <div>
-          <h1 className="text-3xl font-bold">Weekly Meal Management</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{weekLabel}</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold">Weekly Meal Management</h1>
+            <span className="inline-flex items-center gap-1 text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 rounded-full border border-indigo-200 dark:border-indigo-800">
+              <Repeat className="w-3.5 h-3.5" /> Recurring Schedule
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Meals repeat every week on their configured day • Week: {weekLabel}
+          </p>
         </div>
 
         <div className="flex gap-3 items-center">
@@ -222,8 +264,12 @@ export const Edit_Meal = () => {
             onChange={(e) => setMealType(e.target.value)}
             className="border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 rounded-xl text-gray-800 dark:text-gray-200 font-medium cursor-pointer shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
-            <option value="Lunch" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200">Lunch</option>
-            <option value="Dinner" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200">Dinner</option>
+            <option value="Lunch" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200">
+              Lunch
+            </option>
+            <option value="Dinner" className="bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-200">
+              Dinner
+            </option>
           </select>
         </div>
       </div>
@@ -241,53 +287,19 @@ export const Edit_Meal = () => {
               className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-800 p-6 shadow-sm transition-colors"
             >
               {/* HEADER */}
-              <div className="flex justify-between mb-6">
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{meal.day}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{meal.day}</h2>
+                    
+                  </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {new Date(meal.date + "T00:00:00").toLocaleDateString(
+                    Every {meal.day} • {new Date(meal.date + "T00:00:00").toLocaleDateString(
                       "en-GB",
                       { day: "numeric", month: "short", year: "numeric" }
                     )}
                   </p>
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 <span className="inline-flex items-center bg-black dark:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-semibold leading-none h-fit">
                   {mealType}
@@ -378,7 +390,7 @@ export const Edit_Meal = () => {
                 disabled={savingId === meal.id}
                 className="w-full bg-black dark:bg-slate-800 text-white py-3 rounded-2xl font-medium hover:bg-gray-800 dark:hover:bg-slate-700 transition disabled:opacity-50 cursor-pointer"
               >
-                {savingId === meal.id ? "Saving..." : "Save This Day"}
+                {savingId === meal.id ? "Saving..." : `Save ${meal.day}`}
               </button>
             </div>
           ))}

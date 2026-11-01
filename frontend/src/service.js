@@ -294,42 +294,60 @@ export const getAllAttendanceHistory = async (params = {}) => {
 
 export const postMeal = async (meal, mealType) => {
   try {
-    const response = await axios.post(
-      `${API}/meal`,
-      {
-        date: meal.date,
-        mealType,
-        veg: meal.veg,
-        nonVeg: meal.nonVeg,
-      },
-      {
-        headers: getAuthHeaders(),
-      },
-    );
+    const payload = {
+      day: meal.day || meal.weekday,
+      weekday: meal.weekday || meal.day,
+      date: meal.date,
+      mealType,
+      veg: meal.veg,
+      nonVeg: meal.nonVeg,
+      messId: meal.messId,
+    };
+    if (meal.lunch) payload.lunch = meal.lunch;
+    if (meal.dinner) payload.dinner = meal.dinner;
+
+    const response = await axios.post(`${API}/meal`, payload, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
     console.error("POST MEAL ERROR:", error.response?.data || error.message);
-    throw error;
+    throw error.response?.data || error;
   }
 };
 
-export const getMeals = async (date) => {
+export const getMeals = async (params) => {
   try {
+    const queryParams =
+      typeof params === "string"
+        ? { date: params }
+        : params && typeof params === "object"
+        ? params
+        : {};
+
     const response = await axios.get(`${API}/meal`, {
       headers: getAuthHeaders(),
-      params: date ? { date } : {},
+      params: queryParams,
     });
     return response.data;
   } catch (error) {
     console.error("GET MEAL ERROR:", error.response?.data || error.message);
-    throw error;
+    throw error.response?.data || error;
   }
 };
 
-export const getTodayMeal = async () => {
+export const getTodayMeal = async (params) => {
   try {
+    const queryParams =
+      typeof params === "string"
+        ? { date: params }
+        : params && typeof params === "object"
+        ? params
+        : {};
+
     const response = await axios.get(`${API}/meal/today`, {
       headers: getAuthHeaders(),
+      params: queryParams,
     });
     return response.data;
   } catch (error) {
@@ -337,7 +355,7 @@ export const getTodayMeal = async () => {
       "GET TODAY MEAL ERROR:",
       error.response?.data || error.message,
     );
-    throw error;
+    throw error.response?.data || error;
   }
 };
 

@@ -8,6 +8,7 @@ import attendanceRouter from "./Router/attendanceRouter.js";
 import mealRouter from "./Router/mealRouter.js";
 import absenceRouter from "./Router/absenceRouter.js";
 import mealAssignmentRouter from "./Router/mealAssignmentRouter.js";
+import migrateMeals from "./utils/migrateMeals.js";
 dotenv.config();
 
 const app = express();
@@ -44,6 +45,7 @@ mongoose
   .connect(MONGODB_URI)
   .then(async () => {
     console.log("Connected to MongoDB");
+    await migrateMeals();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
